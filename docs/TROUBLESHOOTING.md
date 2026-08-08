@@ -2,9 +2,10 @@
 
 ## The core is not listed
 
-Make sure the shared library and `shmdp_libretro.info` are both in RetroArch's
-configured **Cores** directory. Use `.dll` on Windows, `.dylib` on macOS and `.so`
-on Linux, from the archive matching your architecture.
+Make sure the shared library is in RetroArch's configured **Cores** directory
+and `shmdp_libretro.info` is in the separate **Core Info** directory. Both paths
+are shown under **Settings > Directory**. Use `.dll` on Windows, `.dylib` on
+macOS and `.so` on Linux, from the archive matching your architecture.
 
 ## The game does not start
 

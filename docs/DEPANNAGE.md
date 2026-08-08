@@ -2,8 +2,9 @@
 
 ## « Space Harrier MDP » n’apparaît pas
 
-- Vérifiez que la bibliothèque et `shmdp_libretro.info` sont dans le dossier
-  **Cœurs** indiqué par RetroArch.
+- Vérifiez que la bibliothèque est dans le dossier **Cœurs** et que
+  `shmdp_libretro.info` est dans le dossier distinct **Informations sur les
+  cœurs**, tels qu’indiqués dans **Paramètres > Répertoires**.
 - Vérifiez l’extension : `.dll` sous Windows, `.dylib` sous macOS, `.so` sous Linux.
 - Vérifiez que vous avez téléchargé l’archive du bon système et de la bonne
   architecture.

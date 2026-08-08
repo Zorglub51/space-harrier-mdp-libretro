@@ -14,14 +14,22 @@ SHA-1 `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72`.
 ## Install the core
 
 1. Extract the downloaded archive.
-2. In RetroArch, open **Settings > Directory** and note the **Cores** directory.
+2. In RetroArch, open **Settings > Directory** and note both the **Cores** and
+   **Core Info** directories.
 3. Close RetroArch.
 4. Copy `shmdp_libretro.dll` (Windows), `shmdp_libretro.dylib` (macOS), or
-   `shmdp_libretro.so` (Linux) into that directory.
-5. Copy `shmdp_libretro.info` there too, then restart RetroArch.
+   `shmdp_libretro.so` (Linux) into the **Cores** directory.
+5. Copy `shmdp_libretro.info` into the separate **Core Info** directory, then
+   restart RetroArch. Do not put the `.info` file in **Cores**.
+
+The usual macOS locations are:
+
+- library: `~/Library/Application Support/RetroArch/cores/`;
+- `.info` file: `~/Library/Application Support/RetroArch/info/`.
 
 Some RetroArch versions also let you select **Load Core > Install or Restore a
-Core** and choose the extracted core library directly.
+Core** and choose the extracted core library directly. This does not always
+install the `.info` file, so copy that file to **Core Info** yourself if needed.
 
 ## Play
 

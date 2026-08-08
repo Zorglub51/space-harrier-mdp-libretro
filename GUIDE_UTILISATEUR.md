@@ -15,19 +15,27 @@ son SHA-1 est `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72`.
 ## Installation dans RetroArch
 
 1. Décompressez l’archive téléchargée.
-2. Dans RetroArch, ouvrez **Paramètres > Répertoires** et notez le chemin indiqué
-   pour **Cœurs** (ou *Cores*).
+2. Dans RetroArch, ouvrez **Paramètres > Répertoires** et notez les deux chemins
+   indiqués pour **Cœurs** (ou *Cores*) et **Informations sur les cœurs**
+   (ou *Core Info*).
 3. Fermez RetroArch.
-4. Copiez les deux fichiers suivants dans ce dossier :
+4. Copiez la bibliothèque dans le dossier **Cœurs** :
    - `shmdp_libretro.dll` sous Windows ;
    - `shmdp_libretro.dylib` sous macOS ;
-   - `shmdp_libretro.so` sous Linux ;
-   - et, dans tous les cas, `shmdp_libretro.info`.
-5. Relancez RetroArch.
+   - `shmdp_libretro.so` sous Linux.
+5. Copiez `shmdp_libretro.info` dans le dossier distinct **Informations sur les
+   cœurs**. Ne le placez pas dans le dossier **Cœurs**.
+6. Relancez RetroArch.
+
+Sur une installation macOS standard, les emplacements sont généralement :
+
+- bibliothèque : `~/Library/Application Support/RetroArch/cores/` ;
+- fichier `.info` : `~/Library/Application Support/RetroArch/info/`.
 
 Sur certaines versions de RetroArch, vous pouvez aussi choisir **Charger un
 cœur > Installer ou restaurer un cœur**, puis sélectionner directement la
-bibliothèque extraite.
+bibliothèque extraite. Cette commande n’installe pas toujours le fichier
+`.info` : copiez-le alors vous-même dans **Informations sur les cœurs**.
 
 ## Lancer le jeu
 
