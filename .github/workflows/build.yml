@@ -3,6 +3,17 @@ name: Build cores
 on:
   workflow_call:
   workflow_dispatch:
+    inputs:
+      platform:
+        description: Platform to build
+        required: true
+        default: all
+        type: choice
+        options:
+          - all
+          - linux
+          - windows
+          - macos
   pull_request:
   push:
     branches: [main]
@@ -13,6 +24,7 @@ permissions:
 jobs:
   linux:
     name: Linux x86_64
+    if: github.event_name != 'workflow_dispatch' || inputs.platform == 'all' || inputs.platform == 'linux'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -40,6 +52,7 @@ jobs:
 
   windows:
     name: Windows x86_64
+    if: github.event_name != 'workflow_dispatch' || inputs.platform == 'all' || inputs.platform == 'windows'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -68,6 +81,7 @@ jobs:
 
   macos:
     name: macOS ${{ matrix.arch }}
+    if: github.event_name != 'workflow_dispatch' || inputs.platform == 'all' || inputs.platform == 'macos'
     runs-on: macos-latest
     strategy:
       fail-fast: false

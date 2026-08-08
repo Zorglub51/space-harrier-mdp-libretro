@@ -707,6 +707,27 @@
  	// if we allocated a ROM larger that the file (e.g. due to uneven cart size), set remaining space to 0xff
  	if (len > (tmplen - offset))
  		memset(m_cart->get_rom_base() + (tmplen - offset)/2, 0xffff, (len - tmplen + offset)/2);
+--- a/src/osd/modules/input/input_common.cpp
++++ b/src/osd/modules/input/input_common.cpp
+@@ -31,10 +31,17 @@
+ #if defined(OSD_SDL) || defined(SDLMAME_WIN32)
++#if defined(__LIBRETRO__)
++// The Libretro input module receives already-normalised RetroPad events and
++// never consumes SDL scancodes.  Keeping a placeholder preserves the table
++// layout without requiring host SDL headers for MinGW cross-compilation.
++#define KEY_TRANS_SDL(sdlsc) 0,
++#else
+ #ifdef SDLMAME_SDL3
+ #include <SDL3/SDL.h>
+ #else
+ #include <SDL2/SDL.h>
+ #endif
+ #define KEY_TRANS_SDL(sdlsc) SDL_SCANCODE_##sdlsc,
++#endif
+ #else
+ #define KEY_TRANS_SDL(sdlsc)
+ #endif
+
 --- a/src/osd/libretro/libretro-internal/libretro.cpp
 +++ b/src/osd/libretro/libretro-internal/libretro.cpp
 @@ -716,7 +716,7 @@
