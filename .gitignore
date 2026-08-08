@@ -1,0 +1,11 @@
+.DS_Store
+build/
+out/
+*.pyc
+__pycache__/
+*.smp
+*.bin
+*.gen
+*.zip
+*.7z
+!dist/*.zip

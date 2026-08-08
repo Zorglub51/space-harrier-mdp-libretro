@@ -1,0 +1,47 @@
+name: Publish release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    uses: ./.github/workflows/build.yml
+
+  release:
+    name: GitHub release
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/download-artifact@v8
+        with:
+          pattern: space-harrier-mdp-*
+          path: release-assets
+          merge-multiple: true
+      - name: Bundle complete corresponding source
+        run: |
+          mkdir -p source-bundle/space-harrier-mdp-libretro
+          rsync -a \
+            --exclude .git \
+            --exclude build \
+            --exclude out \
+            ./ source-bundle/space-harrier-mdp-libretro/
+          ./scripts/fetch-mame.sh source-bundle/libretro-mame
+          tar -czf \
+            "release-assets/space-harrier-mdp-${GITHUB_REF_NAME}-source.tar.gz" \
+            --exclude .git \
+            source-bundle
+      - name: Publish archives
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release create "${GITHUB_REF_NAME}" \
+            release-assets/*.zip release-assets/*-source.tar.gz \
+            --repo "${GITHUB_REPOSITORY}" \
+            --title "Space Harrier MDP ${GITHUB_REF_NAME}" \
+            --generate-notes

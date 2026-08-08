@@ -1,0 +1,39 @@
+name: Game or core bug
+description: Report a reproducible problem without sharing copyrighted ROM data.
+title: "[Bug]: "
+labels: [bug]
+body:
+  - type: markdown
+    attributes:
+      value: "Do not upload or link to a ROM."
+  - type: input
+    id: platform
+    attributes:
+      label: Platform
+      placeholder: "Windows 11 x86_64, macOS arm64, Ubuntu x86_64…"
+    validations:
+      required: true
+  - type: input
+    id: versions
+    attributes:
+      label: RetroArch and core versions
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Include the stage, attract-mode cycle or actions leading to the bug.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behaviour
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Log, screenshot or short video
+      description: Remove private paths and never attach the ROM.
