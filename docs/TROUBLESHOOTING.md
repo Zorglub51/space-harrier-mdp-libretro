@@ -7,6 +7,10 @@ and `shmdp_libretro.info` is in the separate **Core Info** directory. Both paths
 are shown under **Settings > Directory**. Use `.dll` on Windows, `.dylib` on
 macOS and `.so` on Linux, from the archive matching your architecture.
 
+If the core is still listed by filename, quit RetroArch, delete the generated
+`core_info.cache` file from **Core Info**, and restart. The cache is rebuilt
+automatically.
+
 ## The game does not start
 
 Use the untouched 4,063,232-byte original with SHA-1

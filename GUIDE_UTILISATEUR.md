@@ -14,6 +14,20 @@ son SHA-1 est `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72`.
 
 ## Installation dans RetroArch
 
+### macOS — installation automatique
+
+1. Fermez complètement RetroArch.
+2. Décompressez l’archive macOS.
+3. Double-cliquez sur `INSTALLER_MACOS.command`. Si macOS le bloque, faites un
+   clic droit sur le fichier puis choisissez **Ouvrir**.
+4. Relancez RetroArch.
+
+L’installateur lit les répertoires configurés par RetroArch, place chaque fichier
+au bon endroit et régénère le cache des informations sur les cœurs. Il ne touche
+ni aux ROM, ni aux sauvegardes, ni aux autres cœurs.
+
+### Installation manuelle — tous les systèmes
+
 1. Décompressez l’archive téléchargée.
 2. Dans RetroArch, ouvrez **Paramètres > Répertoires** et notez les deux chemins
    indiqués pour **Cœurs** (ou *Cores*) et **Informations sur les cœurs**
@@ -25,7 +39,9 @@ son SHA-1 est `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72`.
    - `shmdp_libretro.so` sous Linux.
 5. Copiez `shmdp_libretro.info` dans le dossier distinct **Informations sur les
    cœurs**. Ne le placez pas dans le dossier **Cœurs**.
-6. Relancez RetroArch.
+6. Dans le dossier **Informations sur les cœurs**, supprimez le fichier généré
+   `core_info.cache` s’il existe. RetroArch le recréera automatiquement.
+7. Relancez RetroArch.
 
 Sur une installation macOS standard, les emplacements sont généralement :
 
@@ -35,7 +51,8 @@ Sur une installation macOS standard, les emplacements sont généralement :
 Sur certaines versions de RetroArch, vous pouvez aussi choisir **Charger un
 cœur > Installer ou restaurer un cœur**, puis sélectionner directement la
 bibliothèque extraite. Cette commande n’installe pas toujours le fichier
-`.info` : copiez-le alors vous-même dans **Informations sur les cœurs**.
+`.info` et ne régénère pas toujours le cache : effectuez alors les étapes 5 et 6
+manuellement.
 
 ## Lancer le jeu
 

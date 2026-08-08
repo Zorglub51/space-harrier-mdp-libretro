@@ -31,6 +31,11 @@ cp "${repo_root}/LICENSE" "${package_dir}/LICENSE"
 cp "${repo_root}/COPYING.MAME" "${package_dir}/COPYING.MAME"
 cp "${repo_root}/NOTICE.md" "${package_dir}/NOTICE.md"
 
+if [[ "${platform_tag}" == macos-* ]]; then
+    cp "${repo_root}/dist/INSTALLER_MACOS.command" "${package_dir}/INSTALLER_MACOS.command"
+    chmod +x "${package_dir}/INSTALLER_MACOS.command"
+fi
+
 mkdir -p "${repo_root}/out"
 rm -f "${archive}"
 (cd "${repo_root}/out" && zip -9 -r "$(basename "${archive}")" "$(basename "${package_dir}")")

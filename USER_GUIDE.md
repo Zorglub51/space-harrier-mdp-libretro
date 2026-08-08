@@ -13,6 +13,20 @@ SHA-1 `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72`.
 
 ## Install the core
 
+### Automatic installation on macOS
+
+1. Quit RetroArch completely.
+2. Extract the macOS archive.
+3. Double-click `INSTALLER_MACOS.command`. If macOS blocks it, right-click the
+   file and choose **Open**.
+4. Restart RetroArch.
+
+The installer reads RetroArch's configured directories, puts each file in the
+correct location and rebuilds the core-info cache. It does not touch ROMs,
+saves, or any other core.
+
+### Manual installation on any system
+
 1. Extract the downloaded archive.
 2. In RetroArch, open **Settings > Directory** and note both the **Cores** and
    **Core Info** directories.
@@ -20,7 +34,10 @@ SHA-1 `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72`.
 4. Copy `shmdp_libretro.dll` (Windows), `shmdp_libretro.dylib` (macOS), or
    `shmdp_libretro.so` (Linux) into the **Cores** directory.
 5. Copy `shmdp_libretro.info` into the separate **Core Info** directory, then
-   restart RetroArch. Do not put the `.info` file in **Cores**.
+   do not put the `.info` file in **Cores**.
+6. Delete the generated `core_info.cache` file from **Core Info** if it exists.
+   RetroArch will recreate it automatically.
+7. Restart RetroArch.
 
 The usual macOS locations are:
 
@@ -29,7 +46,8 @@ The usual macOS locations are:
 
 Some RetroArch versions also let you select **Load Core > Install or Restore a
 Core** and choose the extracted core library directly. This does not always
-install the `.info` file, so copy that file to **Core Info** yourself if needed.
+install the `.info` file or rebuild the cache, so perform steps 5 and 6 yourself
+if needed.
 
 ## Play
 
