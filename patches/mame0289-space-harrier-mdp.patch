@@ -732,7 +732,8 @@
 +++ b/src/osd/libretro/libretro-internal/libretro.cpp
 @@ -716,7 +716,7 @@
  
-    info->library_name     = "MAME";
+-   info->library_name     = "MAME";
++   info->library_name     = "Space Harrier MDP";
     info->library_version  = build_version;
 -   info->valid_extensions = "cmd|zip|7z";
 +   info->valid_extensions = "smp|bin|md|gen|cmd|zip|7z";
