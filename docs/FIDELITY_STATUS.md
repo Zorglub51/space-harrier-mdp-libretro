@@ -1,4 +1,4 @@
-# Fidelity status — 0.1.8
+# Fidelity status — 0.1.9
 
 The target is the original M2 emulator output for SH1 and SH2, including its
 pixel alternation and flicker. An attractive image or a plausible reconstruction
@@ -16,6 +16,7 @@ no original executable, ROM, captured game memory or game pixels.
 |---|---|---|
 | SH1 collision block | 31 original ARM executions | One hook; other hooks are not thereby validated |
 | SH2 line-phase reset | 33 original ARM executions | Restores the omitted phase reset |
+| SH2 pre-boss lightning tilemap | 76 original ARM cases and 19,200 game writes | Restores the omitted source read; see [the lightning reference](SH2_LIGHTNING_REFERENCE.md) |
 | Direct CRAM addressing | Original handler and bus traces | Addressing is established; scheduling is separate |
 | Direct low VRAM writes | Native decoder and game write trace | Ranking-font data reaches VRAM without a font remap |
 | Direct video registers | 68 original ARM cases | All 64 registers; byte enables tested as MAME integration |
@@ -57,9 +58,13 @@ the raw scanline output on the captured lines.
 
 ## Reliability checks
 
-Six deterministic SH1/SH2 scenarios replay 39,020 frames. Their PCM streams
-match 0.1.7 exactly. This checks execution stability; it is not a comparison of
-audio or CPU timing with the M2 binary.
+Version 0.1.9 changes only one SH2 reconstruction instruction. Its lightning
+transitions are checked against 19,200 expected source-tile writes. Separate SH1
+and SH2 control sequences retain identical video/audio over 21,000 frames.
+
+The 0.1.8 validation replays six deterministic SH1/SH2 scenarios over 39,020
+frames. Their PCM streams match 0.1.7 exactly. This checks execution stability;
+it is not a comparison of audio or CPU timing with the M2 binary.
 
 With default audio settings, saving and restoring SH1 and SH2 reproduces all
 180 subsequent frames and audio samples in each test. Since 0.1.7, the state includes

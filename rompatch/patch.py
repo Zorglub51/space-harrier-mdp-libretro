@@ -404,7 +404,10 @@ SH2 = [
     (0x171756, 0x3540, 0x0C2A, "cmpi.b #$FD,$20(a2) [ext FFFD 0020, cf SH1 171730]", "handler+SH1"),
     (0x171752, 0x4A44, 0x6700, "beq.w $1718C4       [garde a2 nul, ext 0170]",       "handler+extension"),
     (0x17175E, 0x3039, 0x102A, "move.b $23(a2),d0   [ext 0023, puis move.b d0,d1]", "handler+extension"),
-    (0x190A80, 0x2F3C, 0x30C1, "move.w d1,(a0)+",                                 "handler"),
+    # Native BE9AC reads the source tile at A0 into D6 before ADD.W D1,D6
+    # and MOVE.W D6,(A1)+. Writing D1 to A0 instead leaves D6 accumulating
+    # attributes, corrupting the lightning tilemap before SH2 bosses.
+    (0x190A80, 0x2F3C, 0x3C18, "move.w (a0)+,d6    [boss-transition tilemap source]", "handler+original-ARM oracle"),
     (0x1985B8, 0x00FF, 0x6700, "beq.w $1986CC       [garde a0 nul, ext 0112]",      "handler+extension"),
     (0x1986CC, 0x41F9, 0x0C39, "cmpi.b #$A,$FF39B9.l [ext 000A 00FF 39B9]",         "handler+extension"),
     (0x199142, 0x5240, 0x207C, "movea.l #$A11100,a0 [busreq Z80, ext 00A1 1100]",  "handler+extension"),

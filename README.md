@@ -106,6 +106,8 @@ The [sprite selection reference](docs/MDP_SPRITE_LIST.md) covers the native
 sprite and source-column limits, VRAM list traversal and 76 full-renderer
 synthetic cases. The [raster timing reference](docs/MDP_RASTER_TIMING.md)
 explains the corrected scanline origin for palette writes.
+The [SH2 lightning reference](docs/SH2_LIGHTNING_REFERENCE.md) explains the
+repaired source-tile read that removes corrupt graphics before bosses.
 
 This is not yet a claim of complete pixel-perfect emulation. The
 [fidelity checklist](docs/FIDELITY_STATUS.md) separates measured contracts from

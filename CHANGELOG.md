@@ -4,6 +4,25 @@ Every published version must have a dated entry written in English. The
 `vVERSION` tag, `VERSION` file and entry must match before publication.
 GitHub release notes are generated directly from the corresponding entry.
 
+## [0.1.9] - 2026-10-05
+
+### SH2 pre-boss lightning
+
+- Fixed the corrupt tile graphics during the lightning animation before bosses.
+  A reconstructed instruction wrote to the source address instead of reading
+  the next tile. Restored the source read performed by the original M2 block.
+- Verified all 9,600 tilemap writes in the attract-mode transition before
+  Trimuller: every value now matches its source tile and attributes. The
+  runtime ROM remains unchanged, and audio matches 0.1.8 over 1,801 frames.
+- A second stage-1 diagnostic capture validates another 9,600 tilemap writes.
+  All 79 automated tests pass, including 76 synthetic executions of the
+  original ARM tilemap block. Only the 48 lightning frames change in the
+  compared attract-mode screenshot interval.
+- SH1's repair table and the shared renderer are unchanged. Two SH1 control
+  sequences and the SH2 stage-1 control sequence retain identical video and
+  audio over 21,000 frames. This fix does not establish all-stage or complete
+  CPU/video timing equivalence.
+
 ## [0.1.8] - 2026-10-05
 
 ### Native sprite selection
