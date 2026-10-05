@@ -4,6 +4,46 @@ Every published version must have a dated entry written in English. The
 `vVERSION` tag, `VERSION` file and entry must match before publication.
 GitHub release notes are generated directly from the corresponding entry.
 
+## [0.1.8] - 2026-10-05
+
+### Native sprite selection
+
+- Replaced the empirical sprite pixel budget with M2's source-column and
+  sprite limits: 20 sprites / 40 columns at 320 pixels, or 16 / 32 at 256 pixels.
+  Reduced, transparent and horizontally offscreen sprites consume the same
+  source budget as in the original renderer.
+- Read sprite attributes directly from VRAM. Matched the original table
+  addressing, linked-list cycle handling, conditional X=0 termination and
+  reverse drawing order, including M2's partial final-sprite behaviour.
+- Matched graphics-bank and palette flags with zoom enabled or disabled, and
+  preserved native attribute carries when advancing between tiles.
+
+### Raster colour timing
+
+- Date direct palette writes using the scanline counter passed to the renderer.
+  The previous screen-position counter had a different frame origin, shifting
+  colour changes to the wrong lines. A trace of 678 SH2 writes in the libretro
+  core confirms the 38-line difference between these counters.
+- Preserve the original ordering: render the current line, run its CPU slice,
+  then show colour changes on the following line. No temporal blending added.
+
+### Validation and limitations
+
+- The complete production sprite method matches all 76 synthetic original-ARM
+  cases, plus the earlier geometry, zoom-bank and clipping references. Address
+  and undefined-behaviour sanitizer checks pass.
+- Zero differences across 143,360 indexed pixels from two complete SH2 frames,
+  including a sprite-heavy first-boss scene where 0.1.7 differs in 30 pixels.
+- All 76 automated tests passed with fresh native references and private ROMs.
+  RGB output also matches the native indices combined with the captured local
+  palette for those two frames; this does not prove whole-engine timing.
+- Replayed 39,020 frames across six SH1/SH2 scenarios; audio matches 0.1.7
+  exactly. Save/load reproduces all 180 subsequent frames and audio in each
+  game's control sequence with default settings.
+- These changes also affect SH1. Remaining work includes complete CPU/IRQ
+  timing, interactions between direct and ordinary palette writes, extended
+  VSRAM access, other reconstructed hooks and wider game/platform coverage.
+
 ## [0.1.7] - 2026-10-05
 
 ### Rendering matched to M2 measurements

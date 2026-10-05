@@ -2,8 +2,9 @@
 
 The C++ probe uses the patched write method and raster flush prefix, with only
 screen timing and ordinary VDP ports stubbed. No game ROM or MAME tree is needed.
-Native fixtures prove decoding; scanline scheduling tests preserve the existing
-port timing and do not claim a native M2 timing oracle.
+Native fixtures prove decoding. Scheduling uses the renderer's internal counter,
+which differs from the screen beam in MAME's standard timing mode. These tests
+do not claim complete CPU-cycle or interrupt-timing equivalence with native M2.
 """
 
 import json
@@ -18,6 +19,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 PATCH = ROOT / "patches" / "mame0289-space-harrier-mdp.patch"
 FIXTURE = ROOT / "tests" / "fixtures" / "mdp_cram_m2.json"
+LINE_CLOCK_FIXTURE = ROOT / "tests" / "fixtures" / "mdp_line_clock_m2.json"
 
 
 def patched_fragments(patch, filename):
@@ -71,7 +73,9 @@ public:
     FakeCpu cpu;
     FakeCpu *m_cpu68k = &cpu;
     FakeScreen timing;
+    int scanline = 0;
     FakeScreen &screen() { return timing; }
+    int get_scanline_counter() { return scanline; }
     void vdp_mdp_w(offs_t offset, u16 data, u16 mem_mask);
     void render_videoline_to_videobuffer(int scanline);
     void reset_raster() { RESET_STATEMENT }
@@ -93,8 +97,10 @@ int main() {
             int position;
             unsigned offset, data, mask;
             if (!(std::cin >> position >> offset >> data >> mask)) return 2;
-            vdp.timing.position = position;
+            vdp.scanline = position;
             vdp.vdp_mdp_w(offset, u16(data), u16(mask));
+        } else if (command == 'B') {
+            if (!(std::cin >> vdp.timing.position)) return 6;
         } else if (command == 'R') {
             int line;
             if (!(std::cin >> line)) return 3;
@@ -190,6 +196,42 @@ class MdpRasterCramTests(unittest.TestCase):
         self.assertEqual(self.run_commands([
             self.write(0xc00462, 0x468), "R -1", "R 224", "R 9", "R 10", "R 10",
         ]), [("C", 0x31, 0x468)])
+
+    def test_uses_render_counter_when_screen_beam_is_38_lines_behind(self):
+        # Observed in the released Libretro core: internal line 1 has beam225;
+        # line39 has beam1. Both counters wrap at262, but only the internal
+        # counter indexes render_videoline_to_videobuffer and its CRAM queue.
+        for counter, beam, target in ((1, 225, 2), (39, 1, 40),
+                                      (223, 185, 0), (226, 188, 0)):
+            with self.subTest(counter=counter, beam=beam):
+                commands = [f"B {beam}", self.write(0xc00462, 0x468, position=counter)]
+                wrong_target = beam + 1 if beam + 1 < 224 else 0
+                self.assertNotEqual(wrong_target, target)
+                self.assertEqual(self.run_commands(commands + [f"R {wrong_target}"]), [])
+                self.assertEqual(self.run_commands(commands + [f"R {target}"]),
+                                 [("C", 0x31, 0x468)])
+
+    def test_native_frame_loop_write_reaches_the_next_rendered_line(self):
+        reference = json.loads(LINE_CLOCK_FIXTURE.read_text())
+        fresh = os.environ.get("MDP_LINE_CLOCK_ORACLE_JSON")
+        if fresh:
+            self.assertEqual(json.loads(Path(fresh).read_text())["events"], reference["events"])
+        self.assertEqual(reference["schema"], 1)
+        self.assertEqual(reference["binary_sha256"],
+                         "2374ddca2241d2a040f587a1e86359c3d3d5f1dc93e566588b35e15bee73178f")
+        events = reference["events"]
+        self.assertEqual(len(events), 12)
+        for index in range(0, len(events) - 3, 3):
+            render, cpu_write, completed, next_render = events[index:index + 4]
+            self.assertEqual([item["event"] for item in (render, cpu_write, completed, next_render)],
+                             ["render", "cpu_slice_write", "native_write_complete", "render"])
+            self.assertEqual(completed["cram49"], cpu_write["value"])
+            self.assertEqual(next_render["cram49"], cpu_write["value"])
+            self.assertEqual(next_render["visible_line"], render["visible_line"] + 1)
+            commands = [self.write(0xc00462, cpu_write["value"], position=render["visible_line"])]
+            self.assertEqual(self.run_commands(commands + [f"R {render['visible_line']}"]), [])
+            self.assertEqual(self.run_commands(commands + [f"R {next_render['visible_line']}"]),
+                             [("C", 0x31, next_render["cram49"])])
 
     def test_last_visible_line_and_vblank_schedule_line_zero(self):
         for position in (223, 224, 261, -2, -1):

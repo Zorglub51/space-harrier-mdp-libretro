@@ -1,0 +1,170 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-05",
+  "candidate_version": "0.1.8",
+  "candidate_core_sha256": "4f5a9547724e7085d074034b80ae0a5b3e0596c74bb161dabb36d45c2faf8a2b",
+  "native_binary_sha256": "2374ddca2241d2a040f587a1e86359c3d3d5f1dc93e566588b35e15bee73178f",
+  "scope": "Original M2 sprite selection/rasterization on synthetic VRAM and original indexed full-line renderer on two captured SH2 frames. This manifest contains hashes and comparison metadata only.",
+  "synthetic_sprite_oracle": {
+    "fixture": "tests/fixtures/mdp_sprite_list_m2.json",
+    "fixture_sha256": "19abc7d77f4b52069c217d542a60355a347ed7c6b496ba6c2fc9d0264129296b",
+    "cases": 76,
+    "compared_pixels": 24064,
+    "different_pixels": 0,
+    "oracle_entry": "0xC1E24",
+    "oracle_stop_before": "0xC2472",
+    "production_test": "tests/test_mdp_sprite_list.py",
+    "production_test_sha256": "83e27923eeb4b08242a766471ca4e649dd41920ba09f4a7f994331690fd01072",
+    "earlier_geometry_and_clipping_test": "tests/test_mdp_sprites.py",
+    "earlier_geometry_and_clipping_test_sha256": "99c83d8e4328506741527cc82a4d9f6edc81c8fbec1e68bcf4c734731d4b7036",
+    "native_test_method": "Compile the complete production mdp_render_spriteline from the public patch; compare every visible sprite pixel against executed ARM outputs.",
+    "test_result": "6 sprite tests passed with fresh native references and address/undefined-behavior sanitizers, zero skips. The complete 76-test suite also passed with fresh native references and private ROMs, zero skips."
+  },
+  "full_frame_oracle": {
+    "engine": "Ghidra PcodeEmulator, original ARM plans, sprites and composition",
+    "entry": "0xC1E24",
+    "stop_before": "0xC1E5C",
+    "native_line_width": 474,
+    "visible_x_offset": 77,
+    "indexed_encoding": "Bits 0..6 select CRAM entry 0..127; bit 7 selects normal intensity, otherwise shadow.",
+    "cram_encoding": "128 numeric u16 little-endian words per line; RGB components are bits 1..3, 5..7, 9..11.",
+    "rgb_conversion": "For each original native index, multiply each three-bit component from candidate post-render CRAM by 34 if index bit 7 is set, otherwise 17. Compare the resulting RGB888 pixels to the frontend screenshot.",
+    "aggregate_hash_order": "Concatenate complete per-line numeric buffers, scanlines 0 through 223. Sprite attribute cache is checked additionally; native rendering reads SAT from VRAM.",
+    "capture_timing": {
+      "poll_seconds": 2.5e-07,
+      "render_timer_seconds_after_scanline_transition": 1e-06,
+      "post_snapshot_seconds_after_pre_snapshot": 2e-06,
+      "raster_cram_dimensions": [
+        256,
+        128
+      ]
+    },
+    "frames": [
+      {
+        "scene": "SH2 stage 4",
+        "vdp_frame": 3000,
+        "frontend_frame": 3002,
+        "width": 320,
+        "height": 224,
+        "compared_indexed_pixels": 71680,
+        "different_indexed_pixels": 0,
+        "native_indexed_sha256": "3b30418799ec477fac90f227b540ff5746f6ad13c3e6d6e26c0cefd715797376",
+        "candidate_indexed_sha256": "3b30418799ec477fac90f227b540ff5746f6ad13c3e6d6e26c0cefd715797376",
+        "compared_rgb_pixels": 71680,
+        "different_rgb_pixels": 0,
+        "native_indices_with_candidate_cram_rgb888_sha256": "e5812fb61f1fc035ea5ede01e8250b2d07f77ce4666712c1aee984f901550ec2",
+        "frontend_rgb888_sha256": "e5812fb61f1fc035ea5ede01e8250b2d07f77ce4666712c1aee984f901550ec2",
+        "frontend_png_sha256": "880a178515285c52b0f756978a006c35c5eeb9661eb4309d45c0e6839ad1ea5a",
+        "native_oracle_geometry_inputs_equal": {
+          "m_regs": {
+            "identical": true,
+            "sha256": "78d5c8018340a1b6dc452e1aa69387701989b997490d720192d72e4c5f21769e",
+            "size_bytes": 28672
+          },
+          "m_vram": {
+            "identical": true,
+            "sha256": "5f021a599bd9f85da1ba4a7add03015ddd698f25c31492d2c0b3856c26fb4fd1",
+            "size_bytes": 14680064
+          },
+          "m_mdp_ram": {
+            "identical": true,
+            "sha256": "50a7449d632d30aa3c72b2cb8126c71d803f99db28ec2c95deefc0d95d955f25",
+            "size_bytes": 14680064
+          },
+          "m_vsram": {
+            "identical": true,
+            "sha256": "465cfd796ce451d37774b7b06d0d071fc6c21965d690e2a6e30f90e5e4f9e0c5",
+            "size_bytes": 28672
+          },
+          "m_internal_sprite_attribute_table": {
+            "identical": true,
+            "sha256": "b463f2d4a60bab9468c248e6290d6606b3b1080cf61a67baf3c8eb4dac04c686",
+            "size_bytes": 229376
+          }
+        },
+        "cram_timing_changes": {
+          "different_lines_before_render": 161,
+          "original_cram_before_sha256": "7643ea1b6889787032b6f96403a2e031d539f381a252f2863c6a2f7ff9e8d5bc",
+          "candidate_cram_before_sha256": "712863b4ab4cbef9968a35614beed82bc10e78e080be76ce10b27b26084c332c",
+          "candidate_cram_after_sha256": "91b3117c17c24065aec19e244f517e8d3b0328b05b9de4477c301de38cc347c6",
+          "interpretation": "Expected after correcting the raster queue scanline clock. CRAM is excluded from geometry equivalence and the indexed oracle stops before palette conversion."
+        },
+        "upper_vram_mutation_lines": [
+          8,
+          10,
+          22,
+          32,
+          39,
+          58,
+          89,
+          90
+        ]
+      },
+      {
+        "scene": "SH2 first boss approach",
+        "vdp_frame": 6600,
+        "frontend_frame": 6602,
+        "width": 320,
+        "height": 224,
+        "compared_indexed_pixels": 71680,
+        "different_indexed_pixels": 0,
+        "native_indexed_sha256": "761ff9b924340f4a33df72dea38826b66324e9fb85e6915e76384186ba02788f",
+        "candidate_indexed_sha256": "761ff9b924340f4a33df72dea38826b66324e9fb85e6915e76384186ba02788f",
+        "compared_rgb_pixels": 71680,
+        "different_rgb_pixels": 0,
+        "native_indices_with_candidate_cram_rgb888_sha256": "2b3fe88a1ebf38515564f2fd28b9a6ca8c3b00271381f23398ceeaec979750e6",
+        "frontend_rgb888_sha256": "2b3fe88a1ebf38515564f2fd28b9a6ca8c3b00271381f23398ceeaec979750e6",
+        "frontend_png_sha256": "0a8f7fd1630111bb068415f225b6d96bf1e9765cbae7613226e9aae88d8609eb",
+        "native_oracle_geometry_inputs_equal": {
+          "m_regs": {
+            "identical": true,
+            "sha256": "78d5c8018340a1b6dc452e1aa69387701989b997490d720192d72e4c5f21769e",
+            "size_bytes": 28672
+          },
+          "m_vram": {
+            "identical": true,
+            "sha256": "7bfea450b4d8e98f3078e0af6c43c32ff7e267e86f70bbc2c2d69349380edc62",
+            "size_bytes": 14680064
+          },
+          "m_mdp_ram": {
+            "identical": true,
+            "sha256": "23b7679eff96c0a24d1bbe49118849f8040a12e58190acc60cd4300b87a86af3",
+            "size_bytes": 14680064
+          },
+          "m_vsram": {
+            "identical": true,
+            "sha256": "465cfd796ce451d37774b7b06d0d071fc6c21965d690e2a6e30f90e5e4f9e0c5",
+            "size_bytes": 28672
+          },
+          "m_internal_sprite_attribute_table": {
+            "identical": true,
+            "sha256": "62cb527cd4695e5fcacd1fbf6a10e13207f8813ae36111bb75854eb6f63c6d0b",
+            "size_bytes": 229376
+          }
+        },
+        "cram_timing_changes": {
+          "different_lines_before_render": 101,
+          "original_cram_before_sha256": "4661238aa2ccb97fd47d6244727ede2fcbfa4ab932b139103f79eab7dff4f5b7",
+          "candidate_cram_before_sha256": "d84c2832d5726abde6dc1d5f0d85e2fe40bf04bae4f008c4967071ea1365246d",
+          "candidate_cram_after_sha256": "df69298dcc1cf571a22399aa6784bedc84857da1804cfaec864ba0bd3a321315",
+          "interpretation": "Expected after correcting the raster queue scanline clock. CRAM is excluded from geometry equivalence and the indexed oracle stops before palette conversion."
+        },
+        "upper_vram_mutation_lines": [
+          29,
+          31,
+          37
+        ]
+      }
+    ],
+    "compared_indexed_pixels": 143360,
+    "different_indexed_pixels": 0,
+    "compared_rgb_pixels": 143360,
+    "different_rgb_pixels": 0
+  },
+  "limits": [
+    "The two complete frames and 76 synthetic cases do not establish pixel accuracy for every scene or complete CPU/VDP timing.",
+    "The native full-line execution stops before NEON palette conversion. RGB equality uses the independently established 17/34 CRAM conversion and the candidate local per-line CRAM; it does not establish whole-engine timing against original hardware.",
+    "Snapshot polling can alter CPU scheduling. These comparisons apply to the exact instrumented runs; individual snapshot reads advance no emulated time.",
+    "Upper-VRAM mutations within the capture interval were replayed by the native oracle using before and after snapshots: 8 lines in stage 4 and 3 lines in the boss approach. Their indexed outputs were unchanged."
+  ]
+}

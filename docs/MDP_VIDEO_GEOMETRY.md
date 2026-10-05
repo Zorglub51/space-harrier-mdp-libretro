@@ -70,7 +70,8 @@ These contracts are checked against original sprite geometry instructions,
 separately from tests of the shrink and tile decoding helpers. Version 0.1.7 adds
 native shadow composition, extended sprite palette selection, reduced-cell
 left-edge clipping and the [indexed frame oracle](MDP_FRAME_ORACLE.md). The
-remaining sprite budgets and linked-list edge cases still need dedicated tests.
+[sprite selection reference](MDP_SPRITE_LIST.md) describes the native budgets and
+linked-list cases implemented and tested in version 0.1.8.
 
 ## Validation scope
 

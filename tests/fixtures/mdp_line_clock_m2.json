@@ -1,0 +1,78 @@
+{
+  "schema": 1,
+  "binary_sha256": "2374ddca2241d2a040f587a1e86359c3d3d5f1dc93e566588b35e15bee73178f",
+  "engine": "Ghidra PcodeEmulator ARM p-code",
+  "ghidra_version": "12.1",
+  "boundary": "Original C06FC..C0754 frame loop, C32C8/C3314 scheduler and C2CA8 direct CRAM write; CPU execution replaced with one synthetic native CRAM write per slice, sound and raster pixel routine intercepted",
+  "events": [
+    {
+      "event": "render",
+      "native_slice": 37,
+      "visible_line": -1,
+      "cram49": 48879
+    },
+    {
+      "event": "cpu_slice_write",
+      "native_slice": 37,
+      "requested_cycles": 489,
+      "value": 256
+    },
+    {
+      "event": "native_write_complete",
+      "native_slice": 37,
+      "cram49": 256
+    },
+    {
+      "event": "render",
+      "native_slice": 38,
+      "visible_line": 0,
+      "cram49": 256
+    },
+    {
+      "event": "cpu_slice_write",
+      "native_slice": 38,
+      "requested_cycles": 489,
+      "value": 802
+    },
+    {
+      "event": "native_write_complete",
+      "native_slice": 38,
+      "cram49": 802
+    },
+    {
+      "event": "render",
+      "native_slice": 39,
+      "visible_line": 1,
+      "cram49": 802
+    },
+    {
+      "event": "cpu_slice_write",
+      "native_slice": 39,
+      "requested_cycles": 488,
+      "value": 1348
+    },
+    {
+      "event": "native_write_complete",
+      "native_slice": 39,
+      "cram49": 1348
+    },
+    {
+      "event": "render",
+      "native_slice": 40,
+      "visible_line": 2,
+      "cram49": 1348
+    },
+    {
+      "event": "cpu_slice_write",
+      "native_slice": 40,
+      "requested_cycles": 489,
+      "value": 1894
+    },
+    {
+      "event": "native_write_complete",
+      "native_slice": 40,
+      "cram49": 1894
+    }
+  ],
+  "steps": 386
+}

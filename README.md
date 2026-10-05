@@ -102,9 +102,14 @@ state. Native shadow composition, extended sprite colours and reduced-cell
 clipping replace previous approximations. The core outputs raw frames without
 temporal averaging or sprite persistence.
 
+The [sprite selection reference](docs/MDP_SPRITE_LIST.md) covers the native
+sprite and source-column limits, VRAM list traversal and 76 full-renderer
+synthetic cases. The [raster timing reference](docs/MDP_RASTER_TIMING.md)
+explains the corrected scanline origin for palette writes.
+
 This is not yet a claim of complete pixel-perfect emulation. The
 [fidelity checklist](docs/FIDELITY_STATUS.md) separates measured contracts from
-remaining sprite limits, timing, game hooks and host presentation questions.
+remaining timing, game hooks and host presentation questions.
 Android is deferred.
 
 This is an independent preservation/research project, not an official Sega, M2,
