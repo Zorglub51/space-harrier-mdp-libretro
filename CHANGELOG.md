@@ -1,192 +1,186 @@
 # Changelog
 
-Chaque version publiée possède une entrée datée. Le tag `vVERSION`, le fichier
-`VERSION` et cette entrée doivent correspondre pour autoriser la publication.
+Every published version must have a dated entry written in English. The
+`vVERSION` tag, `VERSION` file and entry must match before publication.
+GitHub release notes are generated directly from the corresponding entry.
 
 ## [0.1.7] - 2026-10-05
 
-### Rendu conforme aux mesures M2
+### Rendering matched to M2 measurements
 
-- Correction des ombres : les opérateurs de sprites suivent désormais les
-  règles de composition du code ARM original. L'ombre de Harrier ne devient
-  plus une zone éclaircie.
-- Conversion des couleurs conforme à la sortie RGB du moteur M2 : chaque
-  composante vaut 34 fois sa valeur CRAM en intensité normale, 17 fois en ombre.
-  Prise en charge du second banc de palette des sprites et du fond.
-- Correction du découpage des petites cellules de sprites au bord gauche,
-  selon le comportement mesuré dans M2.
-- Suppression de l'ancienne moyenne entre deux images du fond et du mécanisme
-  optionnel de persistance des sprites. Le cœur fournit chaque image brute ;
-  les alternances de pixels et de couleurs sont conservées.
+- Corrected shadows: sprite operators now follow the composition rules of the
+  original ARM code. Harrier's shadow no longer becomes a highlighted area.
+- Matched colour conversion to the M2 engine's RGB output: each channel is
+  34 times its CRAM value at normal intensity, or 17 times in shadow.
+  Added support for the second palette bank for sprites and the backdrop.
+- Corrected clipping of reduced sprite cells at the left edge, following the
+  behaviour measured in M2.
+- Removed the old two-frame background averaging and optional sprite
+  persistence. The core outputs each raw frame, preserving alternating pixels
+  and colours.
 
-### Sauvegardes instantanées
+### Save states
 
-- Sauvegarde de la totalité de la mémoire graphique MDP et de l'historique du
-  filtre audio. Après rechargement, SH1 et SH2 reproduisent exactement les
-  180 images et le son des séquences de contrôle, avec les réglages par défaut.
-- Les états des versions précédentes sont incompatibles ; relancer la ROM.
+- Save states now include all MDP graphics memory and the audio filter history.
+  After loading a state, SH1 and SH2 reproduce all 180 subsequent frames and
+  their audio exactly in the control sequences, using default settings.
+- States from earlier versions are incompatible; restart from the original ROM.
 
-### Validation et limites
+### Validation and limitations
 
-- Zéro différence sur 82 240 pixels indexés, à état vidéo identique : une image
-  entière du stage 4 de SH2 (320 × 224), et 11 lignes supplémentaires par scène
-  dans les stages 1 et 3 de SH2 et une scène de SH1. Référence obtenue en exécutant
-  le moteur ARM original, avec contrôle séparé de sa conversion de couleurs.
-- Oracles publics sans ROM : 208 cas de composition et 4 115 cas de conversion
-  de couleurs ; tests du C++ réellement distribué et test de sauvegarde/reprise.
-- 71 tests automatiques réussis, références ARM fraîches et ROM originales
-  privées incluses dans la validation locale.
-- 39 020 images rejouées sur six parcours SH1/SH2 ; son identique à la référence
-  0.1.5 sur ces parcours. Les images changent avec les corrections ci-dessus.
-- Ces mesures ne prouvent pas encore l'équivalence du minutage, des limites de
-  sprites, de tous les hooks du jeu ni de tous les stages. Les filtres de
-  présentation GPU de l'application M2 restent hors de ce périmètre.
+- Zero differences across 82,240 indexed pixels at identical video state: one
+  complete SH2 stage-4 frame (320 × 224), plus 11 lines per scene from SH2 stages
+  1 and 3 and one SH1 scene. The reference was obtained by executing the original
+  ARM engine, with its colour conversion checked separately.
+- Public oracles without ROM data: 208 composition cases and 4,115 colour
+  conversion cases, with tests of the actual distributed C++ and save/load replay.
+- All 71 automated tests passed. Local validation included fresh ARM references
+  and privately supplied original ROMs.
+- Replayed 39,020 frames across six SH1/SH2 scenarios; audio matches the 0.1.5
+  reference on those sequences. Video changes reflect the corrections above.
+- These measurements do not yet establish equivalent timing, sprite limits,
+  all game hooks or all stages. The M2 application's GPU presentation filters
+  remain outside this validation scope.
 
 ## [0.1.6] - 2026-10-05
 
-### Perspective et sprites SH2
+### SH2 perspective and sprites
 
-- Suppression du décalage de 53 lignes et de l'étirement artificiel du décor
-  SH2 : les plans utilisent la transformation de la ligne affichée, comme M2.
-  Cela rétablit leur position par rapport aux sprites, notamment dans les
-  stages 1 et 4 où les objets paraissaient trop bas.
-- Prise en charge des 64 registres directs MDP. Les registres des plans et du
-  zoom des sprites choisissent leurs tables et leur activation explicitement.
-  Le contenu d'une ancienne table ne peut plus activer un effet désactivé.
-- Rendu des deux plans selon les coordonnées, dimensions, retournements,
-  palettes et priorités M2, avec rebouclage ou limitation aux bords. Suppression
-  des règles SH2 qui masquaient certaines lignes de montagnes et de plafond.
-- Zoom vertical des sprites conforme aux calculs M2 : agrandissement permis,
-  hauteur nulle invisible, différence verticale circulaire sur 10 bits.
+- Removed the 53-line offset and artificial stretching of SH2 scenery: planes
+  now use the transformation for the displayed scanline, as M2 does. This
+  restores their position relative to sprites, particularly in stages 1 and 4,
+  where objects appeared too low.
+- Added support for all 64 direct MDP registers. Plane and sprite-zoom registers
+  explicitly select and enable their tables. Stale table contents can no longer
+  activate a disabled effect.
+- Render both planes using M2 coordinates, dimensions, flips, palettes and
+  priorities, with wrapping or edge clamping. Removed SH2 rules that hid certain
+  mountain and ceiling lines.
+- Matched vertical sprite zoom to M2 calculations: enlargement is allowed,
+  zero-height sprites are invisible, and vertical distance wraps over 10 bits.
 
-### Validation et limites
+### Validation and limitations
 
-- Comparaison du C++ distribué avec les sorties d'exécution ARM originales :
-  68 cas d'adressage des registres, 30 cas de plans et les cas de géométrie,
-  choix de table et réduction des sprites. Fixtures publiques sans ROM.
-- Comparaisons de captures SH2 des stages 1, 3 et 4, de l'attraction et du
-  classement, ainsi que des deux parcours SH1 de 6 000 trames. Le son est
-  inchangé sur les séquences comparées. Les corrections de zoom peuvent
-  également modifier certains sprites SH1 ; ses images ne sont pas annoncées
-  identiques à la version précédente.
-- Aucun filtre de scintillement ni persistance ajouté. Le minutage M2, les
-  palettes étendues des sprites, certains cas de bord d'écran et la validation
-  de l'ensemble des stages restent à approfondir.
-- Les anciens états instantanés sont incompatibles avec les registres étendus ;
-  démarrer depuis la ROM originale.
+- Compared the distributed C++ with original ARM execution results: 68 register
+  addressing cases, 30 plane cases, and sprite geometry, table-selection and
+  reduction cases. Public fixtures contain no ROM data.
+- Compared SH2 captures from stages 1, 3 and 4, attract mode and ranking, as well
+  as both 6,000-frame SH1 sequences. Audio is unchanged on the compared sequences.
+  Zoom corrections can also affect some SH1 sprites; SH1 video is not claimed
+  to be identical to the previous version.
+- No flicker filter or persistence was added. M2 timing, extended sprite
+  palettes, some screen-edge cases and validation of all stages still need
+  further investigation.
+- Older save states are incompatible with the extended registers; start from
+  the original ROM.
 
 ## [0.1.5] - 2026-10-05
 
-### Correction SH2
+### SH2 fix
 
-- Restauration de la fenêtre d'accès direct à la mémoire vidéo basse. Les
-  écritures qui reconstruisent la police du classement atteignent maintenant
-  leur destination, avec mise à jour du cache des caractères.
-- Suppression du remappage de police selon la palette. Les lettres du titre
-  « RANKING LIST » et les initiales utilisent les tuiles écrites par le jeu,
-  avec son animation d'apparition. Aucun remplacement de police dans la ROM.
+- Restored the direct access window to lower video memory. Writes that rebuild
+  the ranking font now reach their destination and update the character cache.
+- Removed palette-based font remapping. The "RANKING LIST" title and initials
+  use the tiles written by the game, including their appearance animation.
+  No font is substituted in the ROM.
 
-### Validation et limites
+### Validation and limitations
 
-- Cause vérifiée dans le code M2, la trace du bus et le contenu de la mémoire
-  vidéo : les 3 040 octets écrits pour la police étaient auparavant perdus.
-- Comparaison de séquences SH2 de titre, jeu, premier boss, classement et
-  Yees Land. Le son est inchangé sur les séquences comparées.
-- SH1 conserve les flux vidéo et audio complets des deux parcours de 6 000
-  trames de référence. Aucun filtre anti-scintillement ajouté.
-- Le décor qui persiste derrière le classement, la géométrie de certains
-  niveaux et le minutage M2 restent à traiter. Cette version ne prétend pas
-  valider tous les stages ni l'exécution interactive Windows/Linux.
+- Verified the cause in M2 code, bus traces and video memory: the 3,040 bytes
+  written for the font had previously been discarded.
+- Compared SH2 title, gameplay, first-boss, ranking and Yees Land sequences.
+  Audio is unchanged on the compared sequences.
+- SH1 preserves the complete video and audio streams of both 6,000-frame
+  reference sequences. No additional flicker filter was introduced.
+- Scenery persisting behind the ranking screen, geometry in some stages and
+  M2 timing remain to be addressed. This version does not claim validation of
+  all stages or interactive Windows/Linux sessions.
 
 ## [0.1.4] - 2026-10-05
 
-### Corrections SH2
+### SH2 fixes
 
-- Restauration de `MOVE.L D4,D1` dans le générateur de lignes du décor :
-  l'ancien `NOP` omettait la remise à -32 de la phase. La correction est
-  établie par exécution du bloc ARM original de M2 sur 33 cas.
-- Décodage des écritures directes de couleurs sur `C00400..C004FF` : chaque
-  adresse sélectionne son entrée de palette, notamment `C00462` pour SH2.
-  Plusieurs couleurs écrites pour une même ligne sont conservées séparément.
-- Réinitialisation et sauvegarde des écritures de palette en attente.
-- Ajout d'un lanceur Windows SH2 et des informations des deux ROM dans les
-  guides. Le cœur reste commun à SH1 et SH2.
+- Restored `MOVE.L D4,D1` in the scenery line generator: the previous `NOP`
+  omitted the phase reset to -32. The correction is established by executing
+  M2's original ARM block on 33 cases.
+- Decoded direct colour writes at `C00400..C004FF`: each address selects its
+  palette entry, including `C00462` for SH2. Multiple colours written for the
+  same scanline are retained separately.
+- Added reset and save-state handling for pending palette writes.
+- Added an SH2 Windows launcher and details of both ROMs to the guides.
+  SH1 and SH2 continue to share the same core.
 
-### Validation et limites
+### Validation and limitations
 
-- Références d'exécution ARM et tests publics sans ROM pour le compteur de
-  lignes et l'adressage des couleurs ; 39 000 trames SH2 réparties sur cinq
-  scénarios comparées sur Mac, avec le premier boss atteint.
-- SH1 conserve exactement les flux vidéo et audio complets sur deux
-  parcours de 6 000 trames (attraction et commandes
-  automatisées). Le correctif de palette ne change pas le son de SH2.
-- Aucun filtre anti-scintillement ni persistance des sprites ajouté.
-- Les caractères et le fond du classement SH2 restent incorrects ; la
-  géométrie de certains décors demande encore une comparaison avec M2.
-- L'équivalence complète du rendu et du minutage avec M2, les parties
-  complètes et les essais interactifs Windows/Linux restent à valider.
-- Les anciens états instantanés ne sont pas compatibles avec cette
-  révision ; démarrer le jeu normalement depuis la ROM originale.
+- Original ARM execution references and public tests without ROM data cover
+  the line counter and colour addressing. Compared 39,000 SH2 frames across
+  five scenarios on Mac, reaching the first boss.
+- SH1 preserves the complete video and audio streams exactly on two 6,000-frame
+  sequences: attract mode and scripted input. The palette fix does not change
+  SH2 audio.
+- No additional flicker filter or sprite persistence was introduced.
+- SH2 ranking characters and background remain incorrect; some scenery geometry
+  still needs comparison with M2.
+- Complete rendering and timing equivalence with M2, full playthroughs and
+  interactive Windows/Linux sessions remain to be validated.
+- Older save states are incompatible with this revision; start the game
+  normally from the original ROM.
 
 ## [0.1.3] - 2026-10-05
 
-### Corrections
+### Fixes
 
-- SH1 : les annonces de stages et de boss utilisent à nouveau les bons
-  caractères. La compatibilité de police propre à SH2 est maintenant limitée à
-  sa ROM originale reconnue.
-- SH1 : correction de l'instruction de collision qui écrasait le compteur de
-  parcours au niveau 1.
-- SH2 : reconnaissance de la ROM originale dans le cœur, reconstruction des
-  instructions, correction de la lecture des commandes et de la mémoire de
-  couleurs étendue.
-- Conservation des scintillements du fonctionnement testé ; aucun filtre
-  anti-scintillement supplémentaire n'est activé.
+- SH1 stage and boss announcements display the correct characters again.
+  SH2-specific font compatibility is now restricted to its recognised original
+  ROM.
+- SH1: corrected the collision instruction that overwrote the iteration counter
+  in stage 1.
+- SH2: added original-ROM recognition in the core, instruction reconstruction,
+  corrected input reads and extended colour memory handling.
+- Preserved the flicker observed during testing; no additional flicker filter
+  is enabled.
 
-### Téléchargements
+### Downloads
 
-- Archives complètes pour Windows x86_64, Linux x86_64, macOS Intel et macOS
-  Apple Silicon, avec notices, informations du cœur et empreintes SHA-256.
-- Lanceur de test SH1 pour Windows et installateur pour macOS.
-- Sources correspondantes complètes, incluant la révision MAME épinglée,
-  les patches et les outils de compilation. Aucune ROM n'est fournie.
-- Publication des notes de cette version depuis ce changelog. Les versions
-  suivantes utilisent le même mécanisme à la création d'un tag `vX.Y.Z`.
+- Complete archives for Windows x86_64, Linux x86_64, macOS Intel and macOS
+  Apple Silicon, with guides, core information and SHA-256 checksums.
+- SH1 test launcher for Windows and installer for macOS.
+- Complete corresponding source, including the pinned MAME revision, patches
+  and build tools. No ROM is included.
+- Release notes are published from this changelog. Subsequent versions use the
+  same mechanism when a `vX.Y.Z` tag is created.
 
-### Validation et limites
+### Validation and limitations
 
-- Comparaison du premier bloc portable SH1 avec 31 cas mesurés dans le code ARM
-  original de M2. Ce bloc reste testé séparément ; le cœur distribué utilise
-  encore la reconstruction des instructions 68000.
-- Vérification visuelle des textes SH1 sur Mac. Sur les parcours comparés de
-  6 000 trames, SH2 conserve exactement les mêmes images et le même son ; le son
-  de SH1 reste également identique.
-- Tests automatiques des profils de ROM, de la reconstruction, des outils de
-  publication et des archives. Compilation des quatre architectures avant
-  publication.
-- L'exécution interactive Windows et Linux et les parties complètes restent à
-  valider. Les sauvegardes instantanées et la fidélité globale à M2 font encore
-  l'objet de travaux.
+- Compared the first portable SH1 block against 31 measured executions of M2's
+  original ARM code. This block remains tested separately; the distributed core
+  still uses reconstructed 68000 instructions.
+- Visually checked SH1 text on Mac. Across the compared 6,000-frame sequences,
+  SH2 retains exactly the same video and audio; SH1 audio is also unchanged.
+- Automated tests cover ROM profiles, reconstruction, release tools and archives.
+  All four architectures are built before publication.
+- Interactive Windows/Linux sessions and full playthroughs remain to be
+  validated. Save states and overall fidelity to M2 are still under development.
 
-### Utilisation
+### Usage
 
-Téléchargez l'archive de votre système et extrayez-la avec 7-Zip ou un outil
-compatible. Sous Windows, lancez `TESTER_SH1_WINDOWS.cmd` pour choisir RetroArch
-x64 et votre ROM SH1 originale. Sur Mac, utilisez `INSTALLER_MACOS.command`.
-Sous Linux, installez le `.so` et le `.info` selon le guide fourni.
+Download the archive for your operating system and extract it with 7-Zip or a
+compatible tool. On Windows, run `TESTER_SH1_WINDOWS.cmd` to select RetroArch x64
+and your original SH1 ROM. On Mac, use `INSTALLER_MACOS.command`. On Linux,
+install the `.so` and `.info` files as described in the included guide.
 
-L'archive `source` est destinée à la recompilation ; elle n'est pas nécessaire
-pour jouer. Les fichiers `SHA256SUMS` servent à vérifier les téléchargements.
+The `source` archive is intended for rebuilding; it is not needed to play.
+Use the `SHA256SUMS` files to verify downloads.
 
 ## [0.1.2] - 2026-10-05
 
-Version de test locale, non publiée sur GitHub : correction de collision SH1,
-première référence ARM mesurée et export Windows x64 avec lanceur de test.
+Local test version, not published on GitHub: SH1 collision fix, first measured
+ARM reference, and Windows x64 export with a test launcher.
 
 ## [0.1.1] - 2026-08-08
 
-- Publication des cœurs Windows x86_64, Linux x86_64, macOS Intel et Apple Silicon.
-- Installateur macOS et indications d'installation des informations du cœur.
-- Archive des sources correspondantes.
+- Released cores for Windows x86_64, Linux x86_64, macOS Intel and Apple Silicon.
+- Added a macOS installer and instructions for installing core information.
+- Provided the corresponding source archive.
 
-[Historique détaillé de 0.1.1](https://github.com/Zorglub51/space-harrier-mdp-libretro/compare/v0.1.0...v0.1.1).
+[Full 0.1.1 changelog](https://github.com/Zorglub51/space-harrier-mdp-libretro/compare/v0.1.0...v0.1.1).

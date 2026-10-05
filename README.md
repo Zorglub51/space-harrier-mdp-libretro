@@ -16,7 +16,7 @@ Choose the archive for your operating system on the
 
 - [Guide utilisateur en français](GUIDE_UTILISATEUR.md)
 - [English user guide](USER_GUIDE.md)
-- [Changelog de chaque version](CHANGELOG.md)
+- [Changelog for every version](CHANGELOG.md)
 
 Releases provide complete `.7z` downloads for Windows x86_64, Linux x86_64,
 macOS Intel and macOS Apple Silicon. Extract the archive matching your machine
@@ -58,7 +58,8 @@ The build is pinned to libretro/MAME commit
 
 See [Building](docs/BUILDING.md) for dependencies and platform details. GitHub
 Actions builds Linux x86_64, Windows x86_64, macOS Intel and macOS Apple Silicon.
-Each version has an entry in [CHANGELOG.md](CHANGELOG.md). A matching `vX.Y.Z`
+Each version has an English entry in [CHANGELOG.md](CHANGELOG.md), used as its
+GitHub release notes. A matching `vX.Y.Z`
 tag runs the public tests and builds all four cores plus their corresponding
 source archive. The release becomes public only after all downloads pass the
 revision and integrity checks. See [Publishing](docs/BUILDING.md#publishing-a-revision)
