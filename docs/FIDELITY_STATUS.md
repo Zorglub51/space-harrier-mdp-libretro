@@ -1,4 +1,4 @@
-# Fidelity status — 0.1.9
+# Fidelity status — 0.1.10
 
 The target is the original M2 emulator output for SH1 and SH2, including its
 pixel alternation and flicker. An attractive image or a plausible reconstruction
@@ -19,6 +19,8 @@ no original executable, ROM, captured game memory or game pixels.
 | SH2 pre-boss lightning tilemap | 76 original ARM cases and 19,200 game writes | Restores the omitted source read; see [the lightning reference](SH2_LIGHTNING_REFERENCE.md) |
 | Direct CRAM addressing | Original handler and bus traces | Addressing is established; scheduling is separate |
 | Direct low VRAM writes | Native decoder and game write trace | Ranking-font data reaches VRAM without a font remap |
+| VRAM fills and register command preservation | 36 original ARM fill cases, 139 runtime fills and seven full clear snapshots | Fill memory/state and selected port routing; other DMA/copy paths remain open |
+| SH2 opcode reconstruction review | 119 hook addresses accounted for; 77 symmetry-based entries reviewed against their own SH2 handlers | Static instruction audit, not full-block execution equivalence |
 | Direct video registers | 68 original ARM cases | All 64 registers; byte enables tested as MAME integration |
 | Transformed planes | 30 original ARM cases | Table selection, coordinates, wrapping, tile attributes |
 | Sprite geometry and reduction | Original ARM helper fixtures | Zoom, height, row, table selection and left-cell clipping |
@@ -58,6 +60,14 @@ the raw scanline output on the captured lines.
 
 ## Reliability checks
 
+Version 0.1.10 passes all 84 tests with fresh native references and private ROMs.
+Four deterministic SH1/SH2 sequences cover 27,000 frames with audio identical
+to 0.1.9. A comparison of every frame in two 6,000-frame attract runs finds
+three isolated changed frames in SH1 and four in SH2, each removing transient
+graphics left behind by the previous fill behavior. All other frames match;
+this is a regression comparison, not a full M2 video comparison. The
+[transfer reference](MDP_TRANSFERS.md) records native and runtime coverage.
+
 Version 0.1.9 changes only one SH2 reconstruction instruction. Its lightning
 transitions are checked against 19,200 expected source-tile writes. Separate SH1
 and SH2 control sequences retain identical video/audio over 21,000 frames.
@@ -89,8 +99,9 @@ content. Its automatic input sequence reaches SH2 stage 4 or SH1 gameplay.
 |---|---|---|
 | Palette timing | The renderer's counter now dates the queue, correcting the 38-line origin difference; direct and ordinary writes still take different paths | Mixed-write ordering, readback and transition-frame traces |
 | CPU and video timing | MAME CPU clocks, DMA and interrupt delays remain in use | Native scheduler traces and full deterministic sequences |
+| Video-memory transfers | Native DMA word counts, source-register retention and copy completion differ from inherited behavior | Implement and integrate the measured [transfer contracts](MDP_TRANSFERS.md) beyond fill |
 | Extended VSRAM | Direct MDP access and native leading-word layout are not fully integrated | Original access-handler cases and game traces |
-| Reconstructed game hooks | Most reconstructed instructions have not received isolated original-ARM comparisons | Prioritize hooks reached in remaining SH2 glitches, then broaden coverage |
+| Reconstructed game hooks | The [static SH2 audit](MDP_HOOK_AUDIT.md) checks 77 symmetry-based restorations, but most complete blocks still lack isolated execution comparisons | Prioritize hooks reached in remaining SH2 glitches, then broaden coverage |
 | Compatibility guards | Divide guards, SH1 tree insertion, shot counter and boss-exit handling include empirical choices | Original hook/game-state execution for each affected case |
 | Reset and reload | Save/load is tested; wider reset/reload sequences remain | Default-state and repeated-content tests on all platforms |
 | Host presentation | Actual M2 GPU texture format and active shaders are not established | Trace texture upload and presentation configuration |

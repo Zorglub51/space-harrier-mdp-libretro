@@ -108,6 +108,10 @@ synthetic cases. The [raster timing reference](docs/MDP_RASTER_TIMING.md)
 explains the corrected scanline origin for palette writes.
 The [SH2 lightning reference](docs/SH2_LIGHTNING_REFERENCE.md) explains the
 repaired source-tile read that removes corrupt graphics before bosses.
+The [transfer reference](docs/MDP_TRANSFERS.md) covers native VRAM fills,
+full-memory clears and command preservation, and records remaining DMA/copy
+differences. The [SH2 hook audit](docs/MDP_HOOK_AUDIT.md) checks restorations
+previously justified by similarities with SH1 against their own SH2 handlers.
 
 This is not yet a claim of complete pixel-perfect emulation. The
 [fidelity checklist](docs/FIDELITY_STATUS.md) separates measured contracts from

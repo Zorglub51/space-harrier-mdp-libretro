@@ -4,6 +4,34 @@ Every published version must have a dated entry written in English. The
 `vVERSION` tag, `VERSION` file and entry must match before publication.
 GitHub release notes are generated directly from the corresponding entry.
 
+## [0.1.10] - 2026-10-05
+
+### Native video-memory fills
+
+- Fixed full 64 KiB VRAM clears used by both SH1 and SH2. A zero fill length
+  previously left stale graphics in memory; it now performs M2's complete clear.
+- Matched native byte lanes, even-rounded fill counts, destination wrapping and
+  completion state. Length and source registers are preserved after a fill.
+- Preserve the current MDP address and command when a register is written,
+  including an autoincrement change between fill setup and its data word.
+  Standard Mega Drive behavior remains separate.
+
+### Validation and further findings
+
+- All 84 automated tests pass with fresh native references and private ROMs.
+  The production fill code matches 36 original-ARM cases; runtime checks cover
+  139 fills and seven complete 64 KiB clear snapshots across SH1 and SH2.
+- Audio matches 0.1.9 over 27,000 frames in four control sequences. Comparing
+  every frame of the two 6,000-frame attract runs finds only seven isolated
+  transition-frame changes, removing stale logo or tile fragments. Every other
+  frame matches. No flicker filtering was added.
+- Added 98 synthetic native transfer reference sequences and an SH2 hook audit.
+  The 77 restorations previously justified by SH1 or symmetry were checked
+  against their own SH2 handlers; no additional incorrect opcode was found.
+- Additional CPU-to-video DMA count, source-register and VSRAM/copy differences
+  are documented but remain to be corrected. These measurements do not establish
+  complete controller, timing or all-stage equivalence with M2.
+
 ## [0.1.9] - 2026-10-05
 
 ### SH2 pre-boss lightning
