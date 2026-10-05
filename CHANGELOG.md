@@ -4,6 +4,20 @@ Every published version must have a dated entry written in English. The
 `vVERSION` tag, `VERSION` file and entry must match before publication.
 GitHub release notes are generated directly from the corresponding entry.
 
+## [Unreleased]
+
+### Fidelity investigation
+
+- Added 160 synthetic native video-port reference sequences and documented
+  remaining palette ordering/readback, byte-access, read-decoding and register
+  differences. This audit does not change the production core.
+- Confirmed 31 stale palette overwrites over 27,900 traced SH1/SH2 frame steps.
+  An isolated diagnostic comparison affects only the first two rows of six
+  SH2 attract images; all other images and audio in that sequence match 0.1.11.
+- Identified a counter-read difference that reaches both games' random-state
+  update: M2 returns a zero horizontal byte, while the port supplies changing
+  horizontal bits. Wider game-state and timing consequences remain to be measured.
+
 ## [0.1.11] - 2026-10-05
 
 ### Native DMA, copies and memory mapping

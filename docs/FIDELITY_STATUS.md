@@ -22,6 +22,7 @@ no original executable, ROM, captured game memory or game pixels.
 | VRAM fills and register command preservation | 36 original ARM fill cases, 139 runtime fills and seven full clear snapshots | Fill memory/state and selected port routing |
 | DMA, copy and VSRAM writes | 36 DMA, 18 copy and additional dispatch/write sequences from original ARM execution | Memory, command state, wrapping and mirrors; scheduler and diagnostic aftermath remain separate |
 | RAM source window | 38 original read/write callback cases and live RAM probes | Distinct 64 KiB banks, 128 KiB reset/save/load and DMA continuation beyond the 24-bit boundary; not complete I/O equivalence |
+| Remaining video-port contracts | 160 original ARM sequences and 27,900 traced frontend steps | Additional palette, read, byte-access and register differences are confirmed but not yet corrected; see the [video-port audit](MDP_VIDEO_PORT_AUDIT.md) |
 | SH2 opcode reconstruction review | 119 hook addresses accounted for; 77 symmetry-based entries reviewed against their own SH2 handlers | Static instruction audit, not full-block execution equivalence |
 | Direct video registers | 68 original ARM cases | All 64 registers; byte enables tested as MAME integration |
 | Transformed planes | 30 original ARM cases | Table selection, coordinates, wrapping, tile attributes |
@@ -108,10 +109,11 @@ content. Its automatic input sequence reaches SH2 stage 4 or SH1 gameplay.
 
 | Area | Current concern | Required next comparison |
 |---|---|---|
-| Palette timing | The renderer's counter now dates the queue, correcting the 38-line origin difference; direct and ordinary writes still take different paths | Mixed-write ordering, readback and transition-frame traces |
+| Palette timing and ordering | An older queued direct color overwrites a newer ordinary color in 31 traced cases; six SH2 attract images have a measured two-row effect | Correct ordering and immediate readback together, preserving native render-before-CPU timing; see the [audit](MDP_VIDEO_PORT_AUDIT.md) |
 | CPU and video timing | MAME CPU clocks, DMA and interrupt delays remain in use | Native scheduler traces and full deterministic sequences |
 | Video-memory transfers | Memory/state behavior now follows the [transfer contracts](MDP_TRANSFERS.md); the inherited VRAM transfer pause is retained | Native scheduling, mixed palette-write order and wider game coverage |
-| VDP readback and registers | VSRAM writes and mirrors are implemented; port read quirks and mode-dependent register restrictions remain | Original read/control-handler execution and integration traces |
+| VDP readback and registers | Native execution confirms different code-4 reads, data-read command preservation, byte writes and ordinary-register restrictions | Implement the [measured contracts](MDP_VIDEO_PORT_AUDIT.md), then test integration and state replay |
+| Status and counters | The native horizontal byte is zero; the port supplies bits consumed by the games' random-state update. Status bits also differ | Isolate the counter effect and establish the native flag/vertical-phase mapping |
 | Reconstructed game hooks | The [static SH2 audit](MDP_HOOK_AUDIT.md) checks 77 symmetry-based restorations, but most complete blocks still lack isolated execution comparisons | Prioritize hooks reached in remaining SH2 glitches, then broaden coverage |
 | Compatibility guards | Divide guards, SH1 tree insertion, shot counter and boss-exit handling include empirical choices | Original hook/game-state execution for each affected case |
 | Reset and reload | Save/load is tested; wider reset/reload sequences remain | Default-state and repeated-content tests on all platforms |
