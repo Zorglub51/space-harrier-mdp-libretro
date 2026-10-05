@@ -9,8 +9,13 @@ if [[ ! "${version}" =~ ^[[:alnum:]][[:alnum:]._-]*$ ]]; then
     echo "Invalid package version: ${version}" >&2
     exit 1
 fi
-package_dir="${repo_root}/out/space-harrier-mdp-${version}-${platform_tag}"
-archive="${package_dir}.zip"
+if [[ ! "${platform_tag}" =~ ^[[:alnum:]][[:alnum:]_-]*$ ]]; then
+    echo "Invalid platform tag: ${platform_tag}" >&2
+    exit 1
+fi
+output_dir="${PACKAGE_OUTPUT_DIR:-${repo_root}/out}"
+package_dir="${output_dir}/space-harrier-mdp-${version}-${platform_tag}"
+archive="${package_dir}.7z"
 
 case "${platform_tag}" in
     windows-*) extension=dll ;;
@@ -34,6 +39,7 @@ cp "${repo_root}/USER_GUIDE.md" "${package_dir}/README.md"
 cp "${repo_root}/LICENSE" "${package_dir}/LICENSE"
 cp "${repo_root}/COPYING.MAME" "${package_dir}/COPYING.MAME"
 cp "${repo_root}/NOTICE.md" "${package_dir}/NOTICE.md"
+cp "${repo_root}/CHANGELOG.md" "${package_dir}/CHANGELOG.md"
 mkdir -p "${package_dir}/docs"
 cp "${repo_root}/docs/DEPANNAGE.md" "${package_dir}/docs/"
 cp "${repo_root}/docs/TROUBLESHOOTING.md" "${package_dir}/docs/"
@@ -57,14 +63,18 @@ elif [[ "${platform_tag}" == windows-* ]]; then
     fi
 fi
 
-python3 - "${package_dir}" "${extension}" "${version}" "${platform_tag}" "${repo_root}" <<'PY'
+python3 - "${package_dir}" "${extension}" "${version}" "${platform_tag}" "${repo_root}" "${mame_tree}" <<'PY'
 import hashlib
 import json
 from pathlib import Path
 import sys
+import subprocess
 
-package, extension, version, platform, repo = sys.argv[1:]
-package, repo = Path(package), Path(repo)
+package, extension, version, platform, repo, mame = sys.argv[1:]
+package, repo, mame = Path(package), Path(repo), Path(mame)
+def git(path, *args):
+    result = subprocess.run(["git", "-C", str(path), *args], capture_output=True, text=True)
+    return result.stdout.strip() if result.returncode == 0 else None
 core = package / f"shmdp_libretro.{extension}"
 digest = hashlib.sha256(core.read_bytes()).hexdigest()
 (package / "CORE_SHA256.txt").write_text(f"{digest}  {core.name}\n", encoding="utf-8")
@@ -75,15 +85,17 @@ info.write_text("\n".join(
     if line.startswith("display_version =") else line for line in lines
 ) + "\n", encoding="utf-8")
 (package / "BUILD.json").write_text(json.dumps({
+    "schema_version": 1,
+    "kind": "core",
     "package_version": version,
     "platform": platform,
     "core_sha256": digest,
+    "source_commit": git(repo, "rev-parse", "HEAD"),
+    "source_tree_dirty": bool(git(repo, "status", "--porcelain")),
     "mame_commit": (repo / "MAME_COMMIT").read_text().strip(),
+    "mame_tree_commit": git(mame, "rev-parse", "HEAD"),
     "rom_patch_table_sha256": hashlib.sha256((repo / "rompatch/patch.py").read_bytes()).hexdigest(),
 }, indent=2) + "\n", encoding="utf-8")
 PY
 
-mkdir -p "${repo_root}/out"
-rm -f "${archive}"
-(cd "${repo_root}/out" && zip -9 -r "$(basename "${archive}")" "$(basename "${package_dir}")")
-echo "${archive}"
+python3 "${repo_root}/scripts/package_archive.py" "${package_dir}" "${archive}"

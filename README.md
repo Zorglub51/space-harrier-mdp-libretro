@@ -16,6 +16,12 @@ Choose the archive for your operating system on the
 
 - [Guide utilisateur en français](GUIDE_UTILISATEUR.md)
 - [English user guide](USER_GUIDE.md)
+- [Changelog de chaque version](CHANGELOG.md)
+
+Releases provide complete `.7z` downloads for Windows x86_64, Linux x86_64,
+macOS Intel and macOS Apple Silicon. Extract the archive matching your machine
+with 7-Zip or a compatible tool. The `source` archive is only needed to rebuild.
+Each download has SHA-256 checksums and a build manifest recording its revision.
 
 The supported originals are:
 
@@ -24,7 +30,7 @@ Space Harrier     jp_jp_space_harrier.smp     4,063,232 bytes  e87e9338d7842db68
 Space Harrier II  jp_jp_Space_Harrier_II.smp  3,670,016 bytes  80f576af01d6413c0b92073e2f947b0431f12a74
 ```
 
-The core recognises this exact file and applies the reconstruction in RAM. Your
+The core recognises these exact files and applies the reconstruction in RAM. Your
 file on disk is not modified. A standalone patcher is also included in
 [`rompatch/patch.py`](rompatch/patch.py) for emulator developers and archival use.
 
@@ -53,9 +59,11 @@ The build is pinned to libretro/MAME commit
 
 See [Building](docs/BUILDING.md) for dependencies and platform details. GitHub
 Actions builds Linux x86_64, Windows x86_64, macOS Intel and macOS Apple Silicon.
-Tags of the form `v*` create a public release containing all four archives.
-Each release also includes a complete corresponding-source archive with the
-pinned MAME tree already patched.
+Each version has an entry in [CHANGELOG.md](CHANGELOG.md). A matching `vX.Y.Z`
+tag runs the public tests and builds all four cores plus their corresponding
+source archive. The release becomes public only after all downloads pass the
+revision and integrity checks. See [Publishing](docs/BUILDING.md#publishing-a-revision)
+for the revision procedure.
 
 ## Non-regression tests
 

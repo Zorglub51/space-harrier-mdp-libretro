@@ -6,8 +6,14 @@
 2. [RetroArch](https://www.retroarch.com/) installé.
 3. Votre propre fichier original `jp_jp_space_harrier.smp`, extrait d’une Mega
    Drive Mini 2 vous appartenant.
-4. L’archive `space-harrier-mdp-…zip` correspondant à votre système, téléchargée
+4. L’archive `space-harrier-mdp-….7z` correspondant à votre système, téléchargée
    depuis la page **Releases** de ce dépôt.
+
+Extrayez l'archive complète avec 7-Zip ou un outil compatible. Sur Mac,
+choisissez `macos-arm64` pour Apple Silicon et `macos-x86_64` pour Intel.
+L'archive `source` sert à recompiler et n'est pas nécessaire pour jouer.
+Les changements de chaque version figurent dans les notes de la release et
+dans le fichier `CHANGELOG.md` inclus.
 
 La ROM n’est pas fournie. Le bon fichier fait exactement **4 063 232 octets** et
 son SHA-1 est `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72`.

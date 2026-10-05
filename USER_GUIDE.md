@@ -5,8 +5,13 @@
 1. A 64-bit Windows, macOS or Linux computer.
 2. [RetroArch](https://www.retroarch.com/) installed.
 3. Your own original `jp_jp_space_harrier.smp`, extracted from hardware you own.
-4. The `space-harrier-mdp-…zip` archive for your operating system from this
+4. The `space-harrier-mdp-….7z` archive for your operating system from this
    repository's **Releases** page.
+
+Extract the complete archive with 7-Zip or a compatible tool. On Mac, choose
+`macos-arm64` for Apple Silicon or `macos-x86_64` for Intel. The `source` archive
+is only needed for rebuilding. Each release has version notes and an included
+`CHANGELOG.md`.
 
 No ROM is included. The supported original is exactly 4,063,232 bytes and has
 SHA-1 `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72`.

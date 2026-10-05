@@ -10,12 +10,12 @@ Do not substitute a newer MAME checkout without rebasing and testing the patch.
 
 ## Linux
 
-Install a C/C++ toolchain, Git, Python 3, Make, Zip and the development packages
+Install a C/C++ toolchain, Git, Python 3, Make, 7-Zip and the development packages
 used by MAME's official Libretro workflow. On Ubuntu:
 
 ```bash
 sudo apt-get update
-sudo apt-get install -y build-essential git python3 zip \
+sudo apt-get install -y build-essential git python3 7zip \
   libgl1-mesa-dev libglu1-mesa-dev libegl1-mesa-dev libx11-dev libxext-dev \
   libxrandr-dev libxinerama-dev libxcursor-dev libxi-dev libxxf86vm-dev \
   mesa-common-dev
@@ -26,7 +26,7 @@ sudo apt-get install -y build-essential git python3 zip \
 
 ## macOS
 
-Install Xcode Command Line Tools, Git, Python 3 and Zip, then run:
+Install Xcode Command Line Tools, Git, Python 3 and 7-Zip (`brew install sevenzip`), then run:
 
 ```bash
 ./scripts/fetch-mame.sh
@@ -68,10 +68,42 @@ PLATFORM=win ./scripts/build-libretro.sh
 
 The core is built as the small `shmdp` subtarget using only
 `src/mame/sega/mdconsole.cpp` and its dependencies. `package-core.sh` finds the
-resulting shared library and creates a release-ready archive under `out/`.
+resulting shared library and creates a complete `.7z` archive under `out/`,
+along with its SHA-256 checksums and build manifest. There is no automatic
+download-size cap for GitHub releases. `PACKAGE_MAX_DOWNLOAD_BYTES` is an
+optional local override when transferring files through a constrained channel.
 
 GitHub Actions runs the same scripts. `build.yml` produces downloadable workflow
 artifacts; `release.yml` publishes them when a `v*` tag is pushed.
+
+## Publishing a revision
+
+1. Update `VERSION`, `dist/shmdp_libretro.info`, and add a dated section such as
+   `## [0.1.4] - YYYY-MM-DD` to `CHANGELOG.md`. Describe the user-visible changes,
+   validation and remaining limitations.
+2. Run the public tests and commit the complete revision. Do not include ROMs,
+   saved games or local build outputs.
+3. Create an annotated tag matching `VERSION` and push the commit and tag:
+
+   ```bash
+   git tag -a "v$(cat VERSION)" -m "Space Harrier MDP $(cat VERSION)"
+   git push origin main "v$(cat VERSION)"
+   ```
+
+The release workflow rejects a tag without matching version notes. It tests and
+builds Windows x86_64, Linux x86_64, and native Intel/Apple Silicon macOS cores.
+In parallel it packages the full pinned MAME source with the port changes. It
+verifies all five archives, their checksums and common commit before uploading
+them to a draft release and making it public. The release text is extracted
+from that version's changelog entry. Published revisions are not overwritten;
+use a new version for subsequent changes. A failed workflow can be rerun while
+its release is still a draft.
+
+To package corresponding source locally after preparing the MAME checkout:
+
+```bash
+./scripts/package-source.sh build/mame
+```
 
 ## Standalone ROM patcher
 

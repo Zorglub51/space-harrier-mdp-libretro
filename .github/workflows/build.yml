@@ -24,6 +24,7 @@ permissions:
 jobs:
   linux:
     name: Linux x86_64
+    timeout-minutes: 60
     if: github.event_name != 'workflow_dispatch' || inputs.platform == 'all' || inputs.platform == 'linux'
     runs-on: ubuntu-latest
     steps:
@@ -32,7 +33,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            build-essential git python3 zip \
+            build-essential git python3 7zip \
             libgl1-mesa-dev libglu1-mesa-dev libegl1-mesa-dev \
             libx11-dev libxext-dev libxrandr-dev libxinerama-dev \
             libxcursor-dev libxi-dev libxxf86vm-dev mesa-common-dev
@@ -47,11 +48,13 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: space-harrier-mdp-linux-x86_64
-          path: out/*.zip
+          path: out/*.7z*
+          compression-level: 0
           if-no-files-found: error
 
   windows:
     name: Windows x86_64
+    timeout-minutes: 60
     if: github.event_name != 'workflow_dispatch' || inputs.platform == 'all' || inputs.platform == 'windows'
     runs-on: ubuntu-latest
     steps:
@@ -60,7 +63,7 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y \
-            git python3 zip mingw-w64 \
+            build-essential git python3 7zip mingw-w64 \
             gcc-mingw-w64-x86-64-posix g++-mingw-w64-x86-64-posix
       - name: Prepare pinned MAME tree
         run: ./scripts/fetch-mame.sh
@@ -76,19 +79,27 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: space-harrier-mdp-windows-x86_64
-          path: out/*.zip
+          path: out/*.7z*
+          compression-level: 0
           if-no-files-found: error
 
   macos:
     name: macOS ${{ matrix.arch }}
+    timeout-minutes: 60
     if: github.event_name != 'workflow_dispatch' || inputs.platform == 'all' || inputs.platform == 'macos'
-    runs-on: macos-latest
+    runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
       matrix:
-        arch: [x86_64, arm64]
+        include:
+          - arch: x86_64
+            runner: macos-15-intel
+          - arch: arm64
+            runner: macos-15
     steps:
       - uses: actions/checkout@v7
+      - name: Install archive tool
+        run: brew install sevenzip
       - name: Prepare pinned MAME tree
         run: ./scripts/fetch-mame.sh
       - name: Build
@@ -96,10 +107,13 @@ jobs:
           PLATFORM: osx
           MACOS_ARCH: ${{ matrix.arch }}
         run: ./scripts/build-libretro.sh
+      - name: Verify core architecture
+        run: lipo -verify_arch "${{ matrix.arch }}" build/mame/shmdp_libretro.dylib
       - name: Package
         run: ./scripts/package-core.sh build/mame "macos-${{ matrix.arch }}"
       - uses: actions/upload-artifact@v7
         with:
           name: space-harrier-mdp-macos-${{ matrix.arch }}
-          path: out/*.zip
+          path: out/*.7z*
+          compression-level: 0
           if-no-files-found: error

@@ -17,6 +17,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      - name: Install archive test dependency
+        run: sudo apt-get update && sudo apt-get install -y 7zip
       - name: Run public tests
         run: python3 -m unittest discover -s tests -v
       - name: Verify generated adapter is reproducible

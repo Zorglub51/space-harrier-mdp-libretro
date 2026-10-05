@@ -5,43 +5,93 @@ on:
     tags:
       - "v*"
 
+concurrency:
+  group: release-${{ github.ref }}
+  cancel-in-progress: false
+
 permissions:
-  contents: write
+  contents: read
 
 jobs:
+  validate:
+    name: Validate version and changelog
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install archive test dependency
+        run: sudo apt-get update && sudo apt-get install -y 7zip
+      - name: Check tag and release notes
+        run: python3 scripts/release-notes.py "${GITHUB_REF_NAME}" "${RUNNER_TEMP}/release-notes.md"
+      - name: Run public regression tests
+        run: python3 -m unittest discover -s tests -v
+
   build:
+    needs: validate
     uses: ./.github/workflows/build.yml
 
-  release:
-    name: GitHub release
-    needs: build
+  source:
+    name: Complete corresponding source
+    needs: validate
     runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install archive tool
+        run: sudo apt-get update && sudo apt-get install -y 7zip
+      - name: Prepare corresponding MAME source
+        run: |
+          ./scripts/fetch-mame.sh
+          git -C build/mame apply ../../patches/mame0289-libretro-windows.patch
+      - name: Package sources
+        run: ./scripts/package-source.sh build/mame
+      - uses: actions/upload-artifact@v7
+        with:
+          name: space-harrier-mdp-source
+          path: out/*.7z*
+          compression-level: 0
+          if-no-files-found: error
+
+  release:
+    name: Publish verified downloads
+    needs: [validate, build, source]
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v7
       - uses: actions/download-artifact@v8
         with:
           pattern: space-harrier-mdp-*
-          path: release-assets
+          path: ${{ runner.temp }}/release-assets
           merge-multiple: true
-      - name: Bundle complete corresponding source
+      - name: Install archive tool
+        run: sudo apt-get update && sudo apt-get install -y 7zip
+      - name: Verify all downloads and generate release notes
         run: |
-          mkdir -p source-bundle/space-harrier-mdp-libretro
-          rsync -a \
-            --exclude .git \
-            --exclude build \
-            --exclude out \
-            ./ source-bundle/space-harrier-mdp-libretro/
-          ./scripts/fetch-mame.sh source-bundle/libretro-mame
-          tar -czf \
-            "release-assets/space-harrier-mdp-${GITHUB_REF_NAME}-source.tar.gz" \
-            --exclude .git \
-            source-bundle
-      - name: Publish archives
+          python3 scripts/release-notes.py "${GITHUB_REF_NAME}" "${RUNNER_TEMP}/release-notes.md"
+          python3 scripts/verify-release-assets.py "${RUNNER_TEMP}/release-assets" \
+            --version "$(cat VERSION)" --commit "${GITHUB_SHA}"
+      - name: Upload and publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "${GITHUB_REF_NAME}" \
-            release-assets/*.zip release-assets/*-source.tar.gz \
-            --repo "${GITHUB_REPOSITORY}" \
-            --title "Space Harrier MDP ${GITHUB_REF_NAME}" \
-            --generate-notes
+          if gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            [[ "$(gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" --json isDraft --jq .isDraft)" == true ]] || {
+              echo "This version is already public; publish a new revision instead." >&2
+              exit 1
+            }
+            gh release edit "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" \
+              --notes-file "${RUNNER_TEMP}/release-notes.md"
+          else
+            gh release create "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" \
+              --verify-tag --draft --title "Space Harrier MDP ${GITHUB_REF_NAME}" \
+              --notes-file "${RUNNER_TEMP}/release-notes.md"
+          fi
+          gh release upload "${GITHUB_REF_NAME}" "${RUNNER_TEMP}"/release-assets/* \
+            --repo "${GITHUB_REPOSITORY}" --clobber
+          gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" \
+            --json assets --jq '[.assets[] | {name, size}]' > "${RUNNER_TEMP}/uploaded.json"
+          python3 scripts/verify-release-assets.py "${RUNNER_TEMP}/release-assets" \
+            --version "$(cat VERSION)" --commit "${GITHUB_SHA}" \
+            --uploaded-json "${RUNNER_TEMP}/uploaded.json"
+          gh release edit "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" --draft=false
