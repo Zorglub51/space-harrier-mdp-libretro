@@ -92,7 +92,9 @@ reproduction steps and the remaining work. The [SH2 native reference](docs/SH2_N
 explains its corrected line-phase reset and remaining compatibility questions.
 The [raster colour reference](docs/MDP_RASTER_CRAM.md) documents direct palette
 addressing and its timing limits.
-SH2 ranking text/background and some scenery geometry still need work. Android
+The [SH2 text reference](docs/SH2_TEXT_REFERENCE.md) explains the restored direct
+VRAM writes used for its font animation. SH2 ranking background and some scenery
+geometry still need work. Android
 is deferred.
 
 This is an independent preservation/research project, not an official Sega, M2,

@@ -35,7 +35,8 @@ CE QUE CE TEST MESURE
 Cette version restaure une instruction du générateur de décor et le décodage
 de l'adresse des couleurs raster, vérifiés sur le code ARM original de M2.
 Testez STUNA AREA, le premier boss, le choix des stages et le retour au titre.
-Les caractères du classement et certains décors restent en cours d'analyse.
+La police du classement et son animation sont également corrigées.
+Le décor derrière le classement et certains autres décors restent à traiter.
 Le jeu démarre normalement, sans invincibilité ni chargement automatique d'état.
 Les scintillements présents dans le fonctionnement d'origine sont conservés.
 Le lanceur n'active pas Deflicker et désactive la persistance expérimentale des

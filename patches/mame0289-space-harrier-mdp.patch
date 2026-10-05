@@ -955,21 +955,17 @@
  	}
  }
  
-@@ -1596,6 +1950,13 @@
+@@ -1596,6 +1950,9 @@
  	tile.pri =   (tile_dat & 0x8000) >> 15;
  	u16 code =   (tile_dat & 0x07ff);
  
-+	// Preserve the existing SH2 menu/score compatibility workaround only for
-+	// its recognised cartridge. SH1 loads its stage/boss font into 6A0..6FF;
-+	// remapping its C6xx entries to 4xx reads unrelated graphics. This is not
-+	// a Mark V nametable rule, nor can it be inferred from the scaler layout.
-+	if (m_sh2_text_compat && tile.pri && tile.colour == 2 && code >= 0x6a0 && code < 0x700)
-+		code -= 0x200;
++	// M2 selects the glyph with all 11 tile bits independently of palette.
++	// SH2's font animation writes its selected bank through direct VRAM.
 +
  	if (m_imode == 3)
  		code &= 0x3ff;
  
-@@ -1662,8 +2023,300 @@
+@@ -1662,8 +2019,300 @@
  }
  
  /* Clean up this function (!) */
@@ -1270,7 +1266,7 @@
  	gfx_element *tile_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
  	u16 base_w = 0;
  
-@@ -1934,7 +2587,14 @@
+@@ -1934,7 +2583,14 @@
  
  		/* Non Window Part */
  
@@ -1286,7 +1282,7 @@
  		{   /* 20x 16x1 blocks */
  		//  int xx;
  			int vcolumn;
-@@ -2004,6 +2664,9 @@
+@@ -2004,6 +2660,9 @@
  	}
  		/* END */
  
@@ -1296,7 +1292,7 @@
  /* MEGADRIVE_REG0C_SHADOW_HIGLIGHT */
  	/* Low Priority Sprites */
  	for (int x = 0; x < horz; x++)
-@@ -2120,6 +2783,8 @@
+@@ -2120,6 +2779,8 @@
  	u32 *lineptr;
  	unsigned horz = m_lcm_scaling ? hres[get_hres()] : 320;
  	unsigned mul = m_lcm_scaling ? hres_mul[get_hres()] : 1;
@@ -1305,7 +1301,7 @@
  
  	if (!m_use_alt_timing)
  	{
-@@ -2139,9 +2804,9 @@
+@@ -2139,9 +2800,9 @@
  			if (!MEGADRIVE_REG0_SPECIAL_PAL) // 3 bit color mode, correct?
  				clut &= 0x49; // (1 << 6) | (1 << 3) | (1 << 0);
  
@@ -1318,7 +1314,7 @@
  		}
  	}
  
-@@ -2210,6 +2875,11 @@
+@@ -2210,6 +2871,11 @@
  					break;
  			}
  		}
@@ -1330,7 +1326,7 @@
  		if (++xx >= mul)
  		{
  			srcx++;
-@@ -2217,7 +2887,7 @@
+@@ -2217,7 +2883,7 @@
  		}
  	}
  
@@ -1339,7 +1335,7 @@
  		m_32x_scanline_helper_func(scanline);
  	if (!m_32x_scanline_func.isnull())
  	{
-@@ -2241,6 +2911,7 @@
+@@ -2241,6 +2907,7 @@
  	{
  		//if (MEGADRIVE_REG01_DMA_ENABLE == 0) osd_printf_debug("off\n");
  		render_spriteline_to_spritebuffer(get_scanline_counter());
@@ -1349,7 +1345,16 @@
  	}
 --- a/src/devices/video/315_5313.h
 +++ b/src/devices/video/315_5313.h
-@@ -48,6 +48,45 @@
+@@ -39,24 +39,61 @@
+ 
+ 	// Temporary solution while 32x VDP mixing and scanline interrupting is moved outside MD VDP
+ 	template <typename... T> void set_md_32x_scanline(T &&... args) { m_32x_scanline_func.set(std::forward<T>(args)...); }
+ 	template <typename... T> void set_md_32x_interrupt(T &&... args) { m_32x_interrupt_func.set(std::forward<T>(args)...); }
+ 	template <typename... T> void set_md_32x_scanline_helper(T &&... args) { m_32x_scanline_helper_func.set(std::forward<T>(args)...); }
+ 
+ 	int m_use_alt_timing; // use MAME scanline timer instead, render only one scanline to a single line buffer, to be rendered by a partial update call.. experimental
+ 
+ 	int m_palwrite_base; // if we want to write to the actual MAME palette..
  
  	u16 vdp_r(offs_t offset, u16 mem_mask = ~0);
  	void vdp_w(offs_t offset, u16 data, u16 mem_mask = ~0);
@@ -1361,10 +1366,8 @@
 +	u16 vdp_mdp_r(offs_t offset, u16 mem_mask = ~0);
 +	void vdp_mdp_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 +
-+	// Fenetre VRAM directe 0xD10000-0xD1FFFF (64 Ko = taille exacte de la VRAM).
-+	// Le MDP adresse la VRAM comme de la memoire ; le jeu y compose ses tuiles
-+	// sans passer par le port de donnees. Sur Mega Drive la zone n'est qu'un
-+	// miroir degenere du VDP, donc ces ecritures sont perdues.
++	// Lower half of M2's direct 128 KiB VRAM window (D00000..D0FFFF).
++	// D10000..D1FFFF is stored separately in m_mdp_ram; never alias it here.
 +	u16 vram_direct_r(offs_t offset) { return m_vram[offset & 0x7fff]; }
 +	void vram_direct_w(offs_t offset, u16 data, u16 mem_mask = ~0) { vram_w(offset, data, mem_mask); }
 +
@@ -1395,7 +1398,25 @@
  
  	void vram_w(offs_t offset, u16 data, u16 mem_mask = ~0)
  	{
-@@ -233,11 +272,54 @@
+ 		offset &= 0x7fff;
+ 		COMBINE_DATA(&m_vram[offset]);
+ 		gfx(0)->mark_dirty(offset / ((8*8*4) / 16));
+ 		gfx(1)->mark_dirty(offset / ((8*16*4) / 16));
+ 		gfx(2)->mark_dirty(offset / ((8*8*4) / 16));
+ 		gfx(3)->mark_dirty(offset / ((8*16*4) / 16));
+ 		gfx(4)->mark_dirty(offset / ((8*8*4) / 16));
+ 		gfx(5)->mark_dirty(offset / ((8*16*4) / 16));
+ 	}
+@@ -224,29 +261,72 @@
+ 
+ 	u16 get_hposition();
+ 	u16 megadriv_read_hv_counters();
+ 
+ 	u16 ctrl_port_r();
+ 	u16 data_port_r();
+ 	void data_port_w(int data);
+ 	void ctrl_port_w(int data);
+ 	void update_code_and_address(void);
  
  
  	void render_spriteline_to_spritebuffer(int scanline);
@@ -1450,29 +1471,35 @@
  	std::unique_ptr<u8[]> m_highpri_renderline;
  	std::unique_ptr<u32[]> m_video_renderline;
  	std::unique_ptr<u16[]> m_palette_lookup;
+ 
+ 	address_space *m_space68k;
+ 	required_device<m68000_base_device> m_cpu68k;
+ 	optional_device<palette_device> m_ext_palette;
+ 
+ 	// debug functions
+ 	required_device<palette_device> m_gfx_palette;
+ 	required_device<palette_device> m_gfx_palette_shadow;
+ 	required_device<palette_device> m_gfx_palette_hilight;
 --- a/src/mame/sega/megadriv.cpp
 +++ b/src/mame/sega/megadriv.cpp
-@@ -328,8 +328,18 @@
+@@ -328,8 +328,14 @@
  	map(0xa11100, 0xa11101).rw(FUNC(md_base_state::megadriv_68k_check_z80_bus), FUNC(md_base_state::megadriv_68k_req_z80_bus));
  	map(0xa11200, 0xa11201).w(FUNC(md_base_state::megadriv_68k_req_z80_reset));
  
 -	map(0xc00000, 0xc0001f).rw(m_vdp, FUNC(sega315_5313_device::vdp_r), FUNC(sega315_5313_device::vdp_w));
+-	map(0xd00000, 0xd0001f).rw(m_vdp, FUNC(sega315_5313_device::vdp_r), FUNC(sega315_5313_device::vdp_w)); // the earth defend
 +	map(0xc00000, 0xc0ffff).rw(m_vdp, FUNC(sega315_5313_device::vdp_mdp_r), FUNC(sega315_5313_device::vdp_mdp_w));
- 	map(0xd00000, 0xd0001f).rw(m_vdp, FUNC(sega315_5313_device::vdp_r), FUNC(sega315_5313_device::vdp_w)); // the earth defend
-+	// MDP : zoomeur materiel de sprites, 64 Ko, ecrit ~92 000 fois par 600 trames.
-+	//   0xD10000+ : tampon source, flux lineaire de pixels 4 bits (PC 0x0C83E6)
-+	//   0xD1E000+ : liste de parametres, entrees de 16 octets
-+	//               +0 et +6 = facteurs d'echelle (0x1000 = 1.0, virgule fixe 12 bits)
-+	//               +8 et +C = positions en 20.12, calculees par « lsl.l #$c »
-+	// Jamais relu par le 68000, jamais source de DMA : c'est une cible materielle.
-+	// Le mapper 1:1 sur la VRAM detruit l'affichage (essai fait) : ce n'est pas de
-+	// la VRAM. En RAM dediee, les ecritures sont conservees et inspectables, en
-+	// attendant l'implementation du rendu.
++	// M2 exposes the lower VRAM bank directly. SH2 animates its ranking font
++	// through D0D400; treating this window as VDP ports lost those writes.
++	map(0xd00000, 0xd0ffff).rw(m_vdp, FUNC(sega315_5313_device::vram_direct_r), FUNC(sega315_5313_device::vram_direct_w));
++	// Upper half of M2's 128 KiB direct VRAM window. It stores sprite pixels
++	// and the line/zoom tables (SH1 D1E000/D1F000, SH2 D10000/D11000).
++	// The separate backing allocation must not wrap onto the lower 64 KiB.
 +	map(0xd10000, 0xd1ffff).rw(m_vdp, FUNC(sega315_5313_device::mdp_gfx_r), FUNC(sega315_5313_device::mdp_gfx_w));
  	map(0xe00000, 0xe0ffff).ram().mirror(0x1f0000).share("megadrive_ram");
  //  map(0xff0000, 0xffffff).readonly();
  	/*       0xe00000 - 0xffffff) == MAIN RAM (64kb, Mirrored, most games use ff0000 - ffffff) */
-@@ -650,6 +660,9 @@
+@@ -650,6 +656,9 @@
  			desty[x] = srcy[x];
  		}
  	}

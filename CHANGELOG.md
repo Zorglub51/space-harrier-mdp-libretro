@@ -3,6 +3,29 @@
 Chaque version publiée possède une entrée datée. Le tag `vVERSION`, le fichier
 `VERSION` et cette entrée doivent correspondre pour autoriser la publication.
 
+## [0.1.5] - 2026-10-05
+
+### Correction SH2
+
+- Restauration de la fenêtre d'accès direct à la mémoire vidéo basse. Les
+  écritures qui reconstruisent la police du classement atteignent maintenant
+  leur destination, avec mise à jour du cache des caractères.
+- Suppression du remappage de police selon la palette. Les lettres du titre
+  « RANKING LIST » et les initiales utilisent les tuiles écrites par le jeu,
+  avec son animation d'apparition. Aucun remplacement de police dans la ROM.
+
+### Validation et limites
+
+- Cause vérifiée dans le code M2, la trace du bus et le contenu de la mémoire
+  vidéo : les 3 040 octets écrits pour la police étaient auparavant perdus.
+- Comparaison de séquences SH2 de titre, jeu, premier boss, classement et
+  Yees Land. Le son est inchangé sur les séquences comparées.
+- SH1 conserve les flux vidéo et audio complets des deux parcours de 6 000
+  trames de référence. Aucun filtre anti-scintillement ajouté.
+- Le décor qui persiste derrière le classement, la géométrie de certains
+  niveaux et le minutage M2 restent à traiter. Cette version ne prétend pas
+  valider tous les stages ni l'exécution interactive Windows/Linux.
+
 ## [0.1.4] - 2026-10-05
 
 ### Corrections SH2

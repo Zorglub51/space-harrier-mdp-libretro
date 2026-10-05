@@ -117,9 +117,10 @@ class RomPatchTableTests(unittest.TestCase):
         self.assertGreaterEqual(text.count("mdp_palette_pen("), 7)
 
     def test_sh2_text_and_boss_fonts_keep_distinct_banks(self):
-        """Menus/scores use 4xx; coloured boss names stay in 6xx."""
+        """The game updates each font bank through direct VRAM, without remapping."""
         text = MAME_PATCH.read_text(encoding="utf-8")
-        self.assertIn("tile.colour == 2 && code >= 0x6a0", text)
+        self.assertNotIn("code -= 0x200", text)
+        self.assertIn("map(0xd00000, 0xd0ffff)", text)
         sh2_extra = self.patch.EXTRA_PATCHES[
             "80f576af01d6413c0b92073e2f947b0431f12a74"
         ]
