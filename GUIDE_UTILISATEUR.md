@@ -4,8 +4,8 @@
 
 1. Un ordinateur Windows 64 bits, macOS ou Linux 64 bits.
 2. [RetroArch](https://www.retroarch.com/) installé.
-3. Votre propre fichier original `jp_jp_space_harrier.smp`, extrait d’une Mega
-   Drive Mini 2 vous appartenant.
+3. Votre propre fichier original SH1 ou SH2, extrait d’une Mega Drive Mini 2
+   vous appartenant.
 4. L’archive `space-harrier-mdp-….7z` correspondant à votre système, téléchargée
    depuis la page **Releases** de ce dépôt.
 
@@ -15,8 +15,16 @@ L'archive `source` sert à recompiler et n'est pas nécessaire pour jouer.
 Les changements de chaque version figurent dans les notes de la release et
 dans le fichier `CHANGELOG.md` inclus.
 
-La ROM n’est pas fournie. Le bon fichier fait exactement **4 063 232 octets** et
-son SHA-1 est `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72`.
+Les ROM ne sont pas fournies. Le même cœur reconnaît les deux jeux :
+
+| Jeu | Fichier original | Taille | SHA-1 |
+| --- | --- | --- | --- |
+| SH1 | `jp_jp_space_harrier.smp` | 4 063 232 octets | `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72` |
+| SH2 | `jp_jp_Space_Harrier_II.smp` | 3 670 016 octets | `80f576af01d6413c0b92073e2f947b0431f12a74` |
+
+Sous Windows, `TESTER_SH1_WINDOWS.cmd` et `TESTER_SH2_WINDOWS.cmd` permettent
+un essai avec choix de RetroArch et de la ROM. Chaque lancement conserve ses
+journaux et captures dans un dossier de session distinct.
 
 ## Installation dans RetroArch
 
@@ -65,7 +73,7 @@ manuellement.
 1. Choisissez **Charger un cœur**.
 2. Sélectionnez **Space Harrier MDP**.
 3. Choisissez **Charger du contenu**.
-4. Sélectionnez votre fichier original `jp_jp_space_harrier.smp`.
+4. Sélectionnez votre fichier original SH1 ou SH2 indiqué ci-dessus.
 
 C’est tout : le cœur reconnaît la ROM originale et applique les corrections en
 mémoire. Il ne modifie jamais votre fichier `.smp`.

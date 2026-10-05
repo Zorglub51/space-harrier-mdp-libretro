@@ -83,11 +83,17 @@ published as an artifact.
 
 ## Scope and status
 
-Fidelity work now starts with SH1. The first portable M2 hook translation is
+Fidelity work covers SH1 and SH2 through targeted comparisons with M2. The first
+portable SH1 hook translation is
 checked against 31 measured executions of the original ARM block; the collision
 reconstruction has also been corrected in the existing core. See
 [SH1 native execution reference](docs/SH1_NATIVE_REFERENCE.md) for coverage,
-reproduction steps and the remaining work. Android is deferred.
+reproduction steps and the remaining work. The [SH2 native reference](docs/SH2_NATIVE_REFERENCE.md)
+explains its corrected line-phase reset and remaining compatibility questions.
+The [raster colour reference](docs/MDP_RASTER_CRAM.md) documents direct palette
+addressing and its timing limits.
+SH2 ranking text/background and some scenery geometry still need work. Android
+is deferred.
 
 This is an independent preservation/research project, not an official Sega, M2,
 MAME or Libretro release. The first game has received extensive testing through

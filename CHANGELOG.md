@@ -3,6 +3,36 @@
 Chaque version publiée possède une entrée datée. Le tag `vVERSION`, le fichier
 `VERSION` et cette entrée doivent correspondre pour autoriser la publication.
 
+## [0.1.4] - 2026-10-05
+
+### Corrections SH2
+
+- Restauration de `MOVE.L D4,D1` dans le générateur de lignes du décor :
+  l'ancien `NOP` omettait la remise à -32 de la phase. La correction est
+  établie par exécution du bloc ARM original de M2 sur 33 cas.
+- Décodage des écritures directes de couleurs sur `C00400..C004FF` : chaque
+  adresse sélectionne son entrée de palette, notamment `C00462` pour SH2.
+  Plusieurs couleurs écrites pour une même ligne sont conservées séparément.
+- Réinitialisation et sauvegarde des écritures de palette en attente.
+- Ajout d'un lanceur Windows SH2 et des informations des deux ROM dans les
+  guides. Le cœur reste commun à SH1 et SH2.
+
+### Validation et limites
+
+- Références d'exécution ARM et tests publics sans ROM pour le compteur de
+  lignes et l'adressage des couleurs ; 39 000 trames SH2 réparties sur cinq
+  scénarios comparées sur Mac, avec le premier boss atteint.
+- SH1 conserve exactement les flux vidéo et audio complets sur deux
+  parcours de 6 000 trames (attraction et commandes
+  automatisées). Le correctif de palette ne change pas le son de SH2.
+- Aucun filtre anti-scintillement ni persistance des sprites ajouté.
+- Les caractères et le fond du classement SH2 restent incorrects ; la
+  géométrie de certains décors demande encore une comparaison avec M2.
+- L'équivalence complète du rendu et du minutage avec M2, les parties
+  complètes et les essais interactifs Windows/Linux restent à valider.
+- Les anciens états instantanés ne sont pas compatibles avec cette
+  révision ; démarrer le jeu normalement depuis la ROM originale.
+
 ## [0.1.3] - 2026-10-05
 
 ### Corrections

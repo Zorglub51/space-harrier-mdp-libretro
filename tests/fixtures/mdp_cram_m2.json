@@ -1,0 +1,424 @@
+{
+  "schema": 1,
+  "source": {
+    "binary_sha256": "2374ddca2241d2a040f587a1e86359c3d3d5f1dc93e566588b35e15bee73178f",
+    "handler_file_offset": 732328,
+    "handler_loaded_address": 797864,
+    "engine": "Ghidra PcodeEmulator ARM p-code",
+    "ghidra_version": "12.1",
+    "execution_boundary": "Original return for direct CRAM, before normal port dispatch for other addresses"
+  },
+  "cases": [
+    {
+      "input": {
+        "byte_address": 12583936,
+        "data": 3822
+      },
+      "output": {
+        "direct_cram": true,
+        "cram_writes": [
+          {
+            "index": 0,
+            "value": 3822
+          }
+        ]
+      },
+      "native_instruction_steps": 27,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0",
+        "000c2eb2",
+        "000c2eb4",
+        "000c2eb8",
+        "000c2ebc",
+        "000c2ebe",
+        "000c2ec2",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583938,
+        "data": 546
+      },
+      "output": {
+        "direct_cram": true,
+        "cram_writes": [
+          {
+            "index": 1,
+            "value": 546
+          }
+        ]
+      },
+      "native_instruction_steps": 27,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0",
+        "000c2eb2",
+        "000c2eb4",
+        "000c2eb8",
+        "000c2ebc",
+        "000c2ebe",
+        "000c2ec2",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12584034,
+        "data": 3302
+      },
+      "output": {
+        "direct_cram": true,
+        "cram_writes": [
+          {
+            "index": 49,
+            "value": 3302
+          }
+        ]
+      },
+      "native_instruction_steps": 27,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0",
+        "000c2eb2",
+        "000c2eb4",
+        "000c2eb8",
+        "000c2ebc",
+        "000c2ebe",
+        "000c2ec2",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12584062,
+        "data": 1128
+      },
+      "output": {
+        "direct_cram": true,
+        "cram_writes": [
+          {
+            "index": 63,
+            "value": 1128
+          }
+        ]
+      },
+      "native_instruction_steps": 27,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0",
+        "000c2eb2",
+        "000c2eb4",
+        "000c2eb8",
+        "000c2ebc",
+        "000c2ebe",
+        "000c2ec2",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12584064,
+        "data": 2766
+      },
+      "output": {
+        "direct_cram": true,
+        "cram_writes": [
+          {
+            "index": 64,
+            "value": 2766
+          }
+        ]
+      },
+      "native_instruction_steps": 27,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0",
+        "000c2eb2",
+        "000c2eb4",
+        "000c2eb8",
+        "000c2ebc",
+        "000c2ebe",
+        "000c2ec2",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12584190,
+        "data": 4951
+      },
+      "output": {
+        "direct_cram": true,
+        "cram_writes": [
+          {
+            "index": 127,
+            "value": 4951
+          }
+        ]
+      },
+      "native_instruction_steps": 27,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0",
+        "000c2eb2",
+        "000c2eb4",
+        "000c2eb8",
+        "000c2ebc",
+        "000c2ebe",
+        "000c2ec2",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12584034,
+        "data": 65535
+      },
+      "output": {
+        "direct_cram": true,
+        "cram_writes": [
+          {
+            "index": 49,
+            "value": 65535
+          }
+        ]
+      },
+      "native_instruction_steps": 27,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0",
+        "000c2eb2",
+        "000c2eb4",
+        "000c2eb8",
+        "000c2ebc",
+        "000c2ebe",
+        "000c2ec2",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583934,
+        "data": 2748
+      },
+      "output": {
+        "direct_cram": false,
+        "cram_writes": []
+      },
+      "native_instruction_steps": 19,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12584192,
+        "data": 2748
+      },
+      "output": {
+        "direct_cram": false,
+        "cram_writes": []
+      },
+      "native_instruction_steps": 19,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12584546,
+        "data": 2748
+      },
+      "output": {
+        "direct_cram": false,
+        "cram_writes": []
+      },
+      "native_instruction_steps": 19,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0"
+      ]
+    }
+  ]
+}

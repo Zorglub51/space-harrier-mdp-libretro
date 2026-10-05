@@ -50,6 +50,8 @@ if [[ "${platform_tag}" == macos-* ]]; then
 elif [[ "${platform_tag}" == windows-* ]]; then
     cp "${repo_root}/dist/TESTER_SH1_WINDOWS.cmd" "${package_dir}/"
     cp "${repo_root}/dist/LISEZ_MOI_SH1_WINDOWS.txt" "${package_dir}/"
+    cp "${repo_root}/dist/TESTER_SH2_WINDOWS.cmd" "${package_dir}/"
+    cp "${repo_root}/dist/LISEZ_MOI_SH2_WINDOWS.txt" "${package_dir}/"
     if [[ -f "${mame_tree}/windows-source-manifest.json" ]]; then
         mkdir -p "${package_dir}/source-reference"
         cp "${mame_tree}/windows-source-manifest.json" "${package_dir}/source-reference/"

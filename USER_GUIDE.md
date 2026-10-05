@@ -4,7 +4,7 @@
 
 1. A 64-bit Windows, macOS or Linux computer.
 2. [RetroArch](https://www.retroarch.com/) installed.
-3. Your own original `jp_jp_space_harrier.smp`, extracted from hardware you own.
+3. Your own original SH1 or SH2 file, extracted from hardware you own.
 4. The `space-harrier-mdp-….7z` archive for your operating system from this
    repository's **Releases** page.
 
@@ -13,8 +13,16 @@ Extract the complete archive with 7-Zip or a compatible tool. On Mac, choose
 is only needed for rebuilding. Each release has version notes and an included
 `CHANGELOG.md`.
 
-No ROM is included. The supported original is exactly 4,063,232 bytes and has
-SHA-1 `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72`.
+No ROM is included. The same core supports both originals:
+
+| Game | File | Size | SHA-1 |
+| --- | --- | --- | --- |
+| SH1 | `jp_jp_space_harrier.smp` | 4,063,232 bytes | `e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72` |
+| SH2 | `jp_jp_Space_Harrier_II.smp` | 3,670,016 bytes | `80f576af01d6413c0b92073e2f947b0431f12a74` |
+
+On Windows, use `TESTER_SH1_WINDOWS.cmd` or `TESTER_SH2_WINDOWS.cmd` to choose
+RetroArch and the original ROM. Each launch keeps its logs and screenshots in
+a separate session directory.
 
 ## Install the core
 

@@ -412,7 +412,10 @@ SH2 = [
     (0x19895A, 0x48E7, 0x4CDF, "movem.l (a7)+,d2-d7/a2-a5 [masque 3CFC = miroir de 3F3C, epilogue du 198542]", "handler+symetrie"),
     (0x199184, 0x2030, 0x1010, "move.b (a0),d0      [a0 = $A00113, RAM Z80]",       "handler"),
     (0x19D4A6, 0x0010, 0x33C2, "move.w d2,$C00000.l [port de donnees VDP, boucle dbf]", "handler+extension"),
-    (0x18BCF4, 0x4E75, 0x4E71, "nop                 [handler sans effet propre ; 4E71 vs 4E75, 1 bit]", "handler"),
+    # Native SH2 handler $0BF174 copies all of D4 to D1 at $0BF206. D4 is -32
+    # here: restore the signed 32-line phase when ADDQ makes D1 non-negative.
+    # NOP loses this reset. See the original-ARM oracle and SH2_NATIVE_REFERENCE.
+    (0x18BCF4, 0x4E75, 0x2204, "move.l d4,d1        [reset signed MDP line phase to -32]", "handler+original-ARM oracle"),
     (0x199C74, 0x4243, 0x48E7, "movem.l d2-d4,-(a7) [masque 3800 ; prologue du 199D2E]", "handler+symetrie"),
     (0x199CA2, 0x0012, 0x4A00, "tst.b d0            [avant beq.w $199D34]",       "handler"),
     (0x19A3D0, 0x4EBA, 0x1039, "move.b $FF3AC0.l,d0 [puis andi.b #2,d0]",       "handler"),

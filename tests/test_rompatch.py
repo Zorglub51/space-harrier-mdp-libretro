@@ -24,7 +24,7 @@ ROMS = {
     "80f576af01d6413c0b92073e2f947b0431f12a74": {
         "file": "jp_jp_Space_Harrier_II.smp",
         "size": 0x380000,
-        "patched": "f40ff2894c1c7eee0bbae65643670fcb084a287e",
+        "patched": "70b6514f698ebc9da08528e18299bd5953270b36",
         "words": 119,
         "total": 121,
     },

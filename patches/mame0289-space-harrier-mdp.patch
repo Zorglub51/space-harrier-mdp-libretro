@@ -372,7 +372,7 @@
 +            { 0x19895a, 0x4cdf },
 +            { 0x199184, 0x1010 },
 +            { 0x19d4a6, 0x33c2 },
-+            { 0x18bcf4, 0x4e71 },
++            { 0x18bcf4, 0x2204 },
 +            { 0x199c74, 0x48e7 },
 +            { 0x199ca2, 0x4a00 },
 +            { 0x19a3d0, 0x1039 },
@@ -468,8 +468,12 @@
  	save_pointer(NAME(m_vsram), 0x80 / 2);
  	save_pointer(NAME(m_regs), 0x40 / 2);
  	save_pointer(NAME(m_internal_sprite_attribute_table), 0x400 / 2);
-@@ -342,6 +373,13 @@
+@@ -340,8 +371,17 @@
+ 	save_item(NAME(m_scanline_counter));
+ 	save_item(NAME(m_vblank_flag));
  	save_item(NAME(m_total_scanlines));
++	save_item(NAME(m_mdp_raster_cram));
++	save_item(NAME(m_mdp_raster_cram_set));
  
  	m_sprite_renderline = std::make_unique<u8[]>(1024);
 +	m_mdp_sprite_identity = std::make_unique<u32[]>(1024);
@@ -482,7 +486,15 @@
  	m_highpri_renderline = std::make_unique<u8[]>(320);
  	m_video_renderline = std::make_unique<u32[]>(320);
  
-@@ -460,7 +498,10 @@
+@@ -400,6 +440,7 @@
+ 	m_scanline_counter = 0;
+ 	m_vblank_flag = 0;
+ 	m_total_scanlines = 262;
++	memset(m_mdp_raster_cram_set, 0, sizeof(m_mdp_raster_cram_set));
+ 
+ 	sega315_5313_mode4_device::device_reset();
+ }
+@@ -460,7 +501,10 @@
  	m_cram[offset] = data;
  
  	//logerror("Wrote to CRAM addr %04x data %04x\n", m_vdp_address & 0xfffe, m_cram[m_vdp_address >> 1]);
@@ -494,7 +506,7 @@
  	{
  		data = ((m_cram[offset] & 0xe) >> 1) | ((m_cram[offset] & 0xe0) >> 2) | ((m_cram[offset] & 0xe00) >> 3);
  		m_palette_lookup[offset] = data;
-@@ -468,9 +509,9 @@
+@@ -468,9 +512,9 @@
  		{
  			if (m_palwrite_base != -1)
  			{
@@ -507,7 +519,7 @@
  			}
  		}
  	}
-@@ -478,7 +519,7 @@
+@@ -478,7 +522,7 @@
  
  void sega315_5313_device::vdp_cram_write(u16 data)
  {
@@ -516,7 +528,7 @@
  
  	vdp_address_inc();
  }
-@@ -711,6 +752,20 @@
+@@ -711,6 +755,20 @@
  /* Instant, but we pause the 68k a bit */
  void sega315_5313_device::insta_68k_to_vram_dma(u32 source, int length)
  {
@@ -537,7 +549,7 @@
  	if (length == 0x00) length = 0xffff;
  
  	/* This is a hack until real DMA timings are implemented */
-@@ -742,7 +797,7 @@
+@@ -742,7 +800,7 @@
  	{
  		//if (m_vdp_address >= 0x80) return; // abandon
  
@@ -546,7 +558,7 @@
  		source += 2;
  
  		if (source > 0xffffff) source = 0xfe0000;
-@@ -892,6 +947,71 @@
+@@ -892,6 +950,71 @@
  	}
  }
  
@@ -593,11 +605,10 @@
 +		}
 +	}
 +
-+	// MDP : bit 10 de l'adresse octet (= bit 9 de l'offset mot) => ecriture
-+	// CRAM directe sur l'entree 0 (couleur de fond). Space Harrier s'en sert
-+	// depuis son handler HBlank pour produire le degrade de ciel ligne par
-+	// ligne, sans jamais programmer le port de controle.
-+	if (BIT(offset, 9))
++	// M2 write handler (file 0xB2CA8): C00400..C004FF addresses all 128
++	// CRAM words directly; UBFX address,#1,#7 selects the entry. SH1 uses
++	// C00400 (entry 0), while SH2 uses C00462 (entry 0x31) for its sky.
++	if (offset >= 0x200 && offset < 0x280)
 +	{
 +		// L'appliquer tout de suite ferait dependre la position du changement de
 +		// couleur du decoupage en tranches du 68000, qui varie d'une trame a
@@ -607,8 +618,9 @@
 +		int line = screen().vpos() + 1;
 +		if (line < 0 || line >= 224)
 +			line = 0;                       // ecriture pendant le retour trame
-+		m_mdp_bg[line] = data;
-+		m_mdp_bg_set[line] = 1;
++		const unsigned index = offset & 0x7f;
++		m_mdp_raster_cram[line][index] = data;
++		m_mdp_raster_cram_set[line][index] = 1;
 +		return;
 +	}
 +
@@ -618,7 +630,7 @@
  void sega315_5313_device::vdp_w(offs_t offset, u16 data, u16 mem_mask)
  {
  	switch (offset << 1)
-@@ -953,7 +1073,7 @@
+@@ -953,7 +1076,7 @@
  
  u16 sega315_5313_device::vdp_cram_r(void)
  {
@@ -627,7 +639,7 @@
  }
  
  u16 sega315_5313_device::data_port_r()
-@@ -1415,15 +1535,52 @@
+@@ -1415,15 +1538,52 @@
  		case 3: maxsprites = 80; maxpixels = 320; base_address = (MEGADRIVE_REG05_SPRITE_ADDR & 0x7e) << 9; break;
  	}
  
@@ -680,7 +692,7 @@
  
  		/* Get Sprite Attribs */
  		int spritenum = 0;
-@@ -1443,7 +1600,66 @@
+@@ -1443,7 +1603,66 @@
  			height= ((m_internal_sprite_attribute_table[(spritenum * 4) + 0x1] & 0x0300) >> 8) + 1;
  			width = ((m_internal_sprite_attribute_table[(spritenum * 4) + 0x1] & 0x0c00) >> 10) + 1;
  			link  =  (m_internal_sprite_attribute_table[(spritenum * 4) + 0x1] & 0x007f) >> 0;
@@ -747,7 +759,7 @@
  
  			if (m_imode == 3)
  			{
-@@ -1455,7 +1671,9 @@
+@@ -1455,7 +1674,9 @@
  			{
  				ypos  = (m_internal_sprite_attribute_table[(spritenum * 4) + 0x0] & 0x01ff) >> 0; /* 0x03ff? */ // puyo puyo requires 0x1ff mask, not 0x3ff, see speech bubble corners
  				drawypos = ypos - 128;
@@ -758,7 +770,7 @@
  			}
  
  			//if (scanline == 40) osd_printf_debug("xpos %04x ypos %04x\n", xpos, ypos);
-@@ -1467,6 +1685,12 @@
+@@ -1467,6 +1688,12 @@
  				yflip = (MEGADRIV_VDP_VRAM(((base_address >> 1) + spritenum * 4) + 0x2) & 0x1000) >> 12;
  				colour= (MEGADRIV_VDP_VRAM(((base_address >> 1) + spritenum * 4) + 0x2) & 0x6000) >> 13;
  				pri   = (MEGADRIV_VDP_VRAM(((base_address >> 1) + spritenum * 4) + 0x2) & 0x8000) >> 15;
@@ -771,7 +783,7 @@
  
  				if (m_imode == 3)
  					addr &= 0x3ff;
-@@ -1491,6 +1715,85 @@
+@@ -1491,6 +1718,85 @@
  				if (spritemask == 0x3)
  					return;
  				/* end todo: */
@@ -857,7 +869,7 @@
  
  				//int xdraw;
  				int yline = scanline - drawypos;
-@@ -1525,7 +1828,10 @@
+@@ -1525,7 +1831,10 @@
  						xtile_code *= height;
  						yline_addr *= spr_gfx->rowbytes();
  
@@ -869,7 +881,7 @@
  
  						int xxx = (xpos + xtile * gfx_w) & 0x1ff;
  
-@@ -1533,8 +1839,9 @@
+@@ -1533,8 +1842,9 @@
  						{
  							for (int loopcount = 0; loopcount < gfx_w; loopcount++)
  							{
@@ -881,7 +893,7 @@
  								xxx++; xxx &= 0x1ff;
  								if (--maxpixels == 0x00) return;
  							}
-@@ -1543,8 +1850,9 @@
+@@ -1543,8 +1853,9 @@
  						{
  							for (int tmpcount = gfx_w - 1, loopcount = 0; loopcount < gfx_w; tmpcount--, loopcount++)
  							{
@@ -893,7 +905,7 @@
  								xxx++; xxx &= 0x1ff;
  								if (--maxpixels == 0x00) return;
  							}
-@@ -1559,6 +1867,49 @@
+@@ -1559,6 +1870,49 @@
  		}
  		while ((maxsprites >= 0) && (link != 0));
  
@@ -943,7 +955,7 @@
  	}
  }
  
-@@ -1596,6 +1947,13 @@
+@@ -1596,6 +1950,13 @@
  	tile.pri =   (tile_dat & 0x8000) >> 15;
  	u16 code =   (tile_dat & 0x07ff);
  
@@ -957,7 +969,7 @@
  	if (m_imode == 3)
  		code &= 0x3ff;
  
-@@ -1662,8 +2020,293 @@
+@@ -1662,8 +2023,300 @@
  }
  
  /* Clean up this function (!) */
@@ -1241,17 +1253,24 @@
 +
  void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  {
-+	// MDP : couleur de fond datee a cette ligne par le handler HBlank.
-+	if (scanline >= 0 && scanline < 224 && m_mdp_bg_set[scanline])
++	// Apply every direct CRAM entry scheduled for this line. A second colour
++	// must not replace an unrelated write made during the same HBlank.
++	if (scanline >= 0 && scanline < 224)
 +	{
-+		write_cram_value(0, m_mdp_bg[scanline]);
-+		m_mdp_bg_set[scanline] = 0;
++		for (unsigned index = 0; index < 128; index++)
++		{
++			if (m_mdp_raster_cram_set[scanline][index])
++			{
++				write_cram_value(index, m_mdp_raster_cram[scanline][index]);
++				m_mdp_raster_cram_set[scanline][index] = 0;
++			}
++		}
 +	}
 +
  	gfx_element *tile_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
  	u16 base_w = 0;
  
-@@ -1934,7 +2577,14 @@
+@@ -1934,7 +2587,14 @@
  
  		/* Non Window Part */
  
@@ -1267,7 +1286,7 @@
  		{   /* 20x 16x1 blocks */
  		//  int xx;
  			int vcolumn;
-@@ -2004,6 +2654,9 @@
+@@ -2004,6 +2664,9 @@
  	}
  		/* END */
  
@@ -1277,7 +1296,7 @@
  /* MEGADRIVE_REG0C_SHADOW_HIGLIGHT */
  	/* Low Priority Sprites */
  	for (int x = 0; x < horz; x++)
-@@ -2120,6 +2773,8 @@
+@@ -2120,6 +2783,8 @@
  	u32 *lineptr;
  	unsigned horz = m_lcm_scaling ? hres[get_hres()] : 320;
  	unsigned mul = m_lcm_scaling ? hres_mul[get_hres()] : 1;
@@ -1286,7 +1305,7 @@
  
  	if (!m_use_alt_timing)
  	{
-@@ -2139,9 +2794,9 @@
+@@ -2139,9 +2804,9 @@
  			if (!MEGADRIVE_REG0_SPECIAL_PAL) // 3 bit color mode, correct?
  				clut &= 0x49; // (1 << 6) | (1 << 3) | (1 << 0);
  
@@ -1299,7 +1318,7 @@
  		}
  	}
  
-@@ -2210,6 +2865,11 @@
+@@ -2210,6 +2875,11 @@
  					break;
  			}
  		}
@@ -1311,7 +1330,7 @@
  		if (++xx >= mul)
  		{
  			srcx++;
-@@ -2217,7 +2877,7 @@
+@@ -2217,7 +2887,7 @@
  		}
  	}
  
@@ -1320,7 +1339,7 @@
  		m_32x_scanline_helper_func(scanline);
  	if (!m_32x_scanline_func.isnull())
  	{
-@@ -2241,6 +2901,7 @@
+@@ -2241,6 +2911,7 @@
  	{
  		//if (MEGADRIVE_REG01_DMA_ENABLE == 0) osd_printf_debug("off\n");
  		render_spriteline_to_spritebuffer(get_scanline_counter());
@@ -1376,7 +1395,7 @@
  
  	void vram_w(offs_t offset, u16 data, u16 mem_mask = ~0)
  	{
-@@ -233,11 +272,53 @@
+@@ -233,11 +272,54 @@
  
  
  	void render_spriteline_to_spritebuffer(int scanline);
@@ -1405,8 +1424,9 @@
 +	bool m_mdp_scaler_checked = false;
 +	bool m_mdp_sh2_layout = false;
 +	bool m_sh2_text_compat = false; // Immutable cartridge profile, reapplied on reset.
-+	u16 m_mdp_bg[256]{};        // couleur de fond datee, une par ligne de balayage
-+	u8  m_mdp_bg_set[256]{};
++	// Direct CRAM writes are indexed, and several colours may change on one line.
++	u16 m_mdp_raster_cram[256][128]{};
++	u8  m_mdp_raster_cram_set[256][128]{};
 +	std::unique_ptr<u32[]> m_mdp_prev_frame;   // trame precedente, pour le tramage
 +	int m_mdp_prev_w = 0, m_mdp_prev_h = 0;
 +	// Couleur de fond reellement rendue pour chaque ligne. Le masque implicite
@@ -1452,16 +1472,16 @@
  	map(0xe00000, 0xe0ffff).ram().mirror(0x1f0000).share("megadrive_ram");
  //  map(0xff0000, 0xffffff).readonly();
  	/*       0xe00000 - 0xffffff) == MAIN RAM (64kb, Mirrored, most games use ff0000 - ffffff) */
-@@ -651,6 +661,9 @@
+@@ -650,6 +660,9 @@
+ 			desty[x] = srcy[x];
  		}
  	}
- 
++
 +	// MDP : moyenne des deux dernieres trames (tramage temporel du degrade).
 +	m_vdp->mdp_blend_frame(bitmap, cliprect);
-+
+ 
  	return 0;
  }
- 
 --- a/src/devices/bus/megadrive/md_slot.h
 +++ b/src/devices/bus/megadrive/md_slot.h
 @@ -168,6 +168,7 @@
