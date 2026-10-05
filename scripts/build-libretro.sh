@@ -37,6 +37,13 @@ if [[ "${platform}" == "osx" && "${MACOS_ARCH:-$(uname -m)}" == "arm64" ]]; then
         LIBRETRO_APPLE_PLATFORM=arm64-apple-macos11.0 \
         LIBRETRO_APPLE_ISYSROOT="${macos_sdk}"
 elif [[ "${platform}" == "win" ]]; then
+    windows_patch="${repo_root}/patches/mame0289-libretro-windows.patch"
+    if git -C "${mame_tree}" apply --check "${windows_patch}"; then
+        git -C "${mame_tree}" apply "${windows_patch}"
+    elif ! git -C "${mame_tree}" apply --reverse --check "${windows_patch}"; then
+        echo "The Windows input source is neither clean nor already patched." >&2
+        exit 1
+    fi
     build_core MINGW64=1
 else
     build_core

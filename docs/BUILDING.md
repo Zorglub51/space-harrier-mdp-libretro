@@ -40,6 +40,17 @@ by your Xcode installation.
 
 ## Windows
 
+When `PLATFORM=win`, `build-libretro.sh` also applies
+`patches/mame0289-libretro-windows.patch` to the prepared tree. It avoids an
+unused SDL dependency and accepts a tree where that patch is already applied.
+
+The `0.1.3-sh1-textfix` test export was cross-compiled on macOS ARM64 with
+MinGW-w64. Its `source-reference/` directory records the full source patch,
+generated ROM header, separate Windows patch, exact build command and binary
+verification. That command uses the native host compiler for build tools and
+explicit MinGW overrides for target objects. Do not substitute the Linux
+environment settings below when reproducing that macOS-hosted build.
+
 The release workflow cross-compiles the Windows x86_64 core from Ubuntu with the
 POSIX MinGW-w64 compiler, matching upstream libretro/MAME CI:
 

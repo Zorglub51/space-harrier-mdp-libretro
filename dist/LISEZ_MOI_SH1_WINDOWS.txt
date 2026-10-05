@@ -1,0 +1,66 @@
+SPACE HARRIER 1 — TEST WINDOWS x64
+
+Ce paquet contient le cœur corrigé. RetroArch et la ROM ne sont pas inclus.
+Utilisez Windows 10/11, RetroArch Windows x64 et votre ROM originale SH1 extraite de votre
+console. Aucune installation du cœur ni aucun droit administrateur requis.
+
+LANCEMENT
+
+1. Extrayez toute l'archive .7z (avec 7-Zip ou un outil compatible) dans un
+   dossier où vous pouvez écrire, par exemple Documents\Test SH1.
+   Ne lancez pas les fichiers directement depuis l'archive.
+2. Fermez une éventuelle session RetroArch, puis double-cliquez sur
+   TESTER_SH1_WINDOWS.cmd.
+3. Sélectionnez le RetroArch.exe de votre installation Windows x64.
+4. Sélectionnez votre fichier original jp_jp_space_harrier.smp.
+   Le lanceur vérifie le cœur et la ROM. Un fichier incorrect peut être
+   resélectionné ; Annuler ferme le sélecteur sans démarrer de jeu.
+
+Le lanceur utilise Windows PowerShell et ses sélecteurs de fichiers standard.
+Il ne change ni la politique PowerShell, ni le registre, ni la configuration
+habituelle de RetroArch. Il ne télécharge rien et ne modifie pas votre ROM.
+
+COMMANDES
+
+Entrée : démarrer       Flèches : déplacer Harrier       Z ou X : tirer
+P : pause              F8 : capture d'écran             F1 : menu RetroArch
+Échap : quitter
+
+Une manette reconnue par RetroArch peut aussi être utilisée : croix ou stick
+gauche, bouton B du RetroPad pour tirer, Start pour démarrer. Si nécessaire,
+utilisez F1 puis Commandes / Commandes du port 1. Le clavier reste disponible.
+
+CE QUE CE TEST MESURE
+
+Cette version corrige les caractères parasites dans les annonces de stages
+et de boss SH1. Elle conserve le correctif de collision précédent.
+Testez les annonces STAGE 1 / MOOT, puis STAGE 2 / GEEZA après le premier boss.
+Le jeu démarre normalement, sans invincibilité ni chargement automatique d'état.
+Les scintillements présents dans le fonctionnement d'origine sont conservés.
+Le lanceur n'active pas Deflicker et désactive la persistance expérimentale des
+sprites, afin de garder la référence visuelle du cœur sans ce filtre ajouté.
+Le rendu est celui du test Mac ; sa conformité complète à M2 reste à valider.
+
+Chaque lancement crée un sous-dossier horodaté dans session\, à côté du lanceur.
+Il contient la configuration locale, session.json, logs\retroarch.log et les
+captures dans screenshots\. Les états et données de jeu restent dans cette
+session ; les lancements suivants repartent dans un nouveau dossier.
+Si une erreur apparaît, faites une capture F8 avant de quitter et conservez
+le journal correspondant. Le nom du paquet et session.json identifient le cœur.
+
+EN CAS DE PROBLÈME
+
+- ROM refusée : utilisez SH1 original non modifié, 4 063 232 octets, SHA-1
+  e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72. Une ancienne ROM patchée est refusée.
+- Cœur ou empreinte manquants : extrayez à nouveau l'archive complète. Gardez
+  shmdp_libretro.dll, shmdp_libretro.info et CORE_SHA256.txt avec le lanceur.
+- RetroArch refusé : choisissez RetroArch.exe Windows x64 ; une version 32 bits
+  ou ARM64 ne peut pas charger cette DLL x64.
+- Erreur d'écriture : placez le dossier dans Documents plutôt que Program Files.
+- Si PowerShell ne peut pas démarrer, chargez manuellement shmdp_libretro.dll
+  via Charger un cœur, puis votre .smp via Charger du contenu dans RetroArch.
+  Ce lancement manuel utilise vos réglages habituels et ne crée pas la session
+  isolée décrite ci-dessus.
+
+Le lanceur a été préparé et vérifié statiquement depuis macOS. Son exécution
+réelle sous Windows reste à confirmer lors de ce test.

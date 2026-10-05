@@ -1,0 +1,1454 @@
+{
+  "schema": 1,
+  "source": {
+    "binary_sha256": "2374ddca2241d2a040f587a1e86359c3d3d5f1dc93e566588b35e15bee73178f",
+    "handler_file_offset": 874436,
+    "handler_loaded_address": 939972,
+    "guest_hook_pc": 1685822,
+    "engine": "Ghidra PcodeEmulator ARM p-code",
+    "ghidra_version": "12.1",
+    "execution_boundary": "Before original terminal BX r3; branch bytes, destination, and restored stack verified"
+  },
+  "cases": [
+    {
+      "name": "depth_0000_0000",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 0
+          },
+          {
+            "address": 16720478,
+            "value": 0
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440896,
+        "d4": 1432748032,
+        "d6": 2578103045,
+        "a0": 0,
+        "flags": 4,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_0000_0001",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 1
+          },
+          {
+            "address": 16720478,
+            "value": 0
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440896,
+        "d4": 1432748033,
+        "d6": 2578103045,
+        "a0": 4294967295,
+        "flags": 0,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_0000_7fff",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32767
+          },
+          {
+            "address": 16720478,
+            "value": 0
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440896,
+        "d4": 1432780799,
+        "d6": 2578103045,
+        "a0": 4294934529,
+        "flags": 0,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_0000_8000",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32768
+          },
+          {
+            "address": 16720478,
+            "value": 0
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440896,
+        "d4": 1432780800,
+        "d6": 2578103045,
+        "a0": 32768,
+        "flags": 8,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_0000_ffff",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 65535
+          },
+          {
+            "address": 16720478,
+            "value": 0
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440896,
+        "d4": 1432813567,
+        "d6": 2578103045,
+        "a0": 1,
+        "flags": 8,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_0001_0000",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 0
+          },
+          {
+            "address": 16720478,
+            "value": 1
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440897,
+        "d4": 1432748032,
+        "d6": 2578103045,
+        "a0": 1,
+        "flags": 4,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_0001_0001",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 1
+          },
+          {
+            "address": 16720478,
+            "value": 1
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440897,
+        "d4": 1432748033,
+        "d6": 2578103045,
+        "a0": 0,
+        "flags": 0,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_0001_7fff",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32767
+          },
+          {
+            "address": 16720478,
+            "value": 1
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440897,
+        "d4": 1432780799,
+        "d6": 2578103045,
+        "a0": 4294934530,
+        "flags": 0,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_0001_8000",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32768
+          },
+          {
+            "address": 16720478,
+            "value": 1
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440897,
+        "d4": 1432780800,
+        "d6": 2578103045,
+        "a0": 32769,
+        "flags": 8,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_0001_ffff",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 65535
+          },
+          {
+            "address": 16720478,
+            "value": 1
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440897,
+        "d4": 1432813567,
+        "d6": 2578103045,
+        "a0": 2,
+        "flags": 8,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_7fff_0000",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 0
+          },
+          {
+            "address": 16720478,
+            "value": 32767
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473663,
+        "d4": 1432748032,
+        "d6": 2578103045,
+        "a0": 32767,
+        "flags": 4,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_7fff_0001",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 1
+          },
+          {
+            "address": 16720478,
+            "value": 32767
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473663,
+        "d4": 1432748033,
+        "d6": 2578103045,
+        "a0": 32766,
+        "flags": 0,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_7fff_7fff",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32767
+          },
+          {
+            "address": 16720478,
+            "value": 32767
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473663,
+        "d4": 1432780799,
+        "d6": 2578103045,
+        "a0": 0,
+        "flags": 0,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_7fff_8000",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32768
+          },
+          {
+            "address": 16720478,
+            "value": 32767
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473663,
+        "d4": 1432780800,
+        "d6": 2578103045,
+        "a0": 65535,
+        "flags": 8,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_7fff_ffff",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 65535
+          },
+          {
+            "address": 16720478,
+            "value": 32767
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473663,
+        "d4": 1432813567,
+        "d6": 2578103045,
+        "a0": 32768,
+        "flags": 8,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_8000_0000",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 0
+          },
+          {
+            "address": 16720478,
+            "value": 32768
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473664,
+        "d4": 1432748032,
+        "d6": 2578103045,
+        "a0": 4294934528,
+        "flags": 4,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_8000_0001",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 1
+          },
+          {
+            "address": 16720478,
+            "value": 32768
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473664,
+        "d4": 1432748033,
+        "d6": 2578103045,
+        "a0": 4294934527,
+        "flags": 0,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_8000_7fff",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32767
+          },
+          {
+            "address": 16720478,
+            "value": 32768
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473664,
+        "d4": 1432780799,
+        "d6": 2578103045,
+        "a0": 4294901761,
+        "flags": 0,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_8000_8000",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32768
+          },
+          {
+            "address": 16720478,
+            "value": 32768
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473664,
+        "d4": 1432780800,
+        "d6": 2578103045,
+        "a0": 0,
+        "flags": 8,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_8000_ffff",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 65535
+          },
+          {
+            "address": 16720478,
+            "value": 32768
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473664,
+        "d4": 1432813567,
+        "d6": 2578103045,
+        "a0": 4294934529,
+        "flags": 8,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_ffff_0000",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 0
+          },
+          {
+            "address": 16720478,
+            "value": 65535
+          }
+        ]
+      },
+      "output": {
+        "d1": 287506431,
+        "d4": 1432748032,
+        "d6": 2578103045,
+        "a0": 4294967295,
+        "flags": 4,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_ffff_0001",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 1
+          },
+          {
+            "address": 16720478,
+            "value": 65535
+          }
+        ]
+      },
+      "output": {
+        "d1": 287506431,
+        "d4": 1432748033,
+        "d6": 2578103045,
+        "a0": 4294967294,
+        "flags": 0,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_ffff_7fff",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32767
+          },
+          {
+            "address": 16720478,
+            "value": 65535
+          }
+        ]
+      },
+      "output": {
+        "d1": 287506431,
+        "d4": 1432780799,
+        "d6": 2578103045,
+        "a0": 4294934528,
+        "flags": 0,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_ffff_8000",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32768
+          },
+          {
+            "address": 16720478,
+            "value": 65535
+          }
+        ]
+      },
+      "output": {
+        "d1": 287506431,
+        "d4": 1432780800,
+        "d6": 2578103045,
+        "a0": 32767,
+        "flags": 8,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "depth_ffff_ffff",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 0,
+        "ticks": 12345,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 65535
+          },
+          {
+            "address": 16720478,
+            "value": 65535
+          }
+        ]
+      },
+      "output": {
+        "d1": 287506431,
+        "d4": 1432813567,
+        "d6": 2578103045,
+        "a0": 0,
+        "flags": 8,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 12381
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "ticks_wrap",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 4294967280,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 256
+          },
+          {
+            "address": 16720478,
+            "value": 1792
+          }
+        ]
+      },
+      "output": {
+        "d1": 287442688,
+        "d4": 1432748288,
+        "d6": 2578103045,
+        "a0": 1536,
+        "flags": 0,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 20
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "odd_addresses",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720385,
+        "a4": 16720469,
+        "flags": 0,
+        "x": 1,
+        "ticks": 0,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 32768
+          },
+          {
+            "address": 16720478,
+            "value": 65535
+          }
+        ]
+      },
+      "output": {
+        "d1": 287506431,
+        "d4": 1432780800,
+        "d6": 2578103045,
+        "a0": 32767,
+        "flags": 8,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 36
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "high_address_alias",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 318710272,
+        "a4": 2885624404,
+        "flags": 15,
+        "x": 0,
+        "ticks": 0,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 4660
+          },
+          {
+            "address": 16720478,
+            "value": 17185
+          }
+        ]
+      },
+      "output": {
+        "d1": 287458081,
+        "d4": 1432752692,
+        "d6": 2578103045,
+        "a0": 12525,
+        "flags": 0,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 36
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "same_aliased_word",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16720384,
+        "a4": 318710272,
+        "flags": 15,
+        "x": 1,
+        "ticks": 0,
+        "memory_words": [
+          {
+            "address": 16720394,
+            "value": 5
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440901,
+        "d4": 1432748037,
+        "d6": 2578103045,
+        "a0": 0,
+        "flags": 0,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 36
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        72,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "address_add_wrap",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 4294967288,
+        "a4": 16720468,
+        "flags": 15,
+        "x": 1,
+        "ticks": 0,
+        "memory_words": [
+          {
+            "address": 2,
+            "value": 65535
+          },
+          {
+            "address": 16720478,
+            "value": 0
+          }
+        ]
+      },
+      "output": {
+        "d1": 287440896,
+        "d4": 1432813567,
+        "d6": 2578103045,
+        "a0": 1,
+        "flags": 8,
+        "x": 1,
+        "next_pc": 1685834,
+        "ticks": 36
+      },
+      "native_instruction_steps": 33,
+      "changed_state_byte_offsets": [
+        30,
+        44,
+        45,
+        56,
+        57,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    },
+    {
+      "name": "page_crossing",
+      "input": {
+        "d1": 287454020,
+        "d4": 1432778632,
+        "d6": 2578103045,
+        "a0": 3723427585,
+        "a2": 16711672,
+        "a4": 16777215,
+        "flags": 0,
+        "x": 0,
+        "ticks": 0,
+        "memory_words": [
+          {
+            "address": 16711682,
+            "value": 32767
+          },
+          {
+            "address": 8,
+            "value": 32768
+          }
+        ]
+      },
+      "output": {
+        "d1": 287473664,
+        "d4": 1432780799,
+        "d6": 2578103045,
+        "a0": 4294901761,
+        "flags": 0,
+        "x": 0,
+        "next_pc": 1685834,
+        "ticks": 36
+      },
+      "native_instruction_steps": 36,
+      "changed_state_byte_offsets": [
+        44,
+        45,
+        56,
+        57,
+        73,
+        74,
+        75
+      ],
+      "stop_before_tail_branch": 940070
+    }
+  ]
+}

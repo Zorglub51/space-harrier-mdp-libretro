@@ -1,0 +1,78 @@
+name: Non-regression tests
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+  schedule:
+    - cron: '23 3 * * 1'
+
+permissions:
+  contents: read
+
+jobs:
+  patch-tables:
+    name: ROM patch tables
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: Run public tests
+        run: python3 -m unittest discover -s tests -v
+      - name: Verify generated adapter is reproducible
+        run: |
+          python3 scripts/generate_rom_patch_header.py rompatch/patch.py /tmp/sh1_mdp_rom.h
+          grep -q e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72 /tmp/sh1_mdp_rom.h
+          grep -q 80f576af01d6413c0b92073e2f947b0431f12a74 /tmp/sh1_mdp_rom.h
+
+  rom-regression:
+    name: Private SH1 + SH2 gameplay
+    needs: patch-tables
+    if: >-
+      vars.SH_MDP_ROM_BUNDLE_URL != '' &&
+      (github.event_name != 'pull_request' || github.event.pull_request.head.repo.fork == false)
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v7
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential git python3 unzip \
+            libgl1-mesa-dev libglu1-mesa-dev libegl1-mesa-dev \
+            libx11-dev libxext-dev libxrandr-dev libxinerama-dev \
+            libxcursor-dev libxi-dev libxxf86vm-dev mesa-common-dev
+      - name: Download private ROM bundle
+        env:
+          ROM_BUNDLE_URL: ${{ vars.SH_MDP_ROM_BUNDLE_URL }}
+          ROM_BUNDLE_TOKEN: ${{ secrets.SH_MDP_ROM_BUNDLE_TOKEN }}
+        run: |
+          mkdir -p .private-roms
+          if [[ -n "${ROM_BUNDLE_TOKEN}" ]]; then
+            curl --fail --location --header "Authorization: Bearer ${ROM_BUNDLE_TOKEN}" \
+              "${ROM_BUNDLE_URL}" --output /tmp/space-harrier-roms.zip
+          else
+            curl --fail --location "${ROM_BUNDLE_URL}" --output /tmp/space-harrier-roms.zip
+          fi
+          unzip -q /tmp/space-harrier-roms.zip -d .private-roms
+      - name: Verify both private ROMs
+        env:
+          SH_MDP_ROM_DIR: ${{ github.workspace }}/.private-roms
+        run: python3 -m unittest discover -s tests -v
+      - name: Build Linux core
+        run: |
+          ./scripts/fetch-mame.sh
+          PLATFORM=linux ./scripts/build-libretro.sh
+      - name: Run deterministic gameplay matrix
+        env:
+          SH_MDP_ROM_DIR: ${{ github.workspace }}/.private-roms
+        run: ./scripts/run-rom-regressions.sh
+      - name: Upload regression reports
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: rom-regression-reports
+          path: test-results/*.json
+          if-no-files-found: warn
+          retention-days: 14

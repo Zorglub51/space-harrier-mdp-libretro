@@ -1,12 +1,13 @@
 # Space Harrier MDP — Libretro core
 
-This project makes the Mega Drive Mini 2 edition of **Space Harrier** playable in
+This project makes the Mega Drive Mini 2 editions of **Space Harrier** and
+**Space Harrier II** playable in
 RetroArch on desktop operating systems. It combines a narrowly scoped MAME 0.289
 Libretro build with the missing MDP video behaviour and repairs the original game
 code in memory at launch.
 
 The repository and release archives contain **no game ROM**. You must provide your
-own original `jp_jp_space_harrier.smp` file extracted from hardware you own.
+own original files extracted from hardware you own.
 
 ## Download and play
 
@@ -16,10 +17,11 @@ Choose the archive for your operating system on the
 - [Guide utilisateur en français](GUIDE_UTILISATEUR.md)
 - [English user guide](USER_GUIDE.md)
 
-The expected original file is 4,063,232 bytes with SHA-1:
+The supported originals are:
 
 ```text
-e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72
+Space Harrier     jp_jp_space_harrier.smp     4,063,232 bytes  e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72
+Space Harrier II  jp_jp_Space_Harrier_II.smp  3,670,016 bytes  80f576af01d6413c0b92073e2f947b0431f12a74
 ```
 
 The core recognises this exact file and applies the reconstruction in RAM. Your
@@ -30,6 +32,7 @@ file on disk is not modified. A standalone patcher is also included in
 
 - reconstruction of the 68000 instructions replaced by M2 native hooks;
 - direct MDP graphics RAM and sprite source;
+- 128-entry MDP colour RAM without destructive wraparound into sprite palettes;
 - per-line scaling used by the scenery and large sprites;
 - restored background colour writes and stable temporal dithering;
 - relaxed sprite output that retains deliberately alternating entries;
@@ -54,7 +57,29 @@ Tags of the form `v*` create a public release containing all four archives.
 Each release also includes a complete corresponding-source archive with the
 pinned MAME tree already patched.
 
+## Non-regression tests
+
+`python3 -m unittest discover -s tests -v` checks both reconstruction tables on
+every push and pull request without requiring copyrighted data. If
+`SH_MDP_ROM_DIR` points to a private directory containing the two pristine files,
+the same command additionally verifies every original opcode and both complete
+patched-ROM hashes.
+
+GitHub Actions also contains an optional private gameplay job. Configure the
+repository variable `SH_MDP_ROM_BUNDLE_URL` with a URL to a private ZIP containing
+the two files above. If that endpoint needs a bearer token, store it as the
+`SH_MDP_ROM_BUNDLE_TOKEN` repository secret. The job builds the Linux core, runs
+6,000 deterministic frames for each ROM, validates video production and geometry,
+and archives the checkpoint hashes as CI artifacts. The ROM bundle is never
+published as an artifact.
+
 ## Scope and status
+
+Fidelity work now starts with SH1. The first portable M2 hook translation is
+checked against 31 measured executions of the original ARM block; the collision
+reconstruction has also been corrected in the existing core. See
+[SH1 native execution reference](docs/SH1_NATIVE_REFERENCE.md) for coverage,
+reproduction steps and the remaining work. Android is deferred.
 
 This is an independent preservation/research project, not an official Sega, M2,
 MAME or Libretro release. The first game has received extensive testing through

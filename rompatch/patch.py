@@ -123,7 +123,10 @@ SH1 = [
     (0x19B924, 0x205D, 0x6700, "beq.w $19BAA2",                                     "handler+ROM"),
     (0x19B928, 0x00FF, 0x0C2A, "cmpi.b #$FD,$20(a2)",                               "handler+ROM"),
     (0x19B930, 0x45F9, 0x102A, "move.b $23(a2),d0",                                 "handler+ROM"),
-    (0x19B93E, 0x3C1C, 0x3C2C, "move.w $A(a4),d6",                                  "handler+ROM"),
+    # ARM handler $0D57C4 stores A4+$0A at CPU-state +$2C (D1), then forms
+    # A0 = sign_extend(D1.w) - sign_extend(D4.w).  D6 must keep the collision
+    # table count: writing the object's depth there overruns the FF408C table.
+    (0x19B93E, 0x3C1C, 0x322C, "move.w $A(a4),d1",                                  "handler+ROM+runtime"),
     (0x19B94E, 0x00FF, 0x6D00, "blt.w $19BB2C",                                     "handler+ROM"),
     (0x19B956, 0xBA80, 0x6EC4, "bgt.b $19B91C  [reboucle sur la liste]",            "handler+ROM"),
     (0x01E5F76, 0x13FC, 0x1039, "move.b $FF3D0E.l,d0 [vblank wait-flag spin loop]",  "handler+SH2"),
@@ -163,6 +166,15 @@ SH1_DIVZERO_GUARD = [
         "4EF900172656"  # jmp normal stack cleanup
         "4EF90017265E"  # zero: jmp epilogue
     ), "skip average when no active object"),
+]
+
+SH2_DIVZERO_GUARD = [
+    (0x13D35C, bytes.fromhex("30432F082F00"), bytes.fromhex("4EF90037FFC0"),
+     "jmp $37FFC0  [guard SH2 object-average divisor]"),
+    (0x37FFC0, bytes(28), bytes.fromhex(
+        "4A43" "6712" "3043" "2F08" "2F00"
+        "4EB9001A9BCC" "4EF90013D368" "4EF90013D370"
+    ), "skip SH2 average when no active object"),
 ]
 
 # The Stage 1 script used by attract variant $81 jumps from distance $0037 to
@@ -330,7 +342,7 @@ SH2 = [
     (0x13D2C2, 0xEE80, 0x4287, "clr.l d7",                                        "SH2<-SH1 1725B0"),
     (0x13D2D2, 0x0006, 0x720C, "moveq #$C,d1",                                    "SH2<-SH1 1725C0"),
     (0x13D2D6, 0x0080, 0x3546, "move.w d6,$40(a2)",                               "SH2<-SH1 1725C4"),
-    (0x13D2F2, 0xFC18, 0x6716, "beq.b $13D30A      [deplacement recalcule sur SH2]", "handler"),
+    (0x13D2F2, 0xFC18, 0x6712, "beq.b $13D306      [passer par cmpa.l a1,a2 avant tout retrait]", "handler+SH1+runtime"),
     (0x199CFE, 0x0800, 0x0282, "andi.l #$FFFF,d2    [puis move.l d2,$FF40B6]",     "handler"),
     (0x199D14, 0x0004, 0x6702, "beq.b $199D18       [garde : saute jsr (a0)]",      "handler"),
     (0x199D1E, 0x0019, 0x3039, "move.w $FF4138.l,d0 [puis andi.w #$FFFE,d0]",       "handler"),
@@ -396,7 +408,7 @@ SH2 = [
     (0x1985B8, 0x00FF, 0x6700, "beq.w $1986CC       [garde a0 nul, ext 0112]",      "handler+extension"),
     (0x1986CC, 0x41F9, 0x0C39, "cmpi.b #$A,$FF39B9.l [ext 000A 00FF 39B9]",         "handler+extension"),
     (0x199142, 0x5240, 0x207C, "movea.l #$A11100,a0 [busreq Z80, ext 00A1 1100]",  "handler+extension"),
-    (0x1972D6, 0x0100, 0x42AF, "clr.l $4(a7)        [ext 0004]",                  "handler+extension"),
+    (0x1972D6, 0x0100, 0x206F, "movea.l $4(a7),a0  [ext 0004]",                  "SH2<-SH1 1E8272"),
     (0x19895A, 0x48E7, 0x4CDF, "movem.l (a7)+,d2-d7/a2-a5 [masque 3CFC = miroir de 3F3C, epilogue du 198542]", "handler+symetrie"),
     (0x199184, 0x2030, 0x1010, "move.b (a0),d0      [a0 = $A00113, RAM Z80]",       "handler"),
     (0x19D4A6, 0x0010, 0x33C2, "move.w d2,$C00000.l [port de donnees VDP, boucle dbf]", "handler+extension"),
@@ -408,6 +420,7 @@ SH2 = [
     (0x199A1E, 0x42A7, 0x3039, "move.w $FF4138.l,d0",                              "handler"),
     (0x19A978, 0x4EB9, 0x3039, "move.w $C00004.l,d0 [attente debut VBlank]",   "SH2<-SH1 1EB914"),
 ]
+
 # fmt: on
 
 ROMS = {
@@ -420,6 +433,7 @@ EXTRA_PATCHES = {
         SH1_DIVZERO_GUARD + SH1_TREE_RESTORE + SH1_SHOT_COUNTER_GUARD +
         SH1_BOSS_COMPLETION_GUARD
     ),
+    "80f576af01d6413c0b92073e2f947b0431f12a74": SH2_DIVZERO_GUARD,
 }
 
 

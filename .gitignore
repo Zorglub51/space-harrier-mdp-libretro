@@ -1,6 +1,10 @@
 .DS_Store
 build/
 out/
+cfg/
+nvram/
+test-results/
+.private-roms/
 *.pyc
 __pycache__/
 *.smp

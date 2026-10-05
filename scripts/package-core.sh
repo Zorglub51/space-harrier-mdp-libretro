@@ -4,7 +4,11 @@ set -euo pipefail
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 mame_tree="${1:?usage: package-core.sh MAME_TREE PLATFORM_TAG}"
 platform_tag="${2:?usage: package-core.sh MAME_TREE PLATFORM_TAG}"
-version="$(tr -d '[:space:]' < "${repo_root}/VERSION")"
+version="${PACKAGE_VERSION:-$(tr -d '[:space:]' < "${repo_root}/VERSION")}"
+if [[ ! "${version}" =~ ^[[:alnum:]][[:alnum:]._-]*$ ]]; then
+    echo "Invalid package version: ${version}" >&2
+    exit 1
+fi
 package_dir="${repo_root}/out/space-harrier-mdp-${version}-${platform_tag}"
 archive="${package_dir}.zip"
 
@@ -30,11 +34,54 @@ cp "${repo_root}/USER_GUIDE.md" "${package_dir}/README.md"
 cp "${repo_root}/LICENSE" "${package_dir}/LICENSE"
 cp "${repo_root}/COPYING.MAME" "${package_dir}/COPYING.MAME"
 cp "${repo_root}/NOTICE.md" "${package_dir}/NOTICE.md"
+mkdir -p "${package_dir}/docs"
+cp "${repo_root}/docs/DEPANNAGE.md" "${package_dir}/docs/"
+cp "${repo_root}/docs/TROUBLESHOOTING.md" "${package_dir}/docs/"
 
 if [[ "${platform_tag}" == macos-* ]]; then
     cp "${repo_root}/dist/INSTALLER_MACOS.command" "${package_dir}/INSTALLER_MACOS.command"
     chmod +x "${package_dir}/INSTALLER_MACOS.command"
+elif [[ "${platform_tag}" == windows-* ]]; then
+    cp "${repo_root}/dist/TESTER_SH1_WINDOWS.cmd" "${package_dir}/"
+    cp "${repo_root}/dist/LISEZ_MOI_SH1_WINDOWS.txt" "${package_dir}/"
+    if [[ -f "${mame_tree}/windows-source-manifest.json" ]]; then
+        mkdir -p "${package_dir}/source-reference"
+        cp "${mame_tree}/windows-source-manifest.json" "${package_dir}/source-reference/"
+        cp "${mame_tree}/windows-source.patch" "${package_dir}/source-reference/"
+        cp "${mame_tree}/windows-source-sh1_mdp_rom.h" "${package_dir}/source-reference/"
+        for provenance in windows-portability.patch build-windows-command.txt windows-binary-verification.json; do
+            if [[ -f "${mame_tree}/${provenance}" ]]; then
+                cp "${mame_tree}/${provenance}" "${package_dir}/source-reference/"
+            fi
+        done
+    fi
 fi
+
+python3 - "${package_dir}" "${extension}" "${version}" "${platform_tag}" "${repo_root}" <<'PY'
+import hashlib
+import json
+from pathlib import Path
+import sys
+
+package, extension, version, platform, repo = sys.argv[1:]
+package, repo = Path(package), Path(repo)
+core = package / f"shmdp_libretro.{extension}"
+digest = hashlib.sha256(core.read_bytes()).hexdigest()
+(package / "CORE_SHA256.txt").write_text(f"{digest}  {core.name}\n", encoding="utf-8")
+info = package / "shmdp_libretro.info"
+lines = info.read_text(encoding="utf-8").splitlines()
+info.write_text("\n".join(
+    f'display_version = "{version} (MAME 0.289)"'
+    if line.startswith("display_version =") else line for line in lines
+) + "\n", encoding="utf-8")
+(package / "BUILD.json").write_text(json.dumps({
+    "package_version": version,
+    "platform": platform,
+    "core_sha256": digest,
+    "mame_commit": (repo / "MAME_COMMIT").read_text().strip(),
+    "rom_patch_table_sha256": hashlib.sha256((repo / "rompatch/patch.py").read_bytes()).hexdigest(),
+}, indent=2) + "\n", encoding="utf-8")
+PY
 
 mkdir -p "${repo_root}/out"
 rm -f "${archive}"

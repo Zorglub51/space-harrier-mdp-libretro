@@ -1,0 +1,13 @@
+diff --git a/src/osd/modules/input/input_common.cpp b/src/osd/modules/input/input_common.cpp
+index 0433e84af5..488eef59a5 100644
+--- a/src/osd/modules/input/input_common.cpp
++++ b/src/osd/modules/input/input_common.cpp
+@@ -28,7 +28,7 @@
+ #define KEY_TRANS_WIN32(disc, virtual)
+ #endif
+ 
+-#if defined(OSD_SDL) || defined(SDLMAME_WIN32)
++#if defined(OSD_SDL) || (defined(SDLMAME_WIN32) && !defined(OSD_RETRO))
+ #ifdef SDLMAME_SDL3
+ #include <SDL3/SDL.h>
+ #else
