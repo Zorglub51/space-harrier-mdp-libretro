@@ -3,6 +3,39 @@
 Chaque version publiée possède une entrée datée. Le tag `vVERSION`, le fichier
 `VERSION` et cette entrée doivent correspondre pour autoriser la publication.
 
+## [0.1.6] - 2026-10-05
+
+### Perspective et sprites SH2
+
+- Suppression du décalage de 53 lignes et de l'étirement artificiel du décor
+  SH2 : les plans utilisent la transformation de la ligne affichée, comme M2.
+  Cela rétablit leur position par rapport aux sprites, notamment dans les
+  stages 1 et 4 où les objets paraissaient trop bas.
+- Prise en charge des 64 registres directs MDP. Les registres des plans et du
+  zoom des sprites choisissent leurs tables et leur activation explicitement.
+  Le contenu d'une ancienne table ne peut plus activer un effet désactivé.
+- Rendu des deux plans selon les coordonnées, dimensions, retournements,
+  palettes et priorités M2, avec rebouclage ou limitation aux bords. Suppression
+  des règles SH2 qui masquaient certaines lignes de montagnes et de plafond.
+- Zoom vertical des sprites conforme aux calculs M2 : agrandissement permis,
+  hauteur nulle invisible, différence verticale circulaire sur 10 bits.
+
+### Validation et limites
+
+- Comparaison du C++ distribué avec les sorties d'exécution ARM originales :
+  68 cas d'adressage des registres, 30 cas de plans et les cas de géométrie,
+  choix de table et réduction des sprites. Fixtures publiques sans ROM.
+- Comparaisons de captures SH2 des stages 1, 3 et 4, de l'attraction et du
+  classement, ainsi que des deux parcours SH1 de 6 000 trames. Le son est
+  inchangé sur les séquences comparées. Les corrections de zoom peuvent
+  également modifier certains sprites SH1 ; ses images ne sont pas annoncées
+  identiques à la version précédente.
+- Aucun filtre de scintillement ni persistance ajouté. Le minutage M2, les
+  palettes étendues des sprites, certains cas de bord d'écran et la validation
+  de l'ensemble des stages restent à approfondir.
+- Les anciens états instantanés sont incompatibles avec les registres étendus ;
+  démarrer depuis la ROM originale.
+
 ## [0.1.5] - 2026-10-05
 
 ### Correction SH2

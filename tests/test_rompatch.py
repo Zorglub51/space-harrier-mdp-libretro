@@ -101,14 +101,6 @@ class RomPatchTableTests(unittest.TestCase):
         )
         self.assertIn("m_use_cram && offset < 0x40", text)
 
-    def test_sh2_ceiling_is_kept_above_the_open_stage_scenery(self):
-        """Protect Yees Land's ceiling without restoring doubled mountains."""
-        text = MAME_PATCH.read_text(encoding="utf-8")
-        self.assertIn("constexpr int top_bias = 53", text)
-        self.assertIn("table_line < 112 && srcy >= 336", text)
-        self.assertIn("224 - perspective", text)
-        self.assertIn("if (sh2_layout && srcy >= 432)", text)
-
     def test_mdp_palette_uses_the_linear_mark_v_dac(self):
         """Protect the Mini 2 colour ramp instead of the nonlinear MD DAC."""
         text = MAME_PATCH.read_text(encoding="utf-8")

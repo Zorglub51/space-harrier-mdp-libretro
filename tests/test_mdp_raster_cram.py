@@ -66,6 +66,7 @@ struct FakeCpu { unsigned pcbase() const { return 0; } };
 class sega315_5313_device {
 public:
     DECLARATIONS
+    u16 m_regs[64]{};
     u16 m_vdp_code = 0, m_vdp_address = 0;
     FakeCpu cpu;
     FakeCpu *m_cpu68k = &cpu;

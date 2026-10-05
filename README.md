@@ -93,8 +93,10 @@ explains its corrected line-phase reset and remaining compatibility questions.
 The [raster colour reference](docs/MDP_RASTER_CRAM.md) documents direct palette
 addressing and its timing limits.
 The [SH2 text reference](docs/SH2_TEXT_REFERENCE.md) explains the restored direct
-VRAM writes used for its font animation. SH2 ranking background and some scenery
-geometry still need work. Android
+VRAM writes used for its font animation. The [video geometry reference](docs/MDP_VIDEO_GEOMETRY.md) covers explicit MDP
+registers, restored SH2 perspective and sprite zoom. Complete rendering and
+timing equivalence, extended sprite palettes and edge clipping remain under
+investigation. Android
 is deferred.
 
 This is an independent preservation/research project, not an official Sega, M2,

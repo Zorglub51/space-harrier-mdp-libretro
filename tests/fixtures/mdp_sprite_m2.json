@@ -1,0 +1,960 @@
+{
+  "binary_sha256": "2374ddca2241d2a040f587a1e86359c3d3d5f1dc93e566588b35e15bee73178f",
+  "engine": "Ghidra PcodeEmulator original ARM",
+  "scope": "C1084/C12D0 complete helpers; geometry C2664..C2698 and C26F0..C275C; control C20A2..C20B0 or C2634; no whole-frame/timing claim",
+  "cases": [
+    {
+      "name": "control_0",
+      "kind": "bank",
+      "control": 0,
+      "enabled": false,
+      "base_bytes": 0,
+      "steps": 4
+    },
+    {
+      "name": "control_17",
+      "kind": "bank",
+      "control": 17,
+      "enabled": false,
+      "base_bytes": 0,
+      "steps": 4
+    },
+    {
+      "name": "control_128",
+      "kind": "bank",
+      "control": 128,
+      "enabled": true,
+      "base_bytes": 0,
+      "steps": 12
+    },
+    {
+      "name": "control_145",
+      "kind": "bank",
+      "control": 145,
+      "enabled": true,
+      "base_bytes": 69632,
+      "steps": 12
+    },
+    {
+      "name": "control_159",
+      "kind": "bank",
+      "control": 159,
+      "enabled": true,
+      "base_bytes": 126976,
+      "steps": 12
+    },
+    {
+      "name": "control_255",
+      "kind": "bank",
+      "control": 255,
+      "enabled": true,
+      "base_bytes": 126976,
+      "steps": 12
+    },
+    {
+      "name": "span_0",
+      "kind": "shrink",
+      "x": 2,
+      "span": 0,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 21
+    },
+    {
+      "name": "span_1",
+      "kind": "shrink",
+      "x": 2,
+      "span": 1,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        5,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 35
+    },
+    {
+      "name": "span_2",
+      "kind": "shrink",
+      "x": 2,
+      "span": 2,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        3,
+        7,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 47
+    },
+    {
+      "name": "span_3",
+      "kind": "shrink",
+      "x": 2,
+      "span": 3,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        2,
+        5,
+        7,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 59
+    },
+    {
+      "name": "span_4",
+      "kind": "shrink",
+      "x": 2,
+      "span": 4,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        2,
+        4,
+        6,
+        8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 71
+    },
+    {
+      "name": "span_5",
+      "kind": "shrink",
+      "x": 2,
+      "span": 5,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        1,
+        3,
+        5,
+        6,
+        8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 83
+    },
+    {
+      "name": "span_6",
+      "kind": "shrink",
+      "x": 2,
+      "span": 6,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        1,
+        3,
+        4,
+        5,
+        7,
+        8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 95
+    },
+    {
+      "name": "span_7",
+      "kind": "shrink",
+      "x": 2,
+      "span": 7,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        1,
+        2,
+        3,
+        5,
+        6,
+        7,
+        8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 105
+    },
+    {
+      "name": "span_8",
+      "kind": "shrink",
+      "x": 2,
+      "span": 8,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 103
+    },
+    {
+      "name": "small_partial_left",
+      "kind": "shrink",
+      "x": -2,
+      "span": 4,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 23
+    },
+    {
+      "name": "full_partial_left",
+      "kind": "shrink",
+      "x": -2,
+      "span": 8,
+      "attr": 0,
+      "pixels": [
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 88
+    },
+    {
+      "name": "small_partial_right",
+      "kind": "shrink",
+      "x": 14,
+      "span": 4,
+      "attr": 0,
+      "pixels": [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        2,
+        4
+      ],
+      "steps": 47
+    },
+    {
+      "name": "priority",
+      "kind": "shrink",
+      "x": 2,
+      "span": 4,
+      "attr": 32768,
+      "pixels": [
+        0,
+        0,
+        32898,
+        32900,
+        32902,
+        32904,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0
+      ],
+      "steps": 71
+    },
+    {
+      "name": "tile_0000_0000",
+      "kind": "tile",
+      "attr": 24577,
+      "size": 0,
+      "row": 2,
+      "pixels": [
+        51,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56
+      ],
+      "steps": 59
+    },
+    {
+      "name": "tile_0000_0800",
+      "kind": "tile",
+      "attr": 26625,
+      "size": 0,
+      "row": 2,
+      "pixels": [
+        56,
+        55,
+        54,
+        53,
+        52,
+        51,
+        50,
+        51
+      ],
+      "steps": 58
+    },
+    {
+      "name": "tile_0000_1000",
+      "kind": "tile",
+      "attr": 28673,
+      "size": 0,
+      "row": 2,
+      "pixels": [
+        54,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56
+      ],
+      "steps": 59
+    },
+    {
+      "name": "tile_0000_1800",
+      "kind": "tile",
+      "attr": 30721,
+      "size": 0,
+      "row": 2,
+      "pixels": [
+        56,
+        55,
+        54,
+        53,
+        52,
+        51,
+        50,
+        54
+      ],
+      "steps": 58
+    },
+    {
+      "name": "tile_1000_0000",
+      "kind": "tile",
+      "attr": 24577,
+      "size": 4096,
+      "row": 2,
+      "pixels": [
+        58,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        49
+      ],
+      "steps": 59
+    },
+    {
+      "name": "tile_1000_0800",
+      "kind": "tile",
+      "attr": 26625,
+      "size": 4096,
+      "row": 2,
+      "pixels": [
+        49,
+        63,
+        62,
+        61,
+        60,
+        59,
+        58,
+        58
+      ],
+      "steps": 58
+    },
+    {
+      "name": "tile_1000_1000",
+      "kind": "tile",
+      "attr": 28673,
+      "size": 4096,
+      "row": 2,
+      "pixels": [
+        61,
+        58,
+        59,
+        60,
+        61,
+        62,
+        63,
+        49
+      ],
+      "steps": 59
+    },
+    {
+      "name": "tile_1000_1800",
+      "kind": "tile",
+      "attr": 30721,
+      "size": 4096,
+      "row": 2,
+      "pixels": [
+        49,
+        63,
+        62,
+        61,
+        60,
+        59,
+        58,
+        61
+      ],
+      "steps": 58
+    },
+    {
+      "name": "tile_2000_0000",
+      "kind": "tile",
+      "attr": 24577,
+      "size": 8192,
+      "row": 2,
+      "pixels": [
+        51,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56
+      ],
+      "steps": 59
+    },
+    {
+      "name": "tile_2000_0800",
+      "kind": "tile",
+      "attr": 26625,
+      "size": 8192,
+      "row": 2,
+      "pixels": [
+        56,
+        55,
+        54,
+        53,
+        52,
+        51,
+        50,
+        51
+      ],
+      "steps": 58
+    },
+    {
+      "name": "tile_2000_1000",
+      "kind": "tile",
+      "attr": 28673,
+      "size": 8192,
+      "row": 2,
+      "pixels": [
+        54,
+        50,
+        51,
+        52,
+        53,
+        54,
+        55,
+        56
+      ],
+      "steps": 59
+    },
+    {
+      "name": "tile_2000_1800",
+      "kind": "tile",
+      "attr": 30721,
+      "size": 8192,
+      "row": 2,
+      "pixels": [
+        56,
+        55,
+        54,
+        53,
+        52,
+        51,
+        50,
+        54
+      ],
+      "steps": 58
+    },
+    {
+      "name": "tile_4000_0000",
+      "kind": "tile",
+      "attr": 24577,
+      "size": 16384,
+      "row": 2,
+      "pixels": [
+        115,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120
+      ],
+      "steps": 59
+    },
+    {
+      "name": "tile_4000_0800",
+      "kind": "tile",
+      "attr": 26625,
+      "size": 16384,
+      "row": 2,
+      "pixels": [
+        120,
+        119,
+        118,
+        117,
+        116,
+        115,
+        114,
+        115
+      ],
+      "steps": 58
+    },
+    {
+      "name": "tile_4000_1000",
+      "kind": "tile",
+      "attr": 28673,
+      "size": 16384,
+      "row": 2,
+      "pixels": [
+        118,
+        114,
+        115,
+        116,
+        117,
+        118,
+        119,
+        120
+      ],
+      "steps": 59
+    },
+    {
+      "name": "tile_4000_1800",
+      "kind": "tile",
+      "attr": 30721,
+      "size": 16384,
+      "row": 2,
+      "pixels": [
+        120,
+        119,
+        118,
+        117,
+        116,
+        115,
+        114,
+        118
+      ],
+      "steps": 58
+    },
+    {
+      "name": "tile_5000_0000",
+      "kind": "tile",
+      "attr": 24577,
+      "size": 20480,
+      "row": 2,
+      "pixels": [
+        122,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        113
+      ],
+      "steps": 59
+    },
+    {
+      "name": "tile_5000_0800",
+      "kind": "tile",
+      "attr": 26625,
+      "size": 20480,
+      "row": 2,
+      "pixels": [
+        113,
+        127,
+        126,
+        125,
+        124,
+        123,
+        122,
+        122
+      ],
+      "steps": 58
+    },
+    {
+      "name": "tile_5000_1000",
+      "kind": "tile",
+      "attr": 28673,
+      "size": 20480,
+      "row": 2,
+      "pixels": [
+        125,
+        122,
+        123,
+        124,
+        125,
+        126,
+        127,
+        113
+      ],
+      "steps": 59
+    },
+    {
+      "name": "tile_5000_1800",
+      "kind": "tile",
+      "attr": 30721,
+      "size": 20480,
+      "row": 2,
+      "pixels": [
+        113,
+        127,
+        126,
+        125,
+        124,
+        123,
+        122,
+        125
+      ],
+      "steps": 58
+    },
+    {
+      "name": "unity",
+      "kind": "geometry",
+      "input": {
+        "scan": 0,
+        "sat_y": 128,
+        "size": 768,
+        "xword": 128,
+        "zx": 4096,
+        "zy": 4096,
+        "attr": 1
+      },
+      "output": {
+        "delta_mod1024": 0,
+        "height": 32,
+        "accepted": true,
+        "source_y": 0,
+        "source_row": 0,
+        "tile_attr": 1,
+        "x_accum": 0,
+        "x_step": 64,
+        "height_cells": 4
+      },
+      "steps": 54
+    },
+    {
+      "name": "enlarge_vertical",
+      "kind": "geometry",
+      "input": {
+        "scan": 33,
+        "sat_y": 128,
+        "size": 768,
+        "xword": 128,
+        "zx": 4352,
+        "zy": 4352,
+        "attr": 1
+      },
+      "output": {
+        "delta_mod1024": 33,
+        "height": 34,
+        "accepted": true,
+        "source_y": 31,
+        "source_row": 7,
+        "tile_attr": 4,
+        "x_accum": 0,
+        "x_step": 64,
+        "height_cells": 4
+      },
+      "steps": 54
+    },
+    {
+      "name": "zero_y",
+      "kind": "geometry",
+      "input": {
+        "scan": 0,
+        "sat_y": 128,
+        "size": 768,
+        "xword": 128,
+        "zx": 4096,
+        "zy": 0,
+        "attr": 1
+      },
+      "output": {
+        "delta_mod1024": 0,
+        "height": 0,
+        "accepted": false
+      },
+      "steps": 16
+    },
+    {
+      "name": "tiny_y",
+      "kind": "geometry",
+      "input": {
+        "scan": 0,
+        "sat_y": 128,
+        "size": 0,
+        "xword": 128,
+        "zx": 4096,
+        "zy": 64,
+        "attr": 1
+      },
+      "output": {
+        "delta_mod1024": 0,
+        "height": 0,
+        "accepted": false
+      },
+      "steps": 16
+    },
+    {
+      "name": "zero_x",
+      "kind": "geometry",
+      "input": {
+        "scan": 0,
+        "sat_y": 128,
+        "size": 768,
+        "xword": 128,
+        "zx": 0,
+        "zy": 4096,
+        "attr": 1
+      },
+      "output": {
+        "delta_mod1024": 0,
+        "height": 32,
+        "accepted": true,
+        "source_y": 0,
+        "source_row": 0,
+        "tile_attr": 1,
+        "x_accum": 0,
+        "x_step": 0,
+        "height_cells": 4
+      },
+      "steps": 54
+    },
+    {
+      "name": "y_bit9",
+      "kind": "geometry",
+      "input": {
+        "scan": 0,
+        "sat_y": 640,
+        "size": 768,
+        "xword": 128,
+        "zx": 4096,
+        "zy": 4096,
+        "attr": 1
+      },
+      "output": {
+        "delta_mod1024": 512,
+        "height": 32,
+        "accepted": false
+      },
+      "steps": 16
+    },
+    {
+      "name": "y_mod1024",
+      "kind": "geometry",
+      "input": {
+        "scan": 0,
+        "sat_y": 1152,
+        "size": 768,
+        "xword": 128,
+        "zx": 4096,
+        "zy": 4096,
+        "attr": 1
+      },
+      "output": {
+        "delta_mod1024": 0,
+        "height": 32,
+        "accepted": true,
+        "source_y": 0,
+        "source_row": 0,
+        "tile_attr": 1,
+        "x_accum": 0,
+        "x_step": 64,
+        "height_cells": 4
+      },
+      "steps": 54
+    },
+    {
+      "name": "negative_y_wrap",
+      "kind": "geometry",
+      "input": {
+        "scan": 0,
+        "sat_y": 65535,
+        "size": 768,
+        "xword": 128,
+        "zx": 4096,
+        "zy": 32767,
+        "attr": 1
+      },
+      "output": {
+        "delta_mod1024": 129,
+        "height": 255,
+        "accepted": true,
+        "source_y": 16,
+        "source_row": 0,
+        "tile_attr": 3,
+        "x_accum": 0,
+        "x_step": 64,
+        "height_cells": 4
+      },
+      "steps": 54
+    },
+    {
+      "name": "fractional_vertical",
+      "kind": "geometry",
+      "input": {
+        "scan": 7,
+        "sat_y": 128,
+        "size": 768,
+        "xword": 128,
+        "zx": 2050,
+        "zy": 2050,
+        "attr": 4097
+      },
+      "output": {
+        "delta_mod1024": 7,
+        "height": 16,
+        "accepted": true,
+        "source_y": 14,
+        "source_row": 6,
+        "tile_attr": 4099,
+        "x_accum": 0,
+        "x_step": 32,
+        "height_cells": 4
+      },
+      "steps": 54
+    }
+  ]
+}

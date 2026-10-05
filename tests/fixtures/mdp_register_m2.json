@@ -1,0 +1,2189 @@
+{
+  "schema": 1,
+  "source": {
+    "binary_sha256": "2374ddca2241d2a040f587a1e86359c3d3d5f1dc93e566588b35e15bee73178f",
+    "handler_file_offset": 732328,
+    "handler_loaded_address": 797864,
+    "engine": "Ghidra PcodeEmulator ARM p-code",
+    "ghidra_version": "12.1",
+    "execution_boundary": "Original return for direct registers, before normal port dispatch for other addresses"
+  },
+  "cases": [
+    {
+      "input": {
+        "byte_address": 12583168,
+        "data": 4609
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 0,
+            "value": 1
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583170,
+        "data": 4610
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 1,
+            "value": 2
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583172,
+        "data": 4611
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 2,
+            "value": 3
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583174,
+        "data": 4612
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 3,
+            "value": 4
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583176,
+        "data": 4613
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 4,
+            "value": 5
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583178,
+        "data": 4614
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 5,
+            "value": 6
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583180,
+        "data": 4615
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 6,
+            "value": 7
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583182,
+        "data": 4616
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 7,
+            "value": 8
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583184,
+        "data": 4617
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 8,
+            "value": 9
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583186,
+        "data": 4618
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 9,
+            "value": 10
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583188,
+        "data": 4619
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 10,
+            "value": 11
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583190,
+        "data": 4620
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 11,
+            "value": 12
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583192,
+        "data": 4621
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 12,
+            "value": 13
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583194,
+        "data": 4622
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 13,
+            "value": 14
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583196,
+        "data": 4623
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 14,
+            "value": 15
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583198,
+        "data": 4624
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 15,
+            "value": 16
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583200,
+        "data": 4625
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 16,
+            "value": 17
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583202,
+        "data": 4626
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 17,
+            "value": 18
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583204,
+        "data": 4627
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 18,
+            "value": 19
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583206,
+        "data": 4628
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 19,
+            "value": 20
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583208,
+        "data": 4629
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 20,
+            "value": 21
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583210,
+        "data": 4630
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 21,
+            "value": 22
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583212,
+        "data": 4631
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 22,
+            "value": 23
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583214,
+        "data": 4632
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 23,
+            "value": 24
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583216,
+        "data": 4633
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 24,
+            "value": 25
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583218,
+        "data": 4634
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 25,
+            "value": 26
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583220,
+        "data": 4635
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 26,
+            "value": 27
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583222,
+        "data": 4636
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 27,
+            "value": 28
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583224,
+        "data": 4637
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 28,
+            "value": 29
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583226,
+        "data": 4638
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 29,
+            "value": 30
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583228,
+        "data": 4639
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 30,
+            "value": 31
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583230,
+        "data": 4640
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 31,
+            "value": 32
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583232,
+        "data": 4641
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 32,
+            "value": 33
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583234,
+        "data": 4642
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 33,
+            "value": 34
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583236,
+        "data": 4643
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 34,
+            "value": 35
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583238,
+        "data": 4644
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 35,
+            "value": 36
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583240,
+        "data": 4645
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 36,
+            "value": 37
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583242,
+        "data": 4646
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 37,
+            "value": 38
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583244,
+        "data": 4647
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 38,
+            "value": 39
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583246,
+        "data": 4648
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 39,
+            "value": 40
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583248,
+        "data": 4649
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 40,
+            "value": 41
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583250,
+        "data": 4650
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 41,
+            "value": 42
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583252,
+        "data": 4651
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 42,
+            "value": 43
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583254,
+        "data": 4652
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 43,
+            "value": 44
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583256,
+        "data": 4653
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 44,
+            "value": 45
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583258,
+        "data": 4654
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 45,
+            "value": 46
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583260,
+        "data": 4655
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 46,
+            "value": 47
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583262,
+        "data": 4656
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 47,
+            "value": 48
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583264,
+        "data": 4657
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 48,
+            "value": 49
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583266,
+        "data": 4658
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 49,
+            "value": 50
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583268,
+        "data": 4659
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 50,
+            "value": 51
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583270,
+        "data": 4660
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 51,
+            "value": 52
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583272,
+        "data": 4661
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 52,
+            "value": 53
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583274,
+        "data": 4662
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 53,
+            "value": 54
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583276,
+        "data": 4663
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 54,
+            "value": 55
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583278,
+        "data": 4664
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 55,
+            "value": 56
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583280,
+        "data": 4665
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 56,
+            "value": 57
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583282,
+        "data": 4666
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 57,
+            "value": 58
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583284,
+        "data": 4667
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 58,
+            "value": 59
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583286,
+        "data": 4668
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 59,
+            "value": 60
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583288,
+        "data": 4669
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 60,
+            "value": 61
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583290,
+        "data": 4670
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 61,
+            "value": 62
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583292,
+        "data": 4671
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 62,
+            "value": 63
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583294,
+        "data": 4672
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 63,
+            "value": 64
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583232,
+        "data": 4848
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 32,
+            "value": 240
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583240,
+        "data": 65425
+      },
+      "output": {
+        "direct_register": true,
+        "register_writes": [
+          {
+            "index": 36,
+            "value": 145
+          }
+        ]
+      },
+      "native_instruction_steps": 14,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2d5c",
+        "000c2d5e"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583166,
+        "data": 2748
+      },
+      "output": {
+        "direct_register": false,
+        "register_writes": []
+      },
+      "native_instruction_steps": 19,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0"
+      ]
+    },
+    {
+      "input": {
+        "byte_address": 12583296,
+        "data": 2748
+      },
+      "output": {
+        "direct_register": false,
+        "register_writes": []
+      },
+      "native_instruction_steps": 19,
+      "instruction_addresses": [
+        "000c2ca8",
+        "000c2cac",
+        "000c2cb0",
+        "000c2cb4",
+        "000c2cb6",
+        "000c2cb8",
+        "000c2cbc",
+        "000c2cc0",
+        "000c2cc2",
+        "000c2cc4",
+        "000c2cc8",
+        "000c2cca",
+        "000c2ccc",
+        "000c2cd0",
+        "000c2cd4",
+        "000c2cd6",
+        "000c2cda",
+        "000c2cde",
+        "000c2ce0"
+      ]
+    }
+  ]
+}

@@ -50,7 +50,8 @@ Yees Land and ranking. The ranking glyphs are now legible; SH2 audio remains
 identical over the compared sequences. Both complete SH1 video/audio streams
 remain unchanged over 6,000 attract frames and 6,000 scripted frames.
 
-The remaining scenery behind the ranking is a separate scaler activation issue.
-M2's extended plane registers and full rendering/timing equivalence still need
-to be implemented and validated. This correction does not assert that the
+The scenery behind the ranking is separate from the font correction.
+Version 0.1.6 implements M2's extended plane registers and geometry; see
+[video geometry](MDP_VIDEO_GEOMETRY.md). Full rendering and timing equivalence
+still need validation. This correction does not assert that the
 entire SH2 renderer is faithful or that every stage has been tested.
