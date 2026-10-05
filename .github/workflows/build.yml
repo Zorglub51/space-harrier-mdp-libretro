@@ -2,6 +2,13 @@ name: Build cores
 
 on:
   workflow_call:
+    inputs:
+      ref:
+        type: string
+        default: ""
+      platform:
+        type: string
+        default: all
   workflow_dispatch:
     inputs:
       platform:
@@ -29,6 +36,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.ref }}
       - name: Install dependencies
         run: |
           sudo apt-get update
@@ -59,6 +68,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.ref }}
       - name: Install MinGW-w64
         run: |
           sudo apt-get update
@@ -98,6 +109,8 @@ jobs:
             runner: macos-15
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.ref }}
       - name: Install archive tool
         run: brew install sevenzip
       - name: Prepare pinned MAME tree
@@ -108,7 +121,7 @@ jobs:
           MACOS_ARCH: ${{ matrix.arch }}
         run: ./scripts/build-libretro.sh
       - name: Verify core architecture
-        run: lipo -verify_arch "${{ matrix.arch }}" build/mame/shmdp_libretro.dylib
+        run: lipo build/mame/shmdp_libretro.dylib -verify_arch "${{ matrix.arch }}"
       - name: Package
         run: ./scripts/package-core.sh build/mame "macos-${{ matrix.arch }}"
       - uses: actions/upload-artifact@v7

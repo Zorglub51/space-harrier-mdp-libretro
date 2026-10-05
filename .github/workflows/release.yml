@@ -1,33 +1,53 @@
 name: Publish release
 
 on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Existing version tag to publish or retry
+        required: true
+        type: string
   push:
     tags:
       - "v*"
 
 concurrency:
-  group: release-${{ github.ref }}
+  group: release-${{ inputs.tag || github.ref_name }}
   cancel-in-progress: false
 
 permissions:
   contents: read
 
+env:
+  RELEASE_TAG: ${{ inputs.tag || github.ref_name }}
+
 jobs:
   validate:
     name: Validate version and changelog
     runs-on: ubuntu-latest
+    outputs:
+      commit: ${{ steps.revision.outputs.commit }}
+      tag: ${{ steps.revision.outputs.tag }}
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ inputs.tag || github.ref_name }}
       - name: Install archive test dependency
         run: sudo apt-get update && sudo apt-get install -y 7zip
       - name: Check tag and release notes
-        run: python3 scripts/release-notes.py "${GITHUB_REF_NAME}" "${RUNNER_TEMP}/release-notes.md"
+        id: revision
+        run: |
+          python3 scripts/release-notes.py "${RELEASE_TAG}" "${RUNNER_TEMP}/release-notes.md"
+          echo "commit=$(git rev-parse HEAD)" >> "${GITHUB_OUTPUT}"
+          echo "tag=${RELEASE_TAG}" >> "${GITHUB_OUTPUT}"
       - name: Run public regression tests
         run: python3 -m unittest discover -s tests -v
 
   build:
     needs: validate
     uses: ./.github/workflows/build.yml
+    with:
+      ref: refs/tags/${{ needs.validate.outputs.tag }}
 
   source:
     name: Complete corresponding source
@@ -36,6 +56,8 @@ jobs:
     timeout-minutes: 60
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ needs.validate.outputs.tag }}
       - name: Install archive tool
         run: sudo apt-get update && sudo apt-get install -y 7zip
       - name: Prepare corresponding MAME source
@@ -59,6 +81,8 @@ jobs:
       contents: write
     steps:
       - uses: actions/checkout@v7
+        with:
+          ref: refs/tags/${{ needs.validate.outputs.tag }}
       - uses: actions/download-artifact@v8
         with:
           pattern: space-harrier-mdp-*
@@ -68,30 +92,30 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y 7zip
       - name: Verify all downloads and generate release notes
         run: |
-          python3 scripts/release-notes.py "${GITHUB_REF_NAME}" "${RUNNER_TEMP}/release-notes.md"
+          python3 scripts/release-notes.py "${RELEASE_TAG}" "${RUNNER_TEMP}/release-notes.md"
           python3 scripts/verify-release-assets.py "${RUNNER_TEMP}/release-assets" \
-            --version "$(cat VERSION)" --commit "${GITHUB_SHA}"
+            --version "$(cat VERSION)" --commit "${{ needs.validate.outputs.commit }}"
       - name: Upload and publish release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
-            [[ "$(gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" --json isDraft --jq .isDraft)" == true ]] || {
+          if gh release view "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" >/dev/null 2>&1; then
+            [[ "$(gh release view "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" --json isDraft --jq .isDraft)" == true ]] || {
               echo "This version is already public; publish a new revision instead." >&2
               exit 1
             }
-            gh release edit "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" \
+            gh release edit "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" \
               --notes-file "${RUNNER_TEMP}/release-notes.md"
           else
-            gh release create "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" \
-              --verify-tag --draft --title "Space Harrier MDP ${GITHUB_REF_NAME}" \
+            gh release create "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" \
+              --verify-tag --draft --title "Space Harrier MDP ${RELEASE_TAG}" \
               --notes-file "${RUNNER_TEMP}/release-notes.md"
           fi
-          gh release upload "${GITHUB_REF_NAME}" "${RUNNER_TEMP}"/release-assets/* \
+          gh release upload "${RELEASE_TAG}" "${RUNNER_TEMP}"/release-assets/* \
             --repo "${GITHUB_REPOSITORY}" --clobber
-          gh release view "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" \
+          gh release view "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" \
             --json assets --jq '[.assets[] | {name, size}]' > "${RUNNER_TEMP}/uploaded.json"
           python3 scripts/verify-release-assets.py "${RUNNER_TEMP}/release-assets" \
-            --version "$(cat VERSION)" --commit "${GITHUB_SHA}" \
+            --version "$(cat VERSION)" --commit "${{ needs.validate.outputs.commit }}" \
             --uploaded-json "${RUNNER_TEMP}/uploaded.json"
-          gh release edit "${GITHUB_REF_NAME}" --repo "${GITHUB_REPOSITORY}" --draft=false
+          gh release edit "${RELEASE_TAG}" --repo "${GITHUB_REPOSITORY}" --draft=false

@@ -99,6 +99,12 @@ from that version's changelog entry. Published revisions are not overwritten;
 use a new version for subsequent changes. A failed workflow can be rerun while
 its release is still a draft.
 
+If the workflow itself needs a correction, commit that fix without moving the
+version tag. In Actions, run **Publish release** from `main` and enter the existing
+tag. The updated workflow still checks out and packages the tag's exact commit
+for every platform and the source bundle. This permits a publication retry
+without rewriting a version's history.
+
 To package corresponding source locally after preparing the MAME checkout:
 
 ```bash
