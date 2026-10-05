@@ -3,6 +3,8 @@ set -euo pipefail
 
 # SH_MDP_GAME=sh1 limits the run to Space Harrier; sh2 and all are also accepted.
 # SH_MDP_CORE can select a core outside the default build/mame tree.
+# The private-ROM run also checks save/load with default audio settings.
+# SH_MDP_STATE_FRAMES controls the replay window (default: 180 frames).
 repo_root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 rom_dir="${SH_MDP_ROM_DIR:?Set SH_MDP_ROM_DIR to the private ROM directory}"
 core="${SH_MDP_CORE:-}"
@@ -12,6 +14,11 @@ case "${game}" in
     *) echo "Invalid SH_MDP_GAME: ${game}. Expected all, sh1 or sh2." >&2; exit 1 ;;
 esac
 frames="${SH_MDP_TEST_FRAMES:-6000}"
+state_frames="${SH_MDP_STATE_FRAMES:-180}"
+if [[ ! "${state_frames}" =~ ^[1-9][0-9]*$ ]]; then
+    echo "Invalid SH_MDP_STATE_FRAMES: ${state_frames}. Expected a positive integer." >&2
+    exit 1
+fi
 baseline_frames="${frames}"
 if (( baseline_frames > 1200 )); then
     baseline_frames=1200
@@ -49,6 +56,11 @@ while IFS='|' read -r selected_game rom report; do
         --frames "${frames}" \
         --different-from "${baseline}" \
         --output "${repo_root}/test-results/${report}"
+    python3 "${repo_root}/tests/libretro_state_regression.py" \
+        --core "${core}" \
+        --rom "${rom_dir}/${rom}" \
+        --frames "${state_frames}" \
+        --output "${repo_root}/test-results/${report%.json}-state.json"
 done <<'EOF'
 sh1|jp_jp_space_harrier.smp|space-harrier.json
 sh2|jp_jp_Space_Harrier_II.smp|space-harrier-ii.json

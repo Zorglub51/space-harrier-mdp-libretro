@@ -407,15 +407,12 @@
 +} // namespace sh1_mdp_rom
 --- a/src/devices/video/315_5313.cpp
 +++ b/src/devices/video/315_5313.cpp
-@@ -297,28 +297,59 @@ void sega315_5313_device::device_post_load()
+@@ -297,28 +297,79 @@ void sega315_5313_device::device_post_load()
  	gfx(5)->mark_all_dirty();
  }
  
-+// Le DAC du Mark V emule par M2 est lineaire : les trois bits d'un canal valent
-+// 0, 32, ... 224. Le VDP Mega Drive de MAME emploie volontairement la courbe
-+// non lineaire mesuree sur la console reelle, ce qui surexposait toutes les ROM MDP
-+// (par exemple 0x6 devenait 206 au lieu de 192 et 0x7 devenait 255 au lieu de 224).
-+// Les captures officielles du Mega Drive Mini 2 confirment la rampe lineaire.
++// Legacy intermediate palette cache. MDP's final RGB output bypasses this
++// approximation and uses the original indexed colormap in mdp_indexed_pen.
 +static rgb_t mdp_palette_pen(u16 data)
 +{
 +	const int mode = (data >> 9) & 3;
@@ -429,6 +426,28 @@
 +		return c * 32;                                // couleur normale
 +	};
 +	return rgb_t(level(r), level(g), level(b));
++}
++
++// M2's RGB4440 colormap callback at 229E08 replicates each nibble (x17).
++// C1E24 produces 2*c for normal intensity and c for shadow intensity.
++static rgb_t mdp_indexed_pen(u16 cram, bool normal)
++{
++	const unsigned step = normal ? 34 : 17;
++	return rgb_t(((cram >> 1) & 7) * step,
++		((cram >> 5) & 7) * step, ((cram >> 9) & 7) * step);
++}
++
++// Original M2 C2476..C2532. Bit 7 selects normal versus shadow colour;
++// sprite operators 3e/3f toggle or clear it, rather than producing highlight.
++static u8 mdp_composite_pixel(u16 plane, u16 sprite, bool shadow)
++{
++	if (!shadow)
++		return u8(((sprite && sprite >= (plane & 0x8000)) ? sprite : plane) | 0x80);
++	if (!sprite || sprite < (plane & 0x8000))
++		return u8(plane);
++	if ((sprite & 0x3e) == 0x3e)
++		return u8((sprite & 1) ? (plane & 0x7f) : (plane ^ 0x80));
++	return u8((plane & 0x80) | sprite);
 +}
 +
  void sega315_5313_device::device_start()
@@ -466,6 +485,7 @@
  
  	save_pointer(NAME(m_vram), 0x10000 / 2);
 -	save_pointer(NAME(m_cram), 0x80 / 2);
++	save_pointer(NAME(m_mdp_ram), 0x8000);
 +	save_pointer(NAME(m_cram), 0x100 / 2);
  	save_pointer(NAME(m_vsram), 0x80 / 2);
 -	save_pointer(NAME(m_regs), 0x40 / 2);
@@ -473,25 +493,19 @@
  	save_pointer(NAME(m_internal_sprite_attribute_table), 0x400 / 2);
  
  	save_item(NAME(m_command_pending));
-@@ -340,8 +371,17 @@ void sega315_5313_device::device_start()
+@@ -340,8 +391,10 @@ void sega315_5313_device::device_start()
  	save_item(NAME(m_scanline_counter));
  	save_item(NAME(m_vblank_flag));
  	save_item(NAME(m_total_scanlines));
 +	save_item(NAME(m_mdp_raster_cram));
 +	save_item(NAME(m_mdp_raster_cram_set));
  
- 	m_sprite_renderline = std::make_unique<u8[]>(1024);
-+	m_mdp_sprite_identity = std::make_unique<u32[]>(1024);
-+	m_mdp_prev_sprite = std::make_unique<u8[]>(240 * 1024);
-+	m_mdp_prev_sprite_identity = std::make_unique<u32[]>(240 * 1024);
-+	m_mdp_sprite_seen = std::make_unique<u32[]>(0x80001);
-+	std::fill_n(m_mdp_prev_sprite.get(), 240 * 1024, 0);
-+	std::fill_n(m_mdp_prev_sprite_identity.get(), 240 * 1024, 0);
-+	std::fill_n(m_mdp_sprite_seen.get(), 0x80001, 0);
+-	m_sprite_renderline = std::make_unique<u8[]>(1024);
++	m_sprite_renderline = std::make_unique<u16[]>(1024);
  	m_highpri_renderline = std::make_unique<u8[]>(320);
  	m_video_renderline = std::make_unique<u32[]>(320);
  
-@@ -400,6 +440,7 @@ void sega315_5313_device::device_reset()
+@@ -400,6 +453,7 @@ void sega315_5313_device::device_reset()
  	m_scanline_counter = 0;
  	m_vblank_flag = 0;
  	m_total_scanlines = 262;
@@ -499,7 +513,7 @@
  
  	sega315_5313_mode4_device::device_reset();
  }
-@@ -460,7 +501,10 @@ void sega315_5313_device::write_cram_value(int offset, int data)
+@@ -460,7 +514,10 @@ void sega315_5313_device::write_cram_value(int offset, int data)
  	m_cram[offset] = data;
  
  	//logerror("Wrote to CRAM addr %04x data %04x\n", m_vdp_address & 0xfffe, m_cram[m_vdp_address >> 1]);
@@ -511,7 +525,7 @@
  	{
  		data = ((m_cram[offset] & 0xe) >> 1) | ((m_cram[offset] & 0xe0) >> 2) | ((m_cram[offset] & 0xe00) >> 3);
  		m_palette_lookup[offset] = data;
-@@ -468,9 +512,9 @@ void sega315_5313_device::write_cram_value(int offset, int data)
+@@ -468,9 +525,9 @@ void sega315_5313_device::write_cram_value(int offset, int data)
  		{
  			if (m_palwrite_base != -1)
  			{
@@ -524,7 +538,7 @@
  			}
  		}
  	}
-@@ -478,7 +522,7 @@ void sega315_5313_device::write_cram_value(int offset, int data)
+@@ -478,7 +535,7 @@ void sega315_5313_device::write_cram_value(int offset, int data)
  
  void sega315_5313_device::vdp_cram_write(u16 data)
  {
@@ -533,7 +547,7 @@
  
  	vdp_address_inc();
  }
-@@ -711,6 +755,20 @@ void sega315_5313_device::insta_vram_copy(u32 source, u16 length)
+@@ -711,6 +768,20 @@ void sega315_5313_device::insta_vram_copy(u32 source, u16 length)
  /* Instant, but we pause the 68k a bit */
  void sega315_5313_device::insta_68k_to_vram_dma(u32 source, int length)
  {
@@ -554,7 +568,7 @@
  	if (length == 0x00) length = 0xffff;
  
  	/* This is a hack until real DMA timings are implemented */
-@@ -742,7 +800,7 @@ void sega315_5313_device::insta_68k_to_cram_dma(u32 source, u16 length)
+@@ -742,7 +813,7 @@ void sega315_5313_device::insta_68k_to_cram_dma(u32 source, u16 length)
  	{
  		//if (m_vdp_address >= 0x80) return; // abandon
  
@@ -563,7 +577,7 @@
  		source += 2;
  
  		if (source > 0xffffff) source = 0xfe0000;
-@@ -892,6 +950,80 @@ void sega315_5313_device::ctrl_port_w(int data)
+@@ -892,6 +963,80 @@ void sega315_5313_device::ctrl_port_w(int data)
  	}
  }
  
@@ -644,7 +658,7 @@
  void sega315_5313_device::vdp_w(offs_t offset, u16 data, u16 mem_mask)
  {
  	switch (offset << 1)
-@@ -953,7 +1085,7 @@ u16 sega315_5313_device::vdp_vsram_r(void)
+@@ -953,7 +1098,7 @@ u16 sega315_5313_device::vdp_vsram_r(void)
  
  u16 sega315_5313_device::vdp_cram_r(void)
  {
@@ -653,7 +667,7 @@
  }
  
  u16 sega315_5313_device::data_port_r()
-@@ -1415,15 +1547,32 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
+@@ -1415,8 +1560,22 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
  		case 3: maxsprites = 80; maxpixels = 320; base_address = (MEGADRIVE_REG05_SPRITE_ADDR & 0x7e) << 9; break;
  	}
  
@@ -672,13 +686,12 @@
 +	const u32 mdp_zoom_base = (m_regs[36] & 0x1f) << 11; // word address
 +
  	/* Clear our Render Buffer */
- 	memset(m_sprite_renderline.get(), 0, 1024);
-+	std::fill_n(m_mdp_sprite_identity.get(), 1024, 0);
+-	memset(m_sprite_renderline.get(), 0, 1024);
++	memset(m_sprite_renderline.get(), 0, 1024 * sizeof(u16));
  
  	{
  		int ypos, xpos, addr;
-+		u32 sprite_identity = 0;
- 		int drawypos;
+@@ -1424,6 +1583,7 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
  		int /*drawwidth,*/ drawheight;
  		int spritemask = 0;
  		u8 height, width, link, xflip, yflip, colour, pri;
@@ -686,7 +699,7 @@
  
  		/* Get Sprite Attribs */
  		int spritenum = 0;
-@@ -1443,8 +1592,43 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
+@@ -1443,8 +1603,43 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
  			height= ((m_internal_sprite_attribute_table[(spritenum * 4) + 0x1] & 0x0300) >> 8) + 1;
  			width = ((m_internal_sprite_attribute_table[(spritenum * 4) + 0x1] & 0x0c00) >> 10) + 1;
  			link  =  (m_internal_sprite_attribute_table[(spritenum * 4) + 0x1] & 0x007f) >> 0;
@@ -730,7 +743,7 @@
  			if (m_imode == 3)
  			{
  				ypos  = (m_internal_sprite_attribute_table[(spritenum * 4) + 0x0] & 0x03ff) >> 0; /* 0x3ff requried in interlace mode (sonic 2 2 player) */
-@@ -1453,9 +1637,12 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
+@@ -1453,9 +1648,12 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
  			}
  			else
  			{
@@ -746,20 +759,21 @@
  			}
  
  			//if (scanline == 40) osd_printf_debug("xpos %04x ypos %04x\n", xpos, ypos);
-@@ -1467,6 +1654,12 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
+@@ -1466,8 +1664,13 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
+ 				xflip = (MEGADRIV_VDP_VRAM(((base_address >> 1) + spritenum * 4) + 0x2) & 0x0800) >> 11;
  				yflip = (MEGADRIV_VDP_VRAM(((base_address >> 1) + spritenum * 4) + 0x2) & 0x1000) >> 12;
  				colour= (MEGADRIV_VDP_VRAM(((base_address >> 1) + spritenum * 4) + 0x2) & 0x6000) >> 13;
++				// SAT size bit 14 selects CRAM 64..127 in M2 C12D0.
++				// Keep that bit above the legacy priority flags until composition.
++				if (m_mdp_scaler && BIT(m_internal_sprite_attribute_table[spritenum * 4 + 1], 14))
++					colour |= 0x10;
  				pri   = (MEGADRIV_VDP_VRAM(((base_address >> 1) + spritenum * 4) + 0x2) & 0x8000) >> 15;
-+				// Identite stable lors d'un deplacement : source de tuiles + indice de
-+				// zoom + espace VRAM/MDP. Elle distingue notamment les segments du dragon,
-+				// qui reutilisent les memes tuiles a des profondeurs differentes.
-+				sprite_identity = 1 + (addr & 0x7ff)
-+						+ (((MEGADRIV_VDP_VRAM(((base_address >> 1) + spritenum * 4) + 0x3) >> 9) & 0x7f) << 11)
-+						+ (mdp_gfx ? 0x40000 : 0);
  
++
  				if (m_imode == 3)
  					addr &= 0x3ff;
-@@ -1492,6 +1685,83 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
+ 
+@@ -1492,6 +1695,84 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
  					return;
  				/* end todo: */
  
@@ -808,7 +822,9 @@
 +						}
 +
 +						const int span = end - start; // 0..8, zoom plafonne a 1.0
-+						if (span <= 0)
++						// M2 C1084 rejects a reduced cell whose left edge is negative.
++						// Full-width cells use the separate clipping path.
++						if (span <= 0 || (span < 8 && start < 0))
 +							continue;
 +						const u32 tile = (addr + cell * height + (ysrc >> 3)) % spr_gfx->elements();
 +
@@ -826,7 +842,6 @@
 +								if (!m_sprite_renderline[xxx])
 +								{
 +									m_sprite_renderline[xxx] = dat | (colour << 4) | pri;
-+									m_mdp_sprite_identity[xxx] = sprite_identity;
 +								}
 +								else
 +									m_sprite_collision = 1;
@@ -843,7 +858,7 @@
  				//int xdraw;
  				int yline = scanline - drawypos;
  				const int ytile = yline >> ytile_shift;
-@@ -1525,7 +1795,10 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
+@@ -1525,7 +1806,10 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
  						xtile_code *= height;
  						yline_addr *= spr_gfx->rowbytes();
  
@@ -855,81 +870,27 @@
  
  						int xxx = (xpos + xtile * gfx_w) & 0x1ff;
  
-@@ -1533,8 +1806,9 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
+@@ -1533,7 +1817,8 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
  						{
  							for (int loopcount = 0; loopcount < gfx_w; loopcount++)
  							{
 -								const u8 dat = base_addr[loopcount];
--								if (dat) { if (!m_sprite_renderline[xxx]) { m_sprite_renderline[xxx] = dat | (colour << 4) | pri; } else { m_sprite_collision = 1; } }
 +								const u8 dat = use_mdp ? mdp_sprite_pixel(mdp_tile, loopcount, mdp_row)
 +													   : base_addr[loopcount];
-+								if (dat) { if (!m_sprite_renderline[xxx]) { m_sprite_renderline[xxx] = dat | (colour << 4) | pri; m_mdp_sprite_identity[xxx] = sprite_identity; } else { m_sprite_collision = 1; } }
+ 								if (dat) { if (!m_sprite_renderline[xxx]) { m_sprite_renderline[xxx] = dat | (colour << 4) | pri; } else { m_sprite_collision = 1; } }
  								xxx++; xxx &= 0x1ff;
  								if (--maxpixels == 0x00) return;
- 							}
-@@ -1543,8 +1817,9 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
+@@ -1543,7 +1828,8 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
  						{
  							for (int tmpcount = gfx_w - 1, loopcount = 0; loopcount < gfx_w; tmpcount--, loopcount++)
  							{
 -								const u8 dat = base_addr[tmpcount];
--								if (dat) { if (!m_sprite_renderline[xxx]) { m_sprite_renderline[xxx] = dat | (colour << 4) | pri; } else { m_sprite_collision = 1; } }
 +								const u8 dat = use_mdp ? mdp_sprite_pixel(mdp_tile, tmpcount, mdp_row)
 +													   : base_addr[tmpcount];
-+								if (dat) { if (!m_sprite_renderline[xxx]) { m_sprite_renderline[xxx] = dat | (colour << 4) | pri; m_mdp_sprite_identity[xxx] = sprite_identity; } else { m_sprite_collision = 1; } }
+ 								if (dat) { if (!m_sprite_renderline[xxx]) { m_sprite_renderline[xxx] = dat | (colour << 4) | pri; } else { m_sprite_collision = 1; } }
  								xxx++; xxx &= 0x1ff;
  								if (--maxpixels == 0x00) return;
- 							}
-@@ -1562,6 +1837,49 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
- 	}
- }
- 
-+void sega315_5313_device::mdp_persist_spriteline(int scanline)
-+{
-+	if (!m_mdp_scaler || !getenv("MDP_SPRITE_PERSIST") || scanline < 0 || scanline >= 240)
-+		return;
-+
-+	// Marquer toutes les identites de la SAT courante, pas seulement celles qui
-+	// croisent cette ligne. Un sprite qui s'est deplace verticalement ne laisse ainsi
-+	// aucune trainee sur son ancienne ligne.
-+	if (++m_mdp_sprite_generation == 0)
-+	{
-+		std::fill_n(m_mdp_sprite_seen.get(), 0x80001, 0);
-+		m_mdp_sprite_generation = 1;
-+	}
-+	const u16 base_address = (MEGADRIVE_REG05_SPRITE_ADDR & 0x7f) << 9;
-+	int index = 0;
-+	for (int count = 0; count < 80; count++)
-+	{
-+		const u16 size_link = m_internal_sprite_attribute_table[index * 4 + 1];
-+		const u16 attr = MEGADRIV_VDP_VRAM((base_address >> 1) + index * 4 + 2);
-+		const u16 xword = MEGADRIV_VDP_VRAM((base_address >> 1) + index * 4 + 3);
-+		const u32 identity = 1 + (attr & 0x7ff) + (((xword >> 9) & 0x7f) << 11)
-+				+ ((size_link & 0x1000) ? 0x40000 : 0);
-+		m_mdp_sprite_seen[identity] = m_mdp_sprite_generation;
-+		index = size_link & 0x7f;
-+		if (!index)
-+			break;
-+	}
-+
-+	u8 *const previous = m_mdp_prev_sprite.get() + scanline * 1024;
-+	u32 *const previous_identity = m_mdp_prev_sprite_identity.get() + scanline * 1024;
-+	for (int x = 0; x < 1024; x++)
-+	{
-+		const u8 current = m_sprite_renderline[x];
-+		const u8 old = previous[x];
-+		const u32 old_identity = previous_identity[x];
-+		previous[x] = current;
-+		previous_identity[x] = m_mdp_sprite_identity[x];
-+		if (!current && old && old_identity &&
-+				m_mdp_sprite_seen[old_identity] != m_mdp_sprite_generation)
-+			m_sprite_renderline[x] = old;
-+	}
-+}
-+
- void sega315_5313_device::get_vcolumn_tilebase(int &vcolumn, int &tile_base, u16 base, int vscroll, int scanline, int vsize, int hsize, int hcolumn)
- {
- 	if (m_imode == 3)
-@@ -1596,6 +1914,9 @@ void sega315_5313_device::get_nametable(gfx_element *tile_gfx, u16 tile_base, na
+@@ -1596,6 +1882,9 @@ void sega315_5313_device::get_nametable(gfx_element *tile_gfx, u16 tile_base, na
  	tile.pri =   (tile_dat & 0x8000) >> 15;
  	u16 code =   (tile_dat & 0x07ff);
  
@@ -939,13 +900,12 @@
  	if (m_imode == 3)
  		code &= 0x3ff;
  
-@@ -1662,8 +1983,241 @@ inline void sega315_5313_device::draw_tile(nametable_t tile, int start, int end,
+@@ -1662,8 +1951,192 @@ inline void sega315_5313_device::draw_tile(nametable_t tile, int start, int end,
  }
  
  /* Clean up this function (!) */
-+// Moyenne de la trame courante et de la precedente. N'a d'effet que sur une machine
-+// MDP (m_mdp_scaler resolu), pour ne rien changer aux autres pilotes Mega Drive.
-+void sega315_5313_device::mdp_blend_frame(bitmap_rgb32 &bitmap, const rectangle &cliprect)
++// Optional diagnostic dump. It never changes the rendered image.
++void sega315_5313_device::mdp_debug_frame()
 +{
 +	// Instrumentation temporaire : vidage de la table des sprites telle que la voit
 +	// reellement le VDP, pour une trame donnee (MDP_SATDUMP=<trame>).
@@ -1054,54 +1014,6 @@
 +		}
 +	}
 +
-+	if (!m_mdp_scaler)
-+		return;
-+
-+	const int w = cliprect.width(), h = cliprect.height();
-+	if (!m_mdp_prev_frame || m_mdp_prev_w != w || m_mdp_prev_h != h)
-+	{
-+		m_mdp_prev_frame = std::make_unique<u32[]>(size_t(w) * h);
-+		m_mdp_prev_w = w;
-+		m_mdp_prev_h = h;
-+		std::fill_n(m_mdp_prev_frame.get(), size_t(w) * h, 0);
-+	}
-+
-+	for (int y = 0; y < h; y++)
-+	{
-+		const int sy = cliprect.min_y + y;
-+		u32 *const line = &bitmap.pix(cliprect.min_y + y, cliprect.min_x);
-+		u32 *const prev = &m_mdp_prev_frame[size_t(y) * w];
-+		const bool blend_bg = sy >= 0 && sy < 512 &&
-+			m_mdp_bg_valid[sy] && m_mdp_prev_bg_valid[sy];
-+		const u32 cur_bg = blend_bg ? m_mdp_bg_rgb[sy] : 0;
-+		const u32 old_bg = blend_bg ? m_mdp_prev_bg_rgb[sy] : 0;
-+		for (int x = 0; x < w; x++)
-+		{
-+			const u32 cur = line[x], old = prev[x];
-+			prev[x] = cur;
-+
-+			// Le jeu peut alterner deux couleurs de fond eloignees (62 niveaux sur le
-+			// canal bleu au stage 1). L'ancien seuil RGB laissait donc scintiller ces
-+			// lignes. Ne moyenner que les pixels qui etaient le fond aux deux trames
-+			// supprime le seuil sans creer de trainee sur les sprites en mouvement.
-+			if (blend_bg && cur == cur_bg && old == old_bg)
-+			{
-+				// Une coupure franche (noir -> decor, changement de stage) n'est pas du
-+				// tramage. Le seuil, desormais limite au seul fond, peut etre assez large
-+				// pour la paire du stage 1 sans jamais melanger un sprite en mouvement.
-+				const int dr = std::abs(int((cur >> 16) & 0xff) - int((old >> 16) & 0xff));
-+				const int dg = std::abs(int((cur >>  8) & 0xff) - int((old >>  8) & 0xff));
-+				const int db = std::abs(int( cur        & 0xff) - int( old        & 0xff));
-+				if (dr <= 96 && dg <= 96 && db <= 96)
-+					line[x] = (((cur ^ old) & 0xfefefe) >> 1) + (cur & old);
-+			}
-+		}
-+		if (sy >= 0 && sy < 512)
-+		{
-+			m_mdp_prev_bg_rgb[sy] = m_mdp_bg_rgb[sy];
-+			m_mdp_prev_bg_valid[sy] = m_mdp_bg_valid[sy];
-+		}
-+	}
 +}
 +
 +
@@ -1181,7 +1093,16 @@
  	gfx_element *tile_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
  	u16 base_w = 0;
  
-@@ -1847,7 +2401,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
+@@ -1687,7 +2160,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
+ 	/* Clear our Render Buffer */
+ 	for (int x = 0; x < horz; x++)
+ 	{
+-		m_video_renderline[x] = MEGADRIVE_REG07_BGCOLOUR | 0x20000; // mark as BG
++		m_video_renderline[x] = m_mdp_scaler ? ((m_regs[7] & 0x7f) | 0x24000) : (MEGADRIVE_REG07_BGCOLOUR | 0x20000); // mark as BG
+ 	}
+ 
+ 	memset(m_highpri_renderline.get(), 0, horz);
+@@ -1847,7 +2320,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  	int vscroll;
  	/* Low Priority B Tiles */
  	{
@@ -1190,7 +1111,7 @@
  		{   /* 20x 16x1 blocks */
  			int vcolumn;
  
-@@ -1910,6 +2464,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
+@@ -1910,6 +2383,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  		}
  		/* END */
  	}
@@ -1198,7 +1119,7 @@
  	/* Low Priority A Tiles + Window(!) */
  
  	{
-@@ -1934,7 +2489,8 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
+@@ -1934,7 +2408,8 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  
  		/* Non Window Part */
  
@@ -1208,25 +1129,33 @@
  		{   /* 20x 16x1 blocks */
  		//  int xx;
  			int vcolumn;
-@@ -2004,6 +2560,8 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
+@@ -2004,6 +2479,25 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  	}
  		/* END */
  
 +	mdp_scaler_line(scanline, 0, base_a, non_window_firstcol, non_window_lastcol);
 +
++	if (m_mdp_scaler)
++	{
++		for (int x = 0; x < horz; ++x)
++		{
++			const u8 high = m_highpri_renderline[x];
++			const u16 plane = (high & 15) ? ((high & 0x3f) | 0x8080)
++				: ((m_video_renderline[x] & 0x7f) | (high & 0x80));
++			const u16 legacy = m_sprite_renderline[x + 128];
++			const u16 sprite = legacy ? ((legacy & 0x3f) | ((legacy & 0x100) >> 2)
++				| ((legacy & 0x80) ? 0x8080 : 0)) : 0;
++			const u8 index = mdp_composite_pixel(plane, sprite, MEGADRIVE_REG0C_SHADOW_HIGLIGHT);
++			m_video_renderline[x] = (index & 0x7f) | ((index & 0x80) ? 0x4000 : 0);
++		}
++		return;
++	}
++
++
  /* MEGADRIVE_REG0C_SHADOW_HIGLIGHT */
  	/* Low Priority Sprites */
  	for (int x = 0; x < horz; x++)
-@@ -2120,6 +2678,8 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
- 	u32 *lineptr;
- 	unsigned horz = m_lcm_scaling ? hres[get_hres()] : 320;
- 	unsigned mul = m_lcm_scaling ? hres_mul[get_hres()] : 1;
-+	if (scanline >= 0 && scanline < 512)
-+		m_mdp_bg_valid[scanline] = 0;
- 
- 	if (!m_use_alt_timing)
- 	{
-@@ -2139,9 +2699,9 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
+@@ -2139,9 +2633,9 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
  			if (!MEGADRIVE_REG0_SPECIAL_PAL) // 3 bit color mode, correct?
  				clut &= 0x49; // (1 << 6) | (1 << 3) | (1 << 0);
  
@@ -1239,19 +1168,22 @@
  		}
  	}
  
-@@ -2210,6 +2770,11 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
- 					break;
- 			}
- 		}
-+		if (m_mdp_scaler && scanline >= 0 && scanline < 512 && (dat & 0x20000))
+@@ -2155,7 +2649,13 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
+ 		else
+ 			m_render_line_raw[srcx] = 0x000;
+ 
+-		if (!MEGADRIVE_REG0C_SHADOW_HIGLIGHT)
++		if (m_mdp_scaler)
 +		{
-+			m_mdp_bg_rgb[scanline] = lineptr[dstx];
-+			m_mdp_bg_valid[scanline] = 1;
++			const u16 cram = m_cram[dat & 0x7f];
++			lineptr[dstx] = mdp_indexed_pen(cram, bool(dat & 0x4000));
++			m_render_line_raw[srcx] = (dat & 0x7f) | ((dat & 0x4000) ? 0x80 : 0);
 +		}
- 		if (++xx >= mul)
++		else if (!MEGADRIVE_REG0C_SHADOW_HIGLIGHT)
  		{
- 			srcx++;
-@@ -2217,7 +2782,7 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
+ 			if (dat & 0x10000)
+ 			{
+@@ -2217,7 +2717,7 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
  		}
  	}
  
@@ -1260,17 +1192,9 @@
  		m_32x_scanline_helper_func(scanline);
  	if (!m_32x_scanline_func.isnull())
  	{
-@@ -2241,6 +2806,7 @@ TIMER_CALLBACK_MEMBER(sega315_5313_device::render_scanline)
- 	{
- 		//if (MEGADRIVE_REG01_DMA_ENABLE == 0) osd_printf_debug("off\n");
- 		render_spriteline_to_spritebuffer(get_scanline_counter());
-+		mdp_persist_spriteline(scanline);
- 		render_videoline_to_videobuffer(scanline);
- 		render_videobuffer_to_screenbuffer(scanline);
- 	}
 --- a/src/devices/video/315_5313.h
 +++ b/src/devices/video/315_5313.h
-@@ -40,24 +40,66 @@ public:
+@@ -40,24 +40,62 @@ public:
  	// Temporary solution while 32x VDP mixing and scanline interrupting is moved outside MD VDP
  	template <typename... T> void set_md_32x_scanline(T &&... args) { m_32x_scanline_func.set(std::forward<T>(args)...); }
  	template <typename... T> void set_md_32x_interrupt(T &&... args) { m_32x_interrupt_func.set(std::forward<T>(args)...); }
@@ -1295,12 +1219,8 @@
 +	u16 vram_direct_r(offs_t offset) { return m_vram[offset & 0x7fff]; }
 +	void vram_direct_w(offs_t offset, u16 data, u16 mem_mask = ~0) { vram_w(offset, data, mem_mask); }
 +
-+	// MDP : le degrade de ciel est obtenu par tramage temporel — le jeu alterne, une
-+	// trame sur deux, entre deux couleurs voisines dont la moyenne est la teinte
-+	// visee (mesure : 26 des 113 valeurs changent d'une trame a l'autre, et les
-+	// trames alternees sont identiques au bit pres). La remanence de l'affichage en
-+	// fait la moyenne ; MAME affiche les deux trames brutes, d'ou un scintillement.
-+	void mdp_blend_frame(bitmap_rgb32 &bitmap, const rectangle &cliprect);
++	// Optional read-only diagnostics, with no temporal filtering.
++	void mdp_debug_frame();
 +	void set_sh2_text_compat(bool enabled) { m_sh2_text_compat = enabled; }
 +
 +	// Memoire graphique propre au MDP, 0xD10000-0xD1FFFF, detenue par le VDP.
@@ -1337,8 +1257,7 @@
  		gfx(5)->mark_dirty(offset / ((8*16*4) / 16));
  	}
  
-@@ -224,29 +266,71 @@ private:
- 
+@@ -225,28 +263,53 @@ private:
  	u16 get_hposition();
  	u16 megadriv_read_hv_counters();
  
@@ -1350,7 +1269,6 @@
  
  
  	void render_spriteline_to_spritebuffer(int scanline);
-+	void mdp_persist_spriteline(int scanline);
  	void render_videoline_to_videobuffer(int scanline);
 +	void mdp_scaler_line(int scanline, int plane, u16 base, int first, int last);
 +
@@ -1377,26 +1295,11 @@
 +	// Direct CRAM writes are indexed, and several colours may change on one line.
 +	u16 m_mdp_raster_cram[256][128]{};
 +	u8  m_mdp_raster_cram_set[256][128]{};
-+	std::unique_ptr<u32[]> m_mdp_prev_frame;   // trame precedente, pour le tramage
-+	int m_mdp_prev_w = 0, m_mdp_prev_h = 0;
-+	// Couleur de fond reellement rendue pour chaque ligne. Le masque implicite
-+	// (pixel == couleur de fond) permet de moyenner le tramage sans les sprites.
-+	u32 m_mdp_bg_rgb[512]{};
-+	u32 m_mdp_prev_bg_rgb[512]{};
-+	u8  m_mdp_bg_valid[512]{};
-+	u8  m_mdp_prev_bg_valid[512]{};
  	void render_videobuffer_to_screenbuffer(int scanline);
  
  	/* variables used during emulation - not saved */
- 	std::unique_ptr<u8[]> m_sprite_renderline;
-+	// Mode assoupli optionnel : identite du sprite sous chaque pixel et historique
-+	// d'une trame. Un sprite encore present n'est jamais laisse a son ancienne place ;
-+	// seules les entrees totalement omises par l'alternance survivent une trame.
-+	std::unique_ptr<u32[]> m_mdp_sprite_identity;
-+	std::unique_ptr<u8[]> m_mdp_prev_sprite;
-+	std::unique_ptr<u32[]> m_mdp_prev_sprite_identity;
-+	std::unique_ptr<u32[]> m_mdp_sprite_seen;
-+	u32 m_mdp_sprite_generation = 0;
+-	std::unique_ptr<u8[]> m_sprite_renderline;
++	std::unique_ptr<u16[]> m_sprite_renderline;
  	std::unique_ptr<u8[]> m_highpri_renderline;
  	std::unique_ptr<u32[]> m_video_renderline;
  	std::unique_ptr<u16[]> m_palette_lookup;
@@ -1411,7 +1314,7 @@
  	required_device<palette_device> m_gfx_palette_hilight;
 --- a/src/mame/sega/megadriv.cpp
 +++ b/src/mame/sega/megadriv.cpp
-@@ -328,8 +328,14 @@
+@@ -328,8 +328,14 @@ void md_base_state::megadriv_68k_base_map(address_map &map)
  	map(0xa11100, 0xa11101).rw(FUNC(md_base_state::megadriv_68k_check_z80_bus), FUNC(md_base_state::megadriv_68k_req_z80_bus));
  	map(0xa11200, 0xa11201).w(FUNC(md_base_state::megadriv_68k_req_z80_reset));
  
@@ -1428,16 +1331,16 @@
  	map(0xe00000, 0xe0ffff).ram().mirror(0x1f0000).share("megadrive_ram");
  //  map(0xff0000, 0xffffff).readonly();
  	/*       0xe00000 - 0xffffff) == MAIN RAM (64kb, Mirrored, most games use ff0000 - ffffff) */
-@@ -650,6 +656,9 @@
- 			desty[x] = srcy[x];
+@@ -651,6 +657,9 @@ uint32_t md_core_state::screen_update_megadriv(screen_device &screen, bitmap_rgb
  		}
  	}
-+
-+	// MDP : moyenne des deux dernieres trames (tramage temporel du degrade).
-+	m_vdp->mdp_blend_frame(bitmap, cliprect);
  
++	// Optional MDP inspection; the core outputs the current frame unchanged.
++	m_vdp->mdp_debug_frame();
++
  	return 0;
  }
+ 
 --- a/src/devices/bus/megadrive/md_slot.h
 +++ b/src/devices/bus/megadrive/md_slot.h
 @@ -168,6 +168,7 @@
@@ -1504,3 +1407,25 @@
  
     /* Force success with empty content */
     if (!RPATH[0])
+--- a/src/emu/audio_effects/filter.cpp
++++ b/src/emu/audio_effects/filter.cpp
+@@ -26,6 +26,19 @@ audio_effect_filter::audio_effect_filter(speaker_device *speaker, u32 sample_rat
+ 	m_ql = m_qh = DEFAULT_Q;
+ 
+ 	reset_all();
++
++#ifdef __LIBRETRO__
++	// Effects run synchronously in the Libretro sound backend.  Preserve the
++	// IIR delay samples across state loads, without changing filter settings.
++	// This vector has its final size here and is never resized afterwards.
++	if (m_speaker)
++		for (u32 channel = 0; channel != m_channels; ++channel)
++		{
++			m_speaker->save_item(m_history[channel], &history::m_v0, "audio_filter_history.v0", channel);
++			m_speaker->save_item(m_history[channel], &history::m_v1, "audio_filter_history.v1", channel);
++			m_speaker->save_item(m_history[channel], &history::m_v2, "audio_filter_history.v2", channel);
++		}
++#endif
+ }
+ 
+ void audio_effect_filter::reset_lowpass_active()

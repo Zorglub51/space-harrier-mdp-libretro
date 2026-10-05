@@ -67,8 +67,10 @@ Previously Y was capped like X, zero entries fell back to full size, tiny sprite
 were forced to one line, and the SAT Y coordinate used a nine-bit mask.
 
 These contracts are checked against original sprite geometry instructions,
-separately from tests of the shrink and tile decoding helpers. They do not prove
-equivalence of the entire sprite compositing pipeline.
+separately from tests of the shrink and tile decoding helpers. Version 0.1.7 adds
+native shadow composition, extended sprite palette selection, reduced-cell
+left-edge clipping and the [indexed frame oracle](MDP_FRAME_ORACLE.md). The
+remaining sprite budgets and linked-list edge cases still need dedicated tests.
 
 ## Validation scope
 
@@ -83,7 +85,8 @@ SH1 video is therefore not asserted to be bit-identical to 0.1.5. The final core
 six scenarios. Every compared audio stream matches 0.1.5 exactly. This is a
 non-regression check of game execution, not a full-frame M2 pixel oracle.
 
-This work adds no persistence or smoothing. Remaining work includes M2 timing,
-full sprite composition and extended palette selection, screen-edge clipping,
-and wider gameplay validation. Existing save states are incompatible with the
-expanded video register state; start from the original cartridge image.
+Those figures describe 0.1.6. Version 0.1.7 removes pre-existing frame averaging
+and optional sprite persistence, and compares the resulting indexed output
+directly with M2. See the [current fidelity status](FIDELITY_STATUS.md) for its
+measured coverage and remaining limits. Existing save states are incompatible
+with the expanded video state; start from the original cartridge image.

@@ -3,6 +3,45 @@
 Chaque version publiée possède une entrée datée. Le tag `vVERSION`, le fichier
 `VERSION` et cette entrée doivent correspondre pour autoriser la publication.
 
+## [0.1.7] - 2026-10-05
+
+### Rendu conforme aux mesures M2
+
+- Correction des ombres : les opérateurs de sprites suivent désormais les
+  règles de composition du code ARM original. L'ombre de Harrier ne devient
+  plus une zone éclaircie.
+- Conversion des couleurs conforme à la sortie RGB du moteur M2 : chaque
+  composante vaut 34 fois sa valeur CRAM en intensité normale, 17 fois en ombre.
+  Prise en charge du second banc de palette des sprites et du fond.
+- Correction du découpage des petites cellules de sprites au bord gauche,
+  selon le comportement mesuré dans M2.
+- Suppression de l'ancienne moyenne entre deux images du fond et du mécanisme
+  optionnel de persistance des sprites. Le cœur fournit chaque image brute ;
+  les alternances de pixels et de couleurs sont conservées.
+
+### Sauvegardes instantanées
+
+- Sauvegarde de la totalité de la mémoire graphique MDP et de l'historique du
+  filtre audio. Après rechargement, SH1 et SH2 reproduisent exactement les
+  180 images et le son des séquences de contrôle, avec les réglages par défaut.
+- Les états des versions précédentes sont incompatibles ; relancer la ROM.
+
+### Validation et limites
+
+- Zéro différence sur 82 240 pixels indexés, à état vidéo identique : une image
+  entière du stage 4 de SH2 (320 × 224), et 11 lignes supplémentaires par scène
+  dans les stages 1 et 3 de SH2 et une scène de SH1. Référence obtenue en exécutant
+  le moteur ARM original, avec contrôle séparé de sa conversion de couleurs.
+- Oracles publics sans ROM : 208 cas de composition et 4 115 cas de conversion
+  de couleurs ; tests du C++ réellement distribué et test de sauvegarde/reprise.
+- 71 tests automatiques réussis, références ARM fraîches et ROM originales
+  privées incluses dans la validation locale.
+- 39 020 images rejouées sur six parcours SH1/SH2 ; son identique à la référence
+  0.1.5 sur ces parcours. Les images changent avec les corrections ci-dessus.
+- Ces mesures ne prouvent pas encore l'équivalence du minutage, des limites de
+  sprites, de tous les hooks du jeu ni de tous les stages. Les filtres de
+  présentation GPU de l'application M2 restent hors de ce périmètre.
+
 ## [0.1.6] - 2026-10-05
 
 ### Perspective et sprites SH2

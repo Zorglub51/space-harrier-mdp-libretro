@@ -40,8 +40,7 @@ file on disk is not modified. A standalone patcher is also included in
 - direct MDP graphics RAM and sprite source;
 - 128-entry MDP colour RAM without destructive wraparound into sprite palettes;
 - per-line scaling used by the scenery and large sprites;
-- restored background colour writes and stable temporal dithering;
-- relaxed sprite output that retains deliberately alternating entries;
+- restored background colour writes and raw temporal dithering;
 - compatibility guards found during long play sessions: divide-by-zero, missing
   Stage 1 trees, exhausted shot counter and Stage 1 boss completion;
 - direct loading of `.smp`, `.bin`, `.md` and `.gen` files in RetroArch.
@@ -78,8 +77,9 @@ repository variable `SH_MDP_ROM_BUNDLE_URL` with a URL to a private ZIP containi
 the two files above. If that endpoint needs a bearer token, store it as the
 `SH_MDP_ROM_BUNDLE_TOKEN` repository secret. The job builds the Linux core, runs
 6,000 deterministic frames for each ROM, validates video production and geometry,
-and archives the checkpoint hashes as CI artifacts. The ROM bundle is never
-published as an artifact.
+then verifies identical video and audio for 180 frames after a save/load cycle.
+It archives the checkpoint hashes as CI artifacts. The ROM bundle is never
+published as an artifact. `SH_MDP_STATE_FRAMES` can extend the replay window.
 
 ## Scope and status
 
@@ -93,11 +93,18 @@ explains its corrected line-phase reset and remaining compatibility questions.
 The [raster colour reference](docs/MDP_RASTER_CRAM.md) documents direct palette
 addressing and its timing limits.
 The [SH2 text reference](docs/SH2_TEXT_REFERENCE.md) explains the restored direct
-VRAM writes used for its font animation. The [video geometry reference](docs/MDP_VIDEO_GEOMETRY.md) covers explicit MDP
-registers, restored SH2 perspective and sprite zoom. Complete rendering and
-timing equivalence, extended sprite palettes and edge clipping remain under
-investigation. Android
-is deferred.
+VRAM writes used for its font animation. The [video geometry reference](docs/MDP_VIDEO_GEOMETRY.md)
+covers explicit MDP registers, restored SH2 perspective and sprite zoom. The
+[native frame oracle](docs/MDP_FRAME_ORACLE.md) records zero indexed-pixel differences
+on one complete SH2 stage-4 frame plus sampled SH1/SH2 lines, at identical video
+state. Native shadow composition, extended sprite colours and reduced-cell
+clipping replace previous approximations. The core outputs raw frames without
+temporal averaging or sprite persistence.
+
+This is not yet a claim of complete pixel-perfect emulation. The
+[fidelity checklist](docs/FIDELITY_STATUS.md) separates measured contracts from
+remaining sprite limits, timing, game hooks and host presentation questions.
+Android is deferred.
 
 This is an independent preservation/research project, not an official Sega, M2,
 MAME or Libretro release. The first game has received extensive testing through

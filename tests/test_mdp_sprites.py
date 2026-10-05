@@ -63,6 +63,39 @@ int main(){
 '''.replace('CONTROLS', controls).replace('ZOOM', zoom).replace('GEOMETRY', geometry).replace('SAMPLE', sample).replace('TABLE', table)
 
 
+def clipping_probe_source(patch):
+    source = patched_fragments(patch, 'src/devices/video/315_5313.cpp')
+    start = source.index('const int span = end - start;')
+    guard = source[start:source.index('const u32 tile =', start)]
+    start = source.index('static constexpr u8 shrink_map')
+    table = source[start:source.index('const int rowbytes =', start)]
+    start = source.index('int sx = (span == 8)')
+    sample = source[start:source.index(';', start)+1]
+    # Rendering into the 512-pixel sprite buffer and then cropping is represented
+    # by the final viewport check. The modified guard and lookup are production
+    # statements, not a second implementation of their decision.
+    return r"""
+#include <cstdint>
+#include <iostream>
+using u8=std::uint8_t;
+int main(){
+ TABLE
+ int start,width;
+ while(std::cin>>start>>width){
+  int pixels[16]{},end=start+width;
+  do {
+   GUARD
+   for(int out=0;out<span;++out){
+    SAMPLE
+    if(start+out>=0 && start+out<16)pixels[start+out]=sx+1;
+   }
+  }while(false);
+  for(int x=0;x<16;++x)std::cout<<pixels[x]<<(x==15?'\n':' ');
+ }
+}
+""".replace('TABLE',table).replace('GUARD',guard).replace('SAMPLE',sample)
+
+
 class MdpSpriteTests(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
@@ -73,6 +106,10 @@ class MdpSpriteTests(unittest.TestCase):
         source.write_text(probe_source(PATCH.read_text()))
         cls.probe = directory/('probe.exe' if os.name=='nt' else 'probe')
         subprocess.run(shlex.split(os.environ.get('CXX', 'c++'))+['-std=c++17','-Wall','-Wextra','-Werror',str(source),'-o',str(cls.probe)], check=True)
+        clip_source = directory/'clip.cpp'
+        clip_source.write_text(clipping_probe_source(PATCH.read_text()))
+        cls.clip_probe = directory/('clip.exe' if os.name=='nt' else 'clip')
+        subprocess.run(shlex.split(os.environ.get('CXX', 'c++'))+['-std=c++17','-Wall','-Wextra','-Werror',str(clip_source),'-o',str(cls.clip_probe)], check=True)
 
     def compare(self, fixture):
         self.assertEqual(fixture['binary_sha256'], '2374ddca2241d2a040f587a1e86359c3d3d5f1dc93e566588b35e15bee73178f')
@@ -103,6 +140,16 @@ class MdpSpriteTests(unittest.TestCase):
         for c in fixture['cases']:
             if c['kind']=='shrink' and c['name'].startswith('span_') and c['span']<8:
                 span=c['span'];self.assertEqual(tables[span],[v-1 for v in c['pixels'][2:2+span]])
+
+    def test_reduced_cell_clipping_matches_native_arm(self):
+        cases=[c for c in json.loads(FIXTURE.read_text())['cases'] if c['kind']=='shrink']
+        inputs=''.join(f"{c['x']} {c['span']}\n" for c in cases)
+        result=subprocess.run([str(self.clip_probe)],input=inputs,text=True,capture_output=True,check=True)
+        rows=[list(map(int,line.split())) for line in result.stdout.splitlines()]
+        self.assertEqual(len(rows),len(cases))
+        for case,row in zip(cases,rows):
+            with self.subTest(case=case['name']):
+                self.assertEqual(row,[v&15 for v in case['pixels']])
 
     def test_geometry_and_zoom_bank_match_native_arm(self):
         self.compare(json.loads(FIXTURE.read_text()))
