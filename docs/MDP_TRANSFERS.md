@@ -1,10 +1,10 @@
 # MDP video transfers: native reference and implemented scope
 
-The MDP VRAM fill path now follows the original M2 handler, including a zero
-length clear used by both SH1 and SH2. The accompanying oracle also measures
-CPU-to-VDP DMA, VRAM copy and command state, but those measurements do **not** mean
-that every transfer path has been replaced or validated in the portable core.
-The ordinary Mega Drive fill and register-write behavior remains separate.
+The MDP fill, CPU-to-video DMA and VRAM copy paths follow measured original M2
+memory and command-state behavior. Direct and ordinary VSRAM writes share the
+native wrapping and mirrors. The RAM source window has two distinct 64 KiB
+banks. These corrections do not establish complete port, CPU or video timing
+equivalence. The ordinary Mega Drive transfer routines remain separate.
 
 ## Executable reference
 
@@ -22,7 +22,7 @@ synthetic CPU bus reads. A valid write runs through the native return; an invali
 write stops when it reaches the native diagnostic function at `0x9E818`, without
 assuming that this function returns.
 
-`tests/fixtures/mdp_transfer_m2.json` contains 98 sequences:
+`tests/fixtures/mdp_transfer_m2.json` contains 111 sequences:
 
 | Group | Sequences | Coverage |
 | --- | ---: | --- |
@@ -31,6 +31,10 @@ assuming that this function returns.
 | CPU-to-VDP DMA | 36 | VRAM/CRAM/VSRAM, zero and large lengths, source/destination wrapping, alignment diagnostics and DMA-enable states |
 | VRAM copy | 18 | Zero and large lengths, overlapping regions, source/destination wrapping, increments and a subsequent data write |
 | Command state | 6 | Register writes, interrupted commands, invalid alignment and a register write between fill setup and data |
+| Additional dispatch | 5 | Copy/fill type and command combinations, including invalid commands |
+| VSRAM writes | 3 | Ordinary and direct writes, low-word mirrors and later mirror overrides |
+| Profile-dependent data writes | 3 | Default diagnostic and two unrelated title exceptions; only the default applies to SH1/SH2 |
+| CPU byte writes to VSRAM | 2 | Original byte and word handlers executed together, both byte lanes |
 
 Each sequence records every executed port write, command state, all 64 registers,
 complete memory SHA256 hashes, changed-byte counts and synthetic bus-read traces.
@@ -117,37 +121,58 @@ and needs separate investigation. These checks establish bounded regression
 coverage; the original handler's memory contract, rather than visual preference,
 is the basis for the correction.
 
-## Measured contracts outside the fill correction
+## Implemented DMA, copy and VSRAM contracts
 
-The fixture exposes additional differences that require their own implementation
-and integration checks:
+Version 0.1.11 implements these additional contracts:
 
 - Native CPU-to-VDP DMA takes an unsigned 16-bit **word count**. Zero transfers no
-  words; `0x8000` and `0xFFFF` transfer 32,768 and 65,535 words. The inherited
+  words; `0x8000` and `0xFFFF` transfer 32,768 and 65,535 words. The previous
   implementation first converts to a 16-bit byte count, which can truncate these
   lengths and treats a resulting zero differently.
 - Native DMA clears length registers 19/20 but preserves source registers 21–23.
   It does not gate the transfer on register 1's DMA-enable bit. The source
-  addresses passed to its callback can cross `0xFFFFFF`; these measurements do
-  not establish masking behavior inside the complete CPU bus implementation.
+  addresses passed to its callback can cross `0xFFFFFF`. The original bus
+  callback still selects 128 KiB RAM after this boundary; the port preserves
+  that selection before handing the read to MAME's 24-bit address space. See
+  [the bus reference](MDP_BUS.md) for the separate callback evidence.
 - Native DMA writes only the low 16 bits of the read callback result. Destination
   addresses wrap at 16 bits. Odd word destinations reach diagnostics; their
   behavior after the diagnostic is deliberately not modeled by this oracle.
+  The bus read precedes the alignment check. Earlier writes remain, while the
+  address and length registers retain their initial values on that boundary.
 - Native CRAM DMA wraps across 128 words. VSRAM DMA wraps in its 128-byte backing
   and applies the native shifted layout and mirror writes. It does not stop
   simply because the destination reaches byte address `0x80`.
 - Native VRAM copy is a sequential byte copy, so overlapping writes affect later
   reads. Zero length copies no bytes. It preserves length/source registers and
   finishes with code `0xFF`.
-- The inherited controller has other differences, including its mode-dependent
-  restriction on standard register writes. Preserving address/code for MDP
-  register writes is not a complete replacement of that controller.
+- Command setup tests register 23 bit 7: when set, code `0x21` only prepares
+  data access and code `0x30` copies, even when bit 6 is clear. Other combinations
+  reach diagnostics. The later data write selects fill only for type `0x80`.
+- The direct write window `C00200..C0027F` updates VSRAM without changing the
+  selected command or its address. Ordinary writes and DMA use the same memory
+  helper. In MAME's logical layout, writing word 0/1 also updates word 62/63;
+  writing 62/63 later does not change 0/1. Native storage is a rotation by two
+  words. CPU byte writes to the direct window duplicate the byte onto both lanes.
+
+`tests/test_mdp_dma.py` extracts the distributed transfer methods and MDP
+dispatch, using a synthetic bus callback with an exact read trace. It compares
+all memory banks and register state with the native reference. This separates
+transfer semantics from the independently checked bus-address adapter.
+
+The full-frame oracle now rotates VSRAM storage without manufacturing mirror
+values. This prevents the reference adapter from hiding an incorrect write.
+
+## Remaining boundaries
 
 These synthetic measurements do not establish transfer timing, CPU stalls,
 interrupt timing, reads from VDP ports, or equivalence of every game scene.
 A diagnostic-boundary match does not claim equivalent error reporting or abort
-behavior. Other DMA and copy behavior remains a separate follow-up; this change
-must not be described as a complete native VDP port implementation.
+behavior. The existing VRAM DMA pause remains an explicitly unproved scheduler
+integration choice. Direct CRAM writes are queued while ordinary writes and DMA
+are immediate; mixed-write ordering still needs correction and validation.
+Mode-dependent register restrictions and VDP reads also remain outside this
+change. This must not be described as a complete native VDP port implementation.
 
 ## Reproduction
 

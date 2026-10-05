@@ -4,6 +4,41 @@ Every published version must have a dated entry written in English. The
 `vVERSION` tag, `VERSION` file and entry must match before publication.
 GitHub release notes are generated directly from the corresponding entry.
 
+## [0.1.11] - 2026-10-05
+
+### Native DMA, copies and memory mapping
+
+- Match M2's CPU-to-video DMA word counts, including zero and large lengths,
+  and preserve source registers. Retain the native destination wrapping and
+  the order of bus reads before alignment diagnostics.
+- Match sequential VRAM copies, including overlapping regions, command/type
+  selection and completion state. Reject unsupported DMA data writes according
+  to the actual SH1/SH2 profiles.
+- Restore native VSRAM wrapping and mirrors for DMA and ordinary writes. Add
+  the direct write window, including byte duplication for 8-bit writes.
+- Expand CPU RAM to M2's 128 KiB with distinct lower/upper halves. DMA sources
+  crossing the 24-bit address boundary continue to select RAM as M2 does.
+  Reset and save states include both halves.
+
+### Impact and validation
+
+- Added original ARM references covering 111 video-port sequences and 38 bus
+  cases, with production-code tests for transfers, memory mapping and reset.
+- All 96 automated tests pass with fresh native references and private ROMs.
+  The DMA/bus probes also pass address and undefined-behavior sanitizers.
+  The final core retains identical video and audio over 27,000 control frames;
+  save/load reproduces 180 subsequent frames and audio in both games.
+- In the traced SH1/SH2 sequences, all 11,163 DMA commands rewrite all three
+  source registers before use. No zero/large DMA, VSRAM DMA or VRAM copy is
+  observed, and RAM DMA reads use the upper bank. The previously wrong state
+  therefore does not cause a visible change in these captures.
+- The stage-4 and first-boss controls retain identical video and audio. Native
+  VSRAM mirrors and separate RAM banks are verified independently; no visual
+  improvement is claimed where none was measured.
+- Older save states are incompatible with the larger RAM. Start normally from
+  the original ROM. Full timing, mixed palette-write ordering, VDP read quirks
+  and complete all-stage equivalence remain to be established.
+
 ## [0.1.10] - 2026-10-05
 
 ### Native video-memory fills

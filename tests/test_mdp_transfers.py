@@ -211,7 +211,7 @@ class MdpTransferTests(unittest.TestCase):
         self.assertEqual(rows[1]['code'], last['state']['code'])
         self.assertEqual(rows[1]['address'], last['state']['address'])
 
-    def test_dispatch_leaves_ordinary_md_and_other_dma_types_to_fallback(self):
+    def test_dispatch_preserves_ordinary_md_and_rejects_other_mdp_dma_types(self):
         fixture = json.loads(FIXTURE.read_text())
         _, before, step = next(row for row in fill_steps(fixture)
                                if row[0]['name'] == 'fill_length_4')
@@ -220,12 +220,30 @@ class MdpTransferTests(unittest.TestCase):
             state = dict(before, registers=before['registers'].copy())
             state['registers'][23] = dma_type
             requests.append({'state': state, 'data': [step['write']['data']]})
-        for actual in run_cases(self.probe, requests):
-            self.assertEqual(actual['fallback_calls'], 1)
-            self.assertEqual(actual['diagnostic_calls'], 0)
+        for index, actual in enumerate(run_cases(self.probe, requests)):
+            self.assertEqual(actual['fallback_calls'], int(index == 0))
+            self.assertEqual(actual['diagnostic_calls'], int(index != 0))
             for bank, (size, salt) in BANKS.items():
                 self.assertEqual(actual['memory'][bank],
                                  bytes((i * 37 + salt) & 255 for i in range(size)))
+
+    def test_copy_mode_data_write_matches_native_sh_profile_diagnostic(self):
+        fixture = json.loads(FIXTURE.read_text())
+        # Profile 0 is the generic native path used by SH1/SH2. The fixture's
+        # unrelated title-specific profile exceptions are outside this core.
+        case = next(c for c in fixture['cases'] if c['name'] == 'data_code21_typeC0_profile_0')
+        before = dict(case['input'], command_pending=bool(case['input']['flags'] & 8))
+        expected = case['steps'][0]
+        self.assertEqual(expected['boundary'], 'diagnostic')
+        actual = run_cases(self.probe, [{'state': before, 'data': [expected['write']['data']],
+                                        'fill_pending': 0}])[0]
+        for key in ('code', 'address', 'registers', 'command_pending'):
+            self.assertEqual(actual[key], expected['state'][key])
+        self.assertEqual(actual['fallback_calls'], 0)
+        self.assertEqual(actual['diagnostic_calls'], 1)
+        for bank in BANKS:
+            self.assertEqual(hashlib.sha256(actual['memory'][bank]).hexdigest(),
+                             expected['memory'][bank]['sha256'])
 
     def test_register_write_preserves_native_fill_command_and_md_fallback(self):
         fixture = json.loads(FIXTURE.read_text())

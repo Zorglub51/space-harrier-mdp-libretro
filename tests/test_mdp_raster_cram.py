@@ -59,6 +59,8 @@ using u16 = std::uint16_t;
 using u32 = std::uint32_t;
 using offs_t = std::uint32_t;
 #define BIT(value, bit) (((value) >> (bit)) & 1U)
+#define ACCESSING_BITS_0_7 ((mem_mask & 0x00ff) != 0)
+#define ACCESSING_BITS_8_15 ((mem_mask & 0xff00) != 0)
 struct FakeScreen {
     int position = 0;
     int vpos() const { return position; }
@@ -85,6 +87,9 @@ public:
     }
     void vdp_w(offs_t offset, u16 data, u16 mask) {
         std::cout << "P " << offset << ' ' << data << ' ' << mask << '\n';
+    }
+    void mdp_vsram_write(u16 address, u16 data) {
+        std::cout << "V " << address << ' ' << data << '\n';
     }
 };
 WRITE_FUNCTION

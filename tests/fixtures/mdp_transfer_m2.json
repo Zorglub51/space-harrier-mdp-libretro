@@ -2,6 +2,11 @@
   "schema_version": 1,
   "binary_sha256": "2374ddca2241d2a040f587a1e86359c3d3d5f1dc93e566588b35e15bee73178f",
   "handler_sha256": "d07969110e42a6830564247764dfe5d780dc9205cf52036ceb18a5147bc2a55d",
+  "byte_write_callback": {
+    "loaded_va": 788964,
+    "file_offset": 723428,
+    "sha256": "a2a378478a4415081a1a0fddcac7447df0b24f476dd95fd10440bcf46802e7c4"
+  },
   "entry": {
     "loaded_va": 797864,
     "file_offset": 732328,
@@ -35360,6 +35365,4899 @@
               "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
               "changed_bytes": 0,
               "first_changes": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "copy_dispatch_code_33",
+      "kind": "dispatch",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          2,
+          192,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 9320,
+        "code": 5,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12582916,
+            "data": 16640
+          },
+          {
+            "address": 12582918,
+            "data": 128
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 40,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582916,
+            "data": 16640
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              2,
+              192,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240651,
+            "command_pending": true,
+            "address": 256,
+            "code": 1
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 50,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582918,
+            "data": 128
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              2,
+              192,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 256,
+            "code": 33
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "copy_dispatch_code_49",
+      "kind": "dispatch",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          2,
+          192,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 9320,
+        "code": 5,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12582916,
+            "data": 16640
+          },
+          {
+            "address": 12582918,
+            "data": 192
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 40,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582916,
+            "data": 16640
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              2,
+              192,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240651,
+            "command_pending": true,
+            "address": 256,
+            "code": 1
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        },
+        {
+          "boundary": "diagnostic",
+          "native_instruction_steps": 56,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "diagnostic": {
+            "entry": 649240,
+            "caller_return": 798905,
+            "argument_r2": 601
+          },
+          "write": {
+            "address": 12582918,
+            "data": 192
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              2,
+              192,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 256,
+            "code": 49
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "dma_dispatch_code_48",
+      "kind": "dispatch",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          4,
+          0,
+          176,
+          162,
+          17,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 9320,
+        "code": 5,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12582916,
+            "data": 256
+          },
+          {
+            "address": 12582918,
+            "data": 192
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 40,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582916,
+            "data": 256
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              176,
+              162,
+              17,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240651,
+            "command_pending": true,
+            "address": 256,
+            "code": 0
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        },
+        {
+          "boundary": "diagnostic",
+          "native_instruction_steps": 65,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "diagnostic": {
+            "entry": 649240,
+            "caller_return": 798027,
+            "argument_r2": 564
+          },
+          "write": {
+            "address": 12582918,
+            "data": 192
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              176,
+              162,
+              17,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 256,
+            "code": 48
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "copy_dispatch_type_80",
+      "kind": "dispatch",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          2,
+          128,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 9320,
+        "code": 5,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12582916,
+            "data": 256
+          },
+          {
+            "address": 12582918,
+            "data": 192
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 40,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582916,
+            "data": 256
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              2,
+              128,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240651,
+            "command_pending": true,
+            "address": 256,
+            "code": 0
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 114,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582918,
+            "data": 192
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              2,
+              128,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 264,
+            "code": 255
+          },
+          "memory": {
+            "vram": {
+              "sha256": "81f942358c1698fa10eca43f98b48810428b4a9bbaf7f43ccfef5594a624088c",
+              "changed_bytes": 3,
+              "first_changes": [
+                {
+                  "offset": 259,
+                  "before": 124,
+                  "after": 13
+                },
+                {
+                  "offset": 261,
+                  "before": 198,
+                  "after": 124
+                },
+                {
+                  "offset": 263,
+                  "before": 16,
+                  "after": 87
+                }
+              ]
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "fill_control_code_23_diagnostic",
+      "kind": "dispatch",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          0,
+          128,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 9320,
+        "code": 5,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12582916,
+            "data": 49408
+          },
+          {
+            "address": 12582918,
+            "data": 128
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 40,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582916,
+            "data": 49408
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              0,
+              128,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240651,
+            "command_pending": true,
+            "address": 256,
+            "code": 3
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        },
+        {
+          "boundary": "diagnostic",
+          "native_instruction_steps": 56,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "diagnostic": {
+            "entry": 649240,
+            "caller_return": 798905,
+            "argument_r2": 601
+          },
+          "write": {
+            "address": 12582918,
+            "data": 128
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              0,
+              128,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 256,
+            "code": 35
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "vsram_regular_mirrors",
+      "kind": "vsram_write",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 9320,
+        "code": 5,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12582916,
+            "data": 16384
+          },
+          {
+            "address": 12582918,
+            "data": 16
+          },
+          {
+            "address": 12582912,
+            "data": 4660
+          },
+          {
+            "address": 12582914,
+            "data": 43981
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 40,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582916,
+            "data": 16384
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240651,
+            "command_pending": true,
+            "address": 0,
+            "code": 1
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 45,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582918,
+            "data": 16
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 0,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 59,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582912,
+            "data": 4660
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 2,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "cbc0ac4b781a47fd753d58794ee968864bd7120cd677b51a5d507cac5f98c0ed",
+              "changed_bytes": 4,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 52
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 18
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                }
+              ]
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 59,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582914,
+            "data": 43981
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 4,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "26df25829ed6166f7e94a51f277aa8265bb767ff40456641424f51216b96ab2b",
+              "changed_bytes": 8,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 52
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 18
+                },
+                {
+                  "offset": 2,
+                  "before": 223,
+                  "after": 205
+                },
+                {
+                  "offset": 3,
+                  "before": 4,
+                  "after": 171
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                },
+                {
+                  "offset": 6,
+                  "before": 115,
+                  "after": 205
+                },
+                {
+                  "offset": 7,
+                  "before": 152,
+                  "after": 171
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "vsram_high_overrides_only_mirrors",
+      "kind": "vsram_write",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 9320,
+        "code": 5,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12582916,
+            "data": 16384
+          },
+          {
+            "address": 12582918,
+            "data": 16
+          },
+          {
+            "address": 12582912,
+            "data": 4660
+          },
+          {
+            "address": 12582914,
+            "data": 43981
+          },
+          {
+            "address": 12582916,
+            "data": 16508
+          },
+          {
+            "address": 12582918,
+            "data": 16
+          },
+          {
+            "address": 12582912,
+            "data": 22136
+          },
+          {
+            "address": 12582914,
+            "data": 39612
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 40,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582916,
+            "data": 16384
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240651,
+            "command_pending": true,
+            "address": 0,
+            "code": 1
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 45,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582918,
+            "data": 16
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 0,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 59,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582912,
+            "data": 4660
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 2,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "cbc0ac4b781a47fd753d58794ee968864bd7120cd677b51a5d507cac5f98c0ed",
+              "changed_bytes": 4,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 52
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 18
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                }
+              ]
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 59,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582914,
+            "data": 43981
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 4,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "26df25829ed6166f7e94a51f277aa8265bb767ff40456641424f51216b96ab2b",
+              "changed_bytes": 8,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 52
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 18
+                },
+                {
+                  "offset": 2,
+                  "before": 223,
+                  "after": 205
+                },
+                {
+                  "offset": 3,
+                  "before": 4,
+                  "after": 171
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                },
+                {
+                  "offset": 6,
+                  "before": 115,
+                  "after": 205
+                },
+                {
+                  "offset": 7,
+                  "before": 152,
+                  "after": 171
+                }
+              ]
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 40,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582916,
+            "data": 16508
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240651,
+            "command_pending": true,
+            "address": 124,
+            "code": 1
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "26df25829ed6166f7e94a51f277aa8265bb767ff40456641424f51216b96ab2b",
+              "changed_bytes": 8,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 52
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 18
+                },
+                {
+                  "offset": 2,
+                  "before": 223,
+                  "after": 205
+                },
+                {
+                  "offset": 3,
+                  "before": 4,
+                  "after": 171
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                },
+                {
+                  "offset": 6,
+                  "before": 115,
+                  "after": 205
+                },
+                {
+                  "offset": 7,
+                  "before": 152,
+                  "after": 171
+                }
+              ]
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 45,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582918,
+            "data": 16
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 124,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "26df25829ed6166f7e94a51f277aa8265bb767ff40456641424f51216b96ab2b",
+              "changed_bytes": 8,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 52
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 18
+                },
+                {
+                  "offset": 2,
+                  "before": 223,
+                  "after": 205
+                },
+                {
+                  "offset": 3,
+                  "before": 4,
+                  "after": 171
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                },
+                {
+                  "offset": 6,
+                  "before": 115,
+                  "after": 205
+                },
+                {
+                  "offset": 7,
+                  "before": 152,
+                  "after": 171
+                }
+              ]
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 59,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582912,
+            "data": 22136
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 126,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "6c823b4043110a9d4be325458894a142a64ed9fd772ff7f8766eff4f3c574d13",
+              "changed_bytes": 8,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 120
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 86
+                },
+                {
+                  "offset": 2,
+                  "before": 223,
+                  "after": 205
+                },
+                {
+                  "offset": 3,
+                  "before": 4,
+                  "after": 171
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                },
+                {
+                  "offset": 6,
+                  "before": 115,
+                  "after": 205
+                },
+                {
+                  "offset": 7,
+                  "before": 152,
+                  "after": 171
+                }
+              ]
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 59,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582914,
+            "data": 39612
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 128,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "2a68dfd694ceb6a852c260b65aa632ad71eecd6d7b455f872929e6cb197ff8b1",
+              "changed_bytes": 8,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 120
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 86
+                },
+                {
+                  "offset": 2,
+                  "before": 223,
+                  "after": 188
+                },
+                {
+                  "offset": 3,
+                  "before": 4,
+                  "after": 154
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                },
+                {
+                  "offset": 6,
+                  "before": 115,
+                  "after": 205
+                },
+                {
+                  "offset": 7,
+                  "before": 152,
+                  "after": 171
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "vsram_direct_mirrors",
+      "kind": "vsram_write",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 9320,
+        "code": 5,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12583424,
+            "data": 4660
+          },
+          {
+            "address": 12583426,
+            "data": 43981
+          },
+          {
+            "address": 12583548,
+            "data": 22136
+          },
+          {
+            "address": 12583550,
+            "data": 39612
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 33,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12583424,
+            "data": 4660
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 9320,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "cbc0ac4b781a47fd753d58794ee968864bd7120cd677b51a5d507cac5f98c0ed",
+              "changed_bytes": 4,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 52
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 18
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                }
+              ]
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 33,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12583426,
+            "data": 43981
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 9320,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "26df25829ed6166f7e94a51f277aa8265bb767ff40456641424f51216b96ab2b",
+              "changed_bytes": 8,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 52
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 18
+                },
+                {
+                  "offset": 2,
+                  "before": 223,
+                  "after": 205
+                },
+                {
+                  "offset": 3,
+                  "before": 4,
+                  "after": 171
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                },
+                {
+                  "offset": 6,
+                  "before": 115,
+                  "after": 205
+                },
+                {
+                  "offset": 7,
+                  "before": 152,
+                  "after": 171
+                }
+              ]
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 29,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12583548,
+            "data": 22136
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 9320,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "6c823b4043110a9d4be325458894a142a64ed9fd772ff7f8766eff4f3c574d13",
+              "changed_bytes": 8,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 120
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 86
+                },
+                {
+                  "offset": 2,
+                  "before": 223,
+                  "after": 205
+                },
+                {
+                  "offset": 3,
+                  "before": 4,
+                  "after": 171
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                },
+                {
+                  "offset": 6,
+                  "before": 115,
+                  "after": 205
+                },
+                {
+                  "offset": 7,
+                  "before": 152,
+                  "after": 171
+                }
+              ]
+            }
+          }
+        },
+        {
+          "boundary": "return",
+          "native_instruction_steps": 29,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12583550,
+            "data": 39612
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 9320,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "2a68dfd694ceb6a852c260b65aa632ad71eecd6d7b455f872929e6cb197ff8b1",
+              "changed_bytes": 8,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 120
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 86
+                },
+                {
+                  "offset": 2,
+                  "before": 223,
+                  "after": 188
+                },
+                {
+                  "offset": 3,
+                  "before": 4,
+                  "after": 154
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 52
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 18
+                },
+                {
+                  "offset": 6,
+                  "before": 115,
+                  "after": 205
+                },
+                {
+                  "offset": 7,
+                  "before": 152,
+                  "after": 171
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "data_code21_typeC0_profile_0",
+      "kind": "data_guard",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          2,
+          192,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 256,
+        "code": 33,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12582912,
+            "data": 43981
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "diagnostic",
+          "native_instruction_steps": 56,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "diagnostic": {
+            "entry": 649240,
+            "caller_return": 798741,
+            "argument_r2": 33
+          },
+          "write": {
+            "address": 12582912,
+            "data": 43981
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              2,
+              192,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 256,
+            "code": 33
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "data_code21_typeC0_profile_4f967b9e",
+      "kind": "data_guard",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          2,
+          192,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 256,
+        "code": 33,
+        "profile_tag": 1335262110,
+        "writes": [
+          {
+            "address": 12582912,
+            "data": 43981
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 59,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582912,
+            "data": 43981
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              2,
+              192,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 258,
+            "code": 33
+          },
+          "memory": {
+            "vram": {
+              "sha256": "cb2cc75d2b0b4ea9b2a154807c6c0db1932746dcc05476bc685c8255d05e82d0",
+              "changed_bytes": 2,
+              "first_changes": [
+                {
+                  "offset": 256,
+                  "before": 13,
+                  "after": 205
+                },
+                {
+                  "offset": 257,
+                  "before": 50,
+                  "after": 171
+                }
+              ]
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "data_code21_typeC0_profile_ca196d58",
+      "kind": "data_guard",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          4,
+          0,
+          0,
+          2,
+          192,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 256,
+        "code": 33,
+        "profile_tag": 3390664024,
+        "writes": [
+          {
+            "address": 12582912,
+            "data": 43981
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 63,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12582912,
+            "data": 43981
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              4,
+              0,
+              0,
+              2,
+              192,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 258,
+            "code": 33
+          },
+          "memory": {
+            "vram": {
+              "sha256": "cb2cc75d2b0b4ea9b2a154807c6c0db1932746dcc05476bc685c8255d05e82d0",
+              "changed_bytes": 2,
+              "first_changes": [
+                {
+                  "offset": 256,
+                  "before": 13,
+                  "after": 205
+                },
+                {
+                  "offset": 257,
+                  "before": 50,
+                  "after": 171
+                }
+              ]
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "baadf80342b7e9f75e2800ee1a51765bb581285ca11288c3a48d099164fa9150",
+              "changed_bytes": 0,
+              "first_changes": []
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "vsram_direct_write8_even",
+      "kind": "vsram_write8",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 9320,
+        "code": 5,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12583424,
+            "data": 171,
+            "width": 8
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 46,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12583424,
+            "data": 171,
+            "width": 8
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 9320,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "fa560bedd8230d2b074be462d43bfc920f768deb4ae55045613e29cb7fe20a6e",
+              "changed_bytes": 4,
+              "first_changes": [
+                {
+                  "offset": 0,
+                  "before": 149,
+                  "after": 171
+                },
+                {
+                  "offset": 1,
+                  "before": 186,
+                  "after": 171
+                },
+                {
+                  "offset": 4,
+                  "before": 41,
+                  "after": 171
+                },
+                {
+                  "offset": 5,
+                  "before": 78,
+                  "after": 171
+                }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "vsram_direct_write8_odd",
+      "kind": "vsram_write8",
+      "input": {
+        "registers": [
+          0,
+          16,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          2,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0,
+          0
+        ],
+        "flags": 2768240643,
+        "address": 9320,
+        "code": 5,
+        "profile_tag": 0,
+        "writes": [
+          {
+            "address": 12583427,
+            "data": 205,
+            "width": 8
+          }
+        ]
+      },
+      "steps": [
+        {
+          "boundary": "return",
+          "native_instruction_steps": 46,
+          "bus_reads": {
+            "count": 0,
+            "first": [],
+            "last": null,
+            "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+          },
+          "write": {
+            "address": 12583427,
+            "data": 205,
+            "width": 8
+          },
+          "state": {
+            "registers": [
+              0,
+              16,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              2,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0,
+              0
+            ],
+            "flags": 2768240643,
+            "command_pending": false,
+            "address": 9320,
+            "code": 5
+          },
+          "memory": {
+            "vram": {
+              "sha256": "032518d565b3280f2ee77822b3f0d4642f73c2980c1775c3ca63c6ee004c568f",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "cram": {
+              "sha256": "a8e44bb572fc58bec859e8339169e92293e90246ff06d1301862c5a508a62e21",
+              "changed_bytes": 0,
+              "first_changes": []
+            },
+            "vsram": {
+              "sha256": "5e7e75df1088784a9545290be57da703d20f176b938fffa67955492c6e3d7597",
+              "changed_bytes": 4,
+              "first_changes": [
+                {
+                  "offset": 2,
+                  "before": 223,
+                  "after": 205
+                },
+                {
+                  "offset": 3,
+                  "before": 4,
+                  "after": 205
+                },
+                {
+                  "offset": 6,
+                  "before": 115,
+                  "after": 205
+                },
+                {
+                  "offset": 7,
+                  "before": 152,
+                  "after": 205
+                }
+              ]
             }
           }
         }

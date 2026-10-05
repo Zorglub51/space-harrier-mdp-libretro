@@ -43,6 +43,10 @@ public class MdpTransferOracle extends GhidraScript {
             if (!HANDLER_SHA256.equals(sha256(code)))
                 throw new IllegalStateException("Loaded handler bytes differ from the private original");
             writeMemory(entry, code);
+            byte[] byteWriteCode=new byte[(int)(BYTE_WRITE_END-BYTE_WRITE_ENTRY)];
+            currentProgram.getMemory().getBytes(toAddr(BYTE_WRITE_ENTRY),byteWriteCode);
+            if(!BYTE_WRITE_SHA256.equals(sha256(byteWriteCode)))throw new IllegalStateException("Byte-write callback mismatch");
+            writeMemory(toAddr(BYTE_WRITE_ENTRY),byteWriteCode);
 
         }
         private byte[] le(long value, int size) {
@@ -116,6 +120,8 @@ public class MdpTransferOracle extends GhidraScript {
     }
 
     private static final String HANDLER_SHA256 = "d07969110e42a6830564247764dfe5d780dc9205cf52036ceb18a5147bc2a55d";
+    private static final long BYTE_WRITE_ENTRY=0xc09e4L, BYTE_WRITE_END=0xc0b1cL;
+    private static final String BYTE_WRITE_SHA256="a2a378478a4415081a1a0fddcac7447df0b24f476dd95fd10440bcf46802e7c4";
     private static final long ENTRY = 0xc2ca8L, CODE_END = 0xc32c8L;
     private static final long CRAM = RAM + 0x30000, VSRAM = RAM + 0x31000;
     private static final long READ_CALLBACK = 0x50000000L, OWNER = CTX + 0x800;
@@ -168,9 +174,9 @@ public class MdpTransferOracle extends GhidraScript {
             "flags", read(e,CTX+0x58,4), "command_pending", (read(e,CTX+0x58,4)&8)!=0,
             "address", read(e,CTX+0x5c,2), "code", read(e,CTX+0x5e,1));
     }
-    private Map<String,Object> call(OracleMachine e, long address, long data) throws Exception {
-        e.writeRegister("r0",CTX); e.writeRegister("r1",address); e.writeRegister("r2",data);
-        e.writeRegister("lr",SENTINEL|1); e.writeRegister(e.getPCRegister(),ENTRY);
+    private Map<String,Object> call(OracleMachine e, long address, long data, boolean byteWrite) throws Exception {
+        e.writeRegister("r0",byteWrite?CTX+0x900:CTX); e.writeRegister("r1",address); e.writeRegister("r2",data);
+        e.writeRegister("lr",SENTINEL|1); e.writeRegister(e.getPCRegister(),byteWrite?BYTE_WRITE_ENTRY:ENTRY);
         e.setContextRegister(thumbContext());
         MessageDigest trace = MessageDigest.getInstance("SHA-256");
         List<Object> first = new ArrayList<>(); Object last = null; int count = 0, instructions = 0;
@@ -191,7 +197,7 @@ public class MdpTransferOracle extends GhidraScript {
                 e.setContextRegister(thumbContext());
                 continue;
             }
-            if (pc<ENTRY || pc>=CODE_END) throw new IllegalStateException("unexpected PC "+Long.toHexString(pc));
+            if (!((pc>=ENTRY && pc<CODE_END)||(pc>=BYTE_WRITE_ENTRY && pc<BYTE_WRITE_END))) throw new IllegalStateException("unexpected PC "+Long.toHexString(pc));
             if (++instructions>MAX_INSTRUCTIONS) throw new IllegalStateException("instruction limit");
             e.step(monitor);
         }
@@ -208,6 +214,7 @@ public class MdpTransferOracle extends GhidraScript {
         List<long[]> writes=new ArrayList<>();
         Case(String name,String kind){this.name=name;this.kind=kind;regs[1]=0x10;regs[15]=2;}
         Case write(long port,long data){writes.add(new long[]{port,data});return this;}
+        Case write8(long port,long data){writes.add(new long[]{port,data,8});return this;}
         Case command(int address,int code){return write(0xc00004,(address&0x3fff)|((code&3)<<14))
             .write(0xc00006,((address>>>14)&3)|((code&0x3c)<<2));}
     }
@@ -229,14 +236,14 @@ public class MdpTransferOracle extends GhidraScript {
         byte[] vram=seed(131072,13),cram=seed(256,71),vsram=seed(128,149);
         e.writeMemory(toAddr(RAM),vram);e.writeMemory(toAddr(CRAM),cram);e.writeMemory(toAddr(VSRAM),vsram);
         w32(e,CTX,CRAM);w32(e,CTX+4,RAM);w32(e,CTX+8,VSRAM);w32(e,CTX+0x10,OWNER);
-        w32(e,OWNER+8,READ_CALLBACK|1);w32(e,OWNER+0x1c,0x12345678);
+        w32(e,CTX+0x920,CTX);w32(e,OWNER+8,READ_CALLBACK|1);w32(e,OWNER+0x1c,0x12345678);
         e.writeMemory(toAddr(CTX+0x14),c.regs);w32(e,CTX+0x54,c.profile);w32(e,CTX+0x58,c.flags);
         e.writeMemoryValue(toAddr(CTX+0x5c),2,c.address);e.writeMemoryValue(toAddr(CTX+0x5e),1,c.code);
         List<Object> writes=new ArrayList<>(),steps=new ArrayList<>();
-        for(long[] w:c.writes)writes.add(obj("address",w[0],"data",w[1]));
+        for(long[] w:c.writes){Map<String,Object> write=obj("address",w[0],"data",w[1]);if(w.length==3)write.put("width",8);writes.add(write);}
         for(long[] w:c.writes){
-            Map<String,Object> step=call(e,w[0],w[1]);
-            step.put("write",obj("address",w[0],"data",w[1]));step.put("state",state(e));
+            Map<String,Object> step=call(e,w[0],w[1],w.length==3);
+            Map<String,Object> write=obj("address",w[0],"data",w[1]);if(w.length==3)write.put("width",8);step.put("write",write);step.put("state",state(e));
             step.put("memory",obj("vram",bank(e,RAM,vram),"cram",bank(e,CRAM,cram),"vsram",bank(e,VSRAM,vsram)));
             steps.add(step);if(step.get("boundary").equals("diagnostic"))break;
         }
@@ -289,9 +296,31 @@ public class MdpTransferOracle extends GhidraScript {
         inputs.add(new Case("pending_register_word_is_command_second","control").write(0xc00004,0x4321).write(0xc00004,0x8f03));
         inputs.add(new Case("data_clears_partial_command","control").write(0xc00004,0x4200).write(0xc00000,0x1234));
         inputs.add(new Case("data_odd_diagnostic","control").command(0x101,1).write(0xc00000,0x1234));
+        for(int code:new int[]{0x21,0x31}) {
+            Case c=transfer("copy_dispatch_code_"+code,"copy",4,0x100,2,0x200,0,0);
+            c.kind="dispatch";c.writes.clear();c.command(0x100,code);inputs.add(c);
+        }
+        Case cpuInvalid=transfer("dma_dispatch_code_48","dma68k",4,0x100,2,0x234560,0x30,0);
+        cpuInvalid.kind="dispatch";inputs.add(cpuInvalid);
+        Case copy80=transfer("copy_dispatch_type_80","copy",4,0x100,2,0x200,0,0);
+        copy80.kind="dispatch";copy80.regs[23]=(byte)0x80;inputs.add(copy80);
+        Case fill23=transfer("fill_control_code_23_diagnostic","fill",4,0x100,2,0,0,0x1234);
+        fill23.kind="dispatch";fill23.writes.clear();fill23.command(0x100,0x23);inputs.add(fill23);
+        inputs.add(new Case("vsram_regular_mirrors","vsram_write").command(0,5).write(0xc00000,0x1234).write(0xc00002,0xabcd));
+        inputs.add(new Case("vsram_high_overrides_only_mirrors","vsram_write").command(0,5).write(0xc00000,0x1234).write(0xc00002,0xabcd)
+            .command(0x7c,5).write(0xc00000,0x5678).write(0xc00002,0x9abc));
+        inputs.add(new Case("vsram_direct_mirrors","vsram_write").write(0xc00200,0x1234).write(0xc00202,0xabcd)
+            .write(0xc0027c,0x5678).write(0xc0027e,0x9abc));
+        for(long profile:new long[]{0,0x4f967b9eL,0xca196d58L}){
+            Case c=transfer("data_code21_typeC0_profile_"+Long.toHexString(profile),"copy",4,0x100,2,0x200,0,0);
+            c.kind="data_guard";c.writes.clear();c.code=0x21;c.address=0x100;c.profile=profile;c.write(0xc00000,0xabcd);inputs.add(c);
+        }
+        inputs.add(new Case("vsram_direct_write8_even","vsram_write8").write8(0xc00200,0xab));
+        inputs.add(new Case("vsram_direct_write8_odd","vsram_write8").write8(0xc00203,0xcd));
         List<Object> cases=new ArrayList<>();
         Path output=Path.of(getScriptArgs()[0]);Files.createDirectories(output.toAbsolutePath().getParent());
         Map<String,Object> fixture=obj("schema_version",1,"binary_sha256",BINARY_SHA256,"handler_sha256",HANDLER_SHA256,
+            "byte_write_callback",obj("loaded_va",BYTE_WRITE_ENTRY,"file_offset",BYTE_WRITE_ENTRY-0x10000,"sha256",BYTE_WRITE_SHA256),
             "entry",obj("loaded_va",ENTRY,"file_offset",ENTRY-0x10000,"code_end_exclusive",CODE_END),
             "execution_boundary","Original ARM/Thumb instructions from C2CA8 to return; synthetic read16 callback only. Diagnostic cases stop on entry to 9E818 without assuming return. No whole-machine timing claim.",
             "memory_encoding","Numeric little-endian storage. VSRAM uses M2's shifted backing, not MAME's logical layout.",

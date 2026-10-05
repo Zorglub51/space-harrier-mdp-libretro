@@ -513,7 +513,31 @@
  
  	sega315_5313_mode4_device::device_reset();
  }
-@@ -460,7 +514,10 @@ void sega315_5313_device::write_cram_value(int offset, int data)
+@@ -446,9 +500,22 @@ void sega315_5313_device::vdp_vram_write(u16 data)
+ 	vdp_address_inc();
+ }
+ 
++// M2 stores logical VSRAM words two slots later. Keep MAME's logical layout
++// and reproduce the native leading-word mirrors in the last two slots.
++void sega315_5313_device::mdp_vsram_write(u16 address, u16 data)
++{
++	const unsigned index = (address >> 1) & 63;
++	m_vsram[index] = data;
++	if (index < 2)
++		m_vsram[index + 62] = data;
++}
++
+ void sega315_5313_device::vdp_vsram_write(u16 data)
+ {
+-	m_vsram[(m_vdp_address & 0x7e) >> 1] = data;
++	if (m_mdp_scaler)
++		mdp_vsram_write(m_vdp_address, data);
++	else
++		m_vsram[(m_vdp_address & 0x7e) >> 1] = data;
+ 
+ 	//logerror("Wrote to VSRAM addr %04x data %04x\n", m_vdp_address & 0xfffe, m_vsram[m_vdp_address >> 1]);
+ 
+@@ -460,7 +527,10 @@ void sega315_5313_device::write_cram_value(int offset, int data)
  	m_cram[offset] = data;
  
  	//logerror("Wrote to CRAM addr %04x data %04x\n", m_vdp_address & 0xfffe, m_cram[m_vdp_address >> 1]);
@@ -525,7 +549,7 @@
  	{
  		data = ((m_cram[offset] & 0xe) >> 1) | ((m_cram[offset] & 0xe0) >> 2) | ((m_cram[offset] & 0xe00) >> 3);
  		m_palette_lookup[offset] = data;
-@@ -468,9 +525,9 @@ void sega315_5313_device::write_cram_value(int offset, int data)
+@@ -468,9 +538,9 @@ void sega315_5313_device::write_cram_value(int offset, int data)
  		{
  			if (m_palwrite_base != -1)
  			{
@@ -538,7 +562,7 @@
  			}
  		}
  	}
-@@ -478,15 +535,52 @@ void sega315_5313_device::write_cram_value(int offset, int data)
+@@ -478,15 +548,54 @@ void sega315_5313_device::write_cram_value(int offset, int data)
  
  void sega315_5313_device::vdp_cram_write(u16 data)
  {
@@ -580,19 +604,21 @@
  
 +	// The original handler selects fill from the command and register 23,
 +	// independently of the MD DMA-enable bit or MAME's pending-fill latch.
-+	if (m_mdp_scaler && (m_vdp_code & 0x30) == 0x20 && (m_regs[0x17] & 0xc0) == 0x80)
++	if (m_mdp_scaler && (m_vdp_code & 0x30) == 0x20)
 +	{
-+		if (m_vdp_code == 0x21)
++		if ((m_regs[0x17] & 0xc0) == 0x80 && m_vdp_code == 0x21)
 +			mdp_vram_fill(u16(data));
 +		else
-+			logerror("Unsupported MDP fill command %02x\n", m_vdp_code);
++			// Neither SH1 nor SH2 uses M2's unrelated profile exceptions
++			// that allow an ordinary data write while a DMA code is selected.
++			logerror("Unsupported MDP DMA data command %02x\n", m_vdp_code);
 +		return;
 +	}
 +
  	/*
  	0000b : VRAM read
  	0001b : VRAM write
-@@ -711,6 +805,20 @@ void sega315_5313_device::insta_vram_copy(u32 source, u16 length)
+@@ -711,6 +820,20 @@ void sega315_5313_device::insta_vram_copy(u32 source, u16 length)
  /* Instant, but we pause the 68k a bit */
  void sega315_5313_device::insta_68k_to_vram_dma(u32 source, int length)
  {
@@ -613,7 +639,7 @@
  	if (length == 0x00) length = 0xffff;
  
  	/* This is a hack until real DMA timings are implemented */
-@@ -742,7 +850,7 @@ void sega315_5313_device::insta_68k_to_cram_dma(u32 source, u16 length)
+@@ -742,7 +865,7 @@ void sega315_5313_device::insta_68k_to_cram_dma(u32 source, u16 length)
  	{
  		//if (m_vdp_address >= 0x80) return; // abandon
  
@@ -622,7 +648,109 @@
  		source += 2;
  
  		if (source > 0xffffff) source = 0xfe0000;
-@@ -879,8 +987,13 @@ void sega315_5313_device::ctrl_port_w(int data)
+@@ -783,9 +906,101 @@ void sega315_5313_device::insta_68k_to_vsram_dma(u32 source, u16 length)
+ 	m_regs[0x17] = (source >> 17) & 0xff;
+ }
+ 
++u16 sega315_5313_device::mdp_dma_read_word(u32 source)
++{
++	// M2 C0F74 checks unsigned >= E00000 before decoding the address. Even
++	// after a DMA cursor crosses FFFFFF it still selects the 128 KiB RAM,
++	// rather than wrapping onto ROM through the 68000's 24-bit address bus.
++	if (source >= 0xe00000)
++		source = 0xe00000 | (source & 0x1fffe);
++	return m_space68k->read_word(source);
++}
++
++// M2 C30DC..C31DC: the length is a word count, including zero. The source
++// registers survive; the address and zero length are committed only on success.
++void sega315_5313_device::mdp_dma_transfer()
++{
++	const u32 count = m_regs[19] | (m_regs[20] << 8);
++	u32 source = (m_regs[21] << 1) | (m_regs[22] << 9) | (m_regs[23] << 17);
++	u32 address = m_vdp_address;
++	for (u32 i = 0; i < count; ++i)
++	{
++		const u16 data = mdp_dma_read_word(source);
++		// Native code reads the bus before checking word alignment.
++		if (address & 1)
++		{
++			logerror("Unaligned MDP DMA destination %04x\n", address);
++			return;
++		}
++		if (m_vdp_code == 0x21)
++			vram_w(address >> 1, data);
++		else if (m_vdp_code == 0x23)
++			write_cram_value((address & 0xfe) >> 1, data);
++		else
++			mdp_vsram_write(u16(address), data);
++		source += 2;
++		address = (address + m_regs[15]) & 0xffff;
++	}
++	m_vdp_address = address;
++	m_regs[19] = 0;
++	m_regs[20] = 0;
++}
++
++// Native copies are sequential byte operations, including overlapping regions.
++void sega315_5313_device::mdp_vram_copy()
++{
++	const u32 count = m_regs[19] | (m_regs[20] << 8);
++	u32 source = m_regs[21] | (m_regs[22] << 8);
++	u32 address = m_vdp_address;
++	for (u32 i = 0; i < count; ++i)
++	{
++		const u16 word = m_vram[source >> 1];
++		const u8 data = (source & 1) ? u8(word) : u8(word >> 8);
++		if (address & 1)
++			vram_w(address >> 1, data, 0x00ff);
++		else
++			vram_w(address >> 1, u16(data) << 8, 0xff00);
++		source = (source + 1) & 0xffff;
++		address = (address + m_regs[15]) & 0xffff;
++	}
++	m_vdp_address = address;
++	m_vdp_code = 0xff;
++}
++
+ /* This can be simplified quite a lot.. */
+ void sega315_5313_device::handle_dma_bits()
+ {
++	if (m_mdp_scaler)
++	{
++		const unsigned type = m_regs[23] & 0xc0;
++		if (type < 0x80)
++		{
++			if (m_vdp_code == 0x21 || m_vdp_code == 0x23 || m_vdp_code == 0x25)
++			{
++				// Retain the existing VRAM transfer pause pending a native
++				// scheduler comparison; it is separate from the memory contract.
++				const u32 words = m_regs[19] | (m_regs[20] << 8);
++				if (m_vdp_code == 0x21 && words)
++					m_cpu68k->spin_until_time(attotime::from_nsec(words * 2 * 1000 / 3500));
++				mdp_dma_transfer();
++			}
++			else
++				logerror("Unsupported MDP DMA command %02x\n", m_vdp_code);
++		}
++		else if (m_vdp_code == 0x21)
++		{
++			// Native command setup tests bit 7 only. Type 80 fills when the
++			// subsequent data word arrives; type C0 does not arm a fill.
++			m_vram_fill_pending = (type == 0x80);
++			m_vram_fill_length = m_regs[19] | (m_regs[20] << 8);
++		}
++		else if (m_vdp_code == 0x30)
++			mdp_vram_copy();
++		else
++			logerror("Unsupported MDP copy command %02x\n", m_vdp_code);
++		return;
++	}
++
+ #if 0
+ 	const u32 source = (MEGADRIVE_REG15_DMASOURCE1 | (MEGADRIVE_REG16_DMASOURCE2 << 8) | ((MEGADRIVE_REG17_DMASOURCE3 & 0xff) << 16)) << 1;
+ 	const u16 length = (MEGADRIVE_REG13_DMALENGTH1 | (MEGADRIVE_REG14_DMALENGTH2 << 8)) << 1;
+@@ -879,8 +1094,13 @@ void sega315_5313_device::ctrl_port_w(int data)
  			if (regnum & 0x20) osd_printf_debug("reg error\n");
  
  			vdp_set_register(regnum & 0x1f, value);
@@ -638,7 +766,7 @@
  		}
  		else
  		{
-@@ -892,6 +1005,78 @@ void sega315_5313_device::ctrl_port_w(int data)
+@@ -892,6 +1112,91 @@ void sega315_5313_device::ctrl_port_w(int data)
  	}
  }
  
@@ -694,6 +822,19 @@
 +		}
 +	}
 +
++	// M2 C2ECA..C2EE6: the direct VSRAM window changes memory without advancing
++	// or replacing the currently selected VDP command/address.
++	if (offset >= 0x100 && offset < 0x140)
++	{
++		// M2 C0A76 duplicates a CPU byte write before calling its word port.
++		if (!ACCESSING_BITS_8_15)
++			data = (data & 0x00ff) | data << 8;
++		else if (!ACCESSING_BITS_0_7)
++			data = (data & 0xff00) | data >> 8;
++		mdp_vsram_write(u16(offset << 1), data);
++		return;
++	}
++
 +	// M2 write handler (file 0xB2CA8): C00400..C004FF addresses all 128
 +	// CRAM words directly; UBFX address,#1,#7 selects the entry. SH1 uses
 +	// C00400 (entry 0), while SH2 uses C00462 (entry 0x31) for its sky.
@@ -717,7 +858,7 @@
  void sega315_5313_device::vdp_w(offs_t offset, u16 data, u16 mem_mask)
  {
  	switch (offset << 1)
-@@ -953,7 +1138,7 @@ u16 sega315_5313_device::vdp_vsram_r(void)
+@@ -953,7 +1258,7 @@ u16 sega315_5313_device::vdp_vsram_r(void)
  
  u16 sega315_5313_device::vdp_cram_r(void)
  {
@@ -726,7 +867,7 @@
  }
  
  u16 sega315_5313_device::data_port_r()
-@@ -1396,8 +1581,125 @@ u16 sega315_5313_device::vdp_r(offs_t offset, u16 mem_mask)
+@@ -1396,8 +1701,125 @@ u16 sega315_5313_device::vdp_r(offs_t offset, u16 mem_mask)
  
  */
  
@@ -852,7 +993,7 @@
  	const int ytile_shift = (m_imode == 3) ? 4 : 3;
  	const int yline_mask = (m_imode == 3) ? 0xf : 0x7;
  	gfx_element *spr_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
-@@ -1416,7 +1718,7 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
+@@ -1416,7 +1838,7 @@ void sega315_5313_device::render_spriteline_to_spritebuffer(int scanline)
  	}
  
  	/* Clear our Render Buffer */
@@ -861,7 +1002,7 @@
  
  	{
  		int ypos, xpos, addr;
-@@ -1596,6 +1898,9 @@ void sega315_5313_device::get_nametable(gfx_element *tile_gfx, u16 tile_base, na
+@@ -1596,6 +2018,9 @@ void sega315_5313_device::get_nametable(gfx_element *tile_gfx, u16 tile_base, na
  	tile.pri =   (tile_dat & 0x8000) >> 15;
  	u16 code =   (tile_dat & 0x07ff);
  
@@ -871,7 +1012,7 @@
  	if (m_imode == 3)
  		code &= 0x3ff;
  
-@@ -1662,8 +1967,192 @@ inline void sega315_5313_device::draw_tile(nametable_t tile, int start, int end,
+@@ -1662,8 +2087,192 @@ inline void sega315_5313_device::draw_tile(nametable_t tile, int start, int end,
  }
  
  /* Clean up this function (!) */
@@ -1064,7 +1205,7 @@
  	gfx_element *tile_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
  	u16 base_w = 0;
  
-@@ -1687,7 +2176,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
+@@ -1687,7 +2296,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  	/* Clear our Render Buffer */
  	for (int x = 0; x < horz; x++)
  	{
@@ -1073,7 +1214,7 @@
  	}
  
  	memset(m_highpri_renderline.get(), 0, horz);
-@@ -1847,7 +2336,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
+@@ -1847,7 +2456,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  	int vscroll;
  	/* Low Priority B Tiles */
  	{
@@ -1082,7 +1223,7 @@
  		{   /* 20x 16x1 blocks */
  			int vcolumn;
  
-@@ -1910,6 +2399,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
+@@ -1910,6 +2519,7 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  		}
  		/* END */
  	}
@@ -1090,7 +1231,7 @@
  	/* Low Priority A Tiles + Window(!) */
  
  	{
-@@ -1934,7 +2424,8 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
+@@ -1934,7 +2544,8 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  
  		/* Non Window Part */
  
@@ -1100,7 +1241,7 @@
  		{   /* 20x 16x1 blocks */
  		//  int xx;
  			int vcolumn;
-@@ -2004,6 +2495,25 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
+@@ -2004,6 +2615,25 @@ void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  	}
  		/* END */
  
@@ -1126,7 +1267,7 @@
  /* MEGADRIVE_REG0C_SHADOW_HIGLIGHT */
  	/* Low Priority Sprites */
  	for (int x = 0; x < horz; x++)
-@@ -2139,9 +2649,9 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
+@@ -2139,9 +2769,9 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
  			if (!MEGADRIVE_REG0_SPECIAL_PAL) // 3 bit color mode, correct?
  				clut &= 0x49; // (1 << 6) | (1 << 3) | (1 << 0);
  
@@ -1139,7 +1280,7 @@
  		}
  	}
  
-@@ -2155,7 +2665,13 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
+@@ -2155,7 +2785,13 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
  		else
  			m_render_line_raw[srcx] = 0x000;
  
@@ -1154,7 +1295,7 @@
  		{
  			if (dat & 0x10000)
  			{
-@@ -2217,7 +2733,7 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
+@@ -2217,7 +2853,7 @@ void sega315_5313_device::render_videobuffer_to_screenbuffer(int scanline)
  		}
  	}
  
@@ -1165,7 +1306,7 @@
  	{
 --- a/src/devices/video/315_5313.h
 +++ b/src/devices/video/315_5313.h
-@@ -40,24 +40,63 @@ public:
+@@ -40,24 +40,67 @@ public:
  	// Temporary solution while 32x VDP mixing and scanline interrupting is moved outside MD VDP
  	template <typename... T> void set_md_32x_scanline(T &&... args) { m_32x_scanline_func.set(std::forward<T>(args)...); }
  	template <typename... T> void set_md_32x_interrupt(T &&... args) { m_32x_interrupt_func.set(std::forward<T>(args)...); }
@@ -1185,6 +1326,10 @@
 +	u16 vdp_mdp_r(offs_t offset, u16 mem_mask = ~0);
 +	void vdp_mdp_w(offs_t offset, u16 data, u16 mem_mask = ~0);
 +	void mdp_vram_fill(u16 data);
++	void mdp_vsram_write(u16 address, u16 data);
++	u16 mdp_dma_read_word(u32 source);
++	void mdp_dma_transfer();
++	void mdp_vram_copy();
 +
 +	// Lower half of M2's direct 128 KiB VRAM window (D00000..D0FFFF).
 +	// D10000..D1FFFF is stored separately in m_mdp_ram; never alias it here.
@@ -1229,7 +1374,7 @@
  		gfx(5)->mark_dirty(offset / ((8*16*4) / 16));
  	}
  
-@@ -223,30 +262,56 @@ private:
+@@ -223,30 +266,56 @@ private:
  	void handle_dma_bits();
  
  	u16 get_hposition();
@@ -1289,12 +1434,15 @@
  	required_device<palette_device> m_gfx_palette_hilight;
 --- a/src/mame/sega/megadriv.cpp
 +++ b/src/mame/sega/megadriv.cpp
-@@ -328,8 +328,14 @@ void md_base_state::megadriv_68k_base_map(address_map &map)
+@@ -328,11 +328,17 @@ void md_base_state::megadriv_68k_base_map(address_map &map)
  	map(0xa11100, 0xa11101).rw(FUNC(md_base_state::megadriv_68k_check_z80_bus), FUNC(md_base_state::megadriv_68k_req_z80_bus));
  	map(0xa11200, 0xa11201).w(FUNC(md_base_state::megadriv_68k_req_z80_reset));
  
 -	map(0xc00000, 0xc0001f).rw(m_vdp, FUNC(sega315_5313_device::vdp_r), FUNC(sega315_5313_device::vdp_w));
 -	map(0xd00000, 0xd0001f).rw(m_vdp, FUNC(sega315_5313_device::vdp_r), FUNC(sega315_5313_device::vdp_w)); // the earth defend
+-	map(0xe00000, 0xe0ffff).ram().mirror(0x1f0000).share("megadrive_ram");
+-//  map(0xff0000, 0xffffff).readonly();
+-	/*       0xe00000 - 0xffffff) == MAIN RAM (64kb, Mirrored, most games use ff0000 - ffffff) */
 +	map(0xc00000, 0xc0ffff).rw(m_vdp, FUNC(sega315_5313_device::vdp_mdp_r), FUNC(sega315_5313_device::vdp_mdp_w));
 +	// M2 exposes the lower VRAM bank directly. SH2 animates its ranking font
 +	// through D0D400; treating this window as VDP ports lost those writes.
@@ -1303,9 +1451,12 @@
 +	// and the line/zoom tables (SH1 D1E000/D1F000, SH2 D10000/D11000).
 +	// The separate backing allocation must not wrap onto the lower 64 KiB.
 +	map(0xd10000, 0xd1ffff).rw(m_vdp, FUNC(sega315_5313_device::mdp_gfx_r), FUNC(sega315_5313_device::mdp_gfx_w));
- 	map(0xe00000, 0xe0ffff).ram().mirror(0x1f0000).share("megadrive_ram");
- //  map(0xff0000, 0xffffff).readonly();
- 	/*       0xe00000 - 0xffffff) == MAIN RAM (64kb, Mirrored, most games use ff0000 - ffffff) */
++	// M2 C0F74/C086C read/write 128 KiB, indexed by address bits 1..16.
++	// FE0000 and FF0000 are distinct halves, including for DMA reads.
++	map(0xe00000, 0xe1ffff).ram().mirror(0x1e0000).share("megadrive_ram");
+ }
+ 
+ void md_base_state::megadriv_68k_map(address_map &map)
 @@ -651,6 +657,9 @@ uint32_t md_core_state::screen_update_megadriv(screen_device &screen, bitmap_rgb
  		}
  	}
@@ -1315,6 +1466,15 @@
 +
  	return 0;
  }
+ 
+@@ -691,7 +700,7 @@ void md_base_state::machine_reset()
+ 	m_genz80.z80_run_timer->adjust(attotime::zero);
+ 
+ 	if (m_megadrive_ram)
+-		memset(m_megadrive_ram, 0x00, 0x10000);
++		memset(m_megadrive_ram, 0x00, m_megadrive_ram.bytes());
+ }
+ 
  
 --- a/src/devices/bus/megadrive/md_slot.h
 +++ b/src/devices/bus/megadrive/md_slot.h

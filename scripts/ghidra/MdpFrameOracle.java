@@ -168,14 +168,13 @@ public class MdpFrameOracle extends GhidraScript {
             prefix + "-after-m_cram.bin", 256, hashes));
         byte[] vs = input(snapshot, prefix + "-before-m_vsram.bin", 128, hashes);
         byte[] nativeVs = new byte[128];
-        // M2's port decoder reserves two leading VSRAM words and mirrors its
-        // first two global values. This adapts storage, not rendering behavior.
+        // The core stores logical VSRAM words and maintains the native mirrors
+        // during writes. Rotate storage without synthesizing any mirror values.
         for (int index = 0; index < 64; index++) {
             int target = (index + 2) & 63;
             nativeVs[target * 2] = vs[index * 2];
             nativeVs[target * 2 + 1] = vs[index * 2 + 1];
         }
-        System.arraycopy(vs, 0, nativeVs, 0, 4);
         emu.writeMemory(toAddr(vsram), nativeVs);
 
         byte[] registerWords = input(snapshot,

@@ -1,4 +1,4 @@
-# Fidelity status — 0.1.10
+# Fidelity status — 0.1.11
 
 The target is the original M2 emulator output for SH1 and SH2, including its
 pixel alternation and flicker. An attractive image or a plausible reconstruction
@@ -19,7 +19,9 @@ no original executable, ROM, captured game memory or game pixels.
 | SH2 pre-boss lightning tilemap | 76 original ARM cases and 19,200 game writes | Restores the omitted source read; see [the lightning reference](SH2_LIGHTNING_REFERENCE.md) |
 | Direct CRAM addressing | Original handler and bus traces | Addressing is established; scheduling is separate |
 | Direct low VRAM writes | Native decoder and game write trace | Ranking-font data reaches VRAM without a font remap |
-| VRAM fills and register command preservation | 36 original ARM fill cases, 139 runtime fills and seven full clear snapshots | Fill memory/state and selected port routing; other DMA/copy paths remain open |
+| VRAM fills and register command preservation | 36 original ARM fill cases, 139 runtime fills and seven full clear snapshots | Fill memory/state and selected port routing |
+| DMA, copy and VSRAM writes | 36 DMA, 18 copy and additional dispatch/write sequences from original ARM execution | Memory, command state, wrapping and mirrors; scheduler and diagnostic aftermath remain separate |
+| RAM source window | 38 original read/write callback cases and live RAM probes | Distinct 64 KiB banks, 128 KiB reset/save/load and DMA continuation beyond the 24-bit boundary; not complete I/O equivalence |
 | SH2 opcode reconstruction review | 119 hook addresses accounted for; 77 symmetry-based entries reviewed against their own SH2 handlers | Static instruction audit, not full-block execution equivalence |
 | Direct video registers | 68 original ARM cases | All 64 registers; byte enables tested as MAME integration |
 | Transformed planes | 30 original ARM cases | Table selection, coordinates, wrapping, tile attributes |
@@ -60,6 +62,14 @@ the raw scanline output on the captured lines.
 
 ## Reliability checks
 
+Version 0.1.11 passes all 96 tests with fresh native references and private ROMs.
+The final core preserves video and audio over 27,000 control frames against
+0.1.10, and save/load reproduces 180 subsequent frames and audio in each game.
+The [runtime impact report](MDP_TRANSFER_IMPACT.md) separates this final-core
+validation from 16,500 additional traced frames on the preceding candidate,
+including SH2 stage 4 and the first boss. It explains why corrected source
+registers and VSRAM mirrors cause no visible change in those compared sequences.
+
 Version 0.1.10 passes all 84 tests with fresh native references and private ROMs.
 Four deterministic SH1/SH2 sequences cover 27,000 frames with audio identical
 to 0.1.9. A comparison of every frame in two 6,000-frame attract runs finds
@@ -80,7 +90,8 @@ With default audio settings, saving and restoring SH1 and SH2 reproduces all
 180 subsequent frames and audio samples in each test. Since 0.1.7, the state includes
 the upper 64 KiB of MDP graphics memory and the audio filter's delay samples.
 An earlier build fails this same audio comparison, providing a regression
-check for the history fix. States from versions before 0.1.7 are incompatible.
+check for the history fix. Version 0.1.11 expands CPU RAM to its native 128 KiB;
+states from previous versions are incompatible. Start normally from the ROM.
 
 Run the private-ROM test with a locally built core:
 
@@ -99,8 +110,8 @@ content. Its automatic input sequence reaches SH2 stage 4 or SH1 gameplay.
 |---|---|---|
 | Palette timing | The renderer's counter now dates the queue, correcting the 38-line origin difference; direct and ordinary writes still take different paths | Mixed-write ordering, readback and transition-frame traces |
 | CPU and video timing | MAME CPU clocks, DMA and interrupt delays remain in use | Native scheduler traces and full deterministic sequences |
-| Video-memory transfers | Native DMA word counts, source-register retention and copy completion differ from inherited behavior | Implement and integrate the measured [transfer contracts](MDP_TRANSFERS.md) beyond fill |
-| Extended VSRAM | Direct MDP access and native leading-word layout are not fully integrated | Original access-handler cases and game traces |
+| Video-memory transfers | Memory/state behavior now follows the [transfer contracts](MDP_TRANSFERS.md); the inherited VRAM transfer pause is retained | Native scheduling, mixed palette-write order and wider game coverage |
+| VDP readback and registers | VSRAM writes and mirrors are implemented; port read quirks and mode-dependent register restrictions remain | Original read/control-handler execution and integration traces |
 | Reconstructed game hooks | The [static SH2 audit](MDP_HOOK_AUDIT.md) checks 77 symmetry-based restorations, but most complete blocks still lack isolated execution comparisons | Prioritize hooks reached in remaining SH2 glitches, then broaden coverage |
 | Compatibility guards | Divide guards, SH1 tree insertion, shot counter and boss-exit handling include empirical choices | Original hook/game-state execution for each affected case |
 | Reset and reload | Save/load is tested; wider reset/reload sequences remain | Default-state and repeated-content tests on all platforms |
