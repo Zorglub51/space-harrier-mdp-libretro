@@ -118,11 +118,13 @@ to preserve the donor cycle's clock and phase behavior.
 
 The adapter anchors the cycle to SH2's corresponding game-update
 clock. This reproduces the formula and cadence, not an absolute presentation
-phase shared between two independently running games. It also retains SH2's
-immediate constructor-time size selection and its projection tables. Those are
+phase shared between two independently running games. For ordinary enemy
+deaths, it also retains SH2's immediate constructor-time size selection and
+its projection tables. Those are
 host-geometry choices; SH1's initial level-zero sample is not claimed to be
-reproduced. When there is no other active modified explosion, the adapter
-preloads pose one so the new object has valid graphics. When another modified
+reproduced. At ordinary-enemy construction, when there is no other active
+modified explosion, the adapter preloads pose one so the new object has valid
+graphics. When another modified
 explosion is active, it retains the current shared pixels until the next
 handler update, preserving the donor's shared restart sequence. Both paths
 leave the shared phase at zero so that the first actual handler update
@@ -208,3 +210,108 @@ The private harness and result are under
 `forced-sh2-reference/RESULT.json` against the donor ROM and saved cache data.
 Its `capture.py` accepts `SH2 reference --frames 3400 --label forced- --core
 <candidate-core>` and explicitly selects the optional SH1 explosion style.
+
+## Airborne-position audit of v0.1.12
+
+An ordinary explosion does not keep its impact altitude indefinitely in either
+original game. Both constructors retain the object's signed vertical position
+at offset `+0x02` and set vertical velocity at `+0x06` to
+`-(y arithmetic-shift-right 2)`: SH1 at `0x170068`–`0x170070`, and SH2 at
+`0x139BB4`–`0x139BBC`. The original SH2 handler adds this velocity and clamps a
+positive result to zero at `0x137FA8`–`0x137FBA`. It normally reaches ground
+level after four game updates. World X is at `+0x00`, depth at `+0x0A`, and the
+projected screen coordinates at `+0x0C` and `+0x0E`.
+
+Two 3,180-step traces compared original and enabled modes in the same v0.1.12
+candidate, SHA-256
+`851917729d919bd91a739c85fe0b0d586daf4e74e345fc2ca9306adab745ea9c`.
+They observed naturally triggered enemy destructions with read-only taps; no
+position or animation field was forced. For the first explosion, both modes
+started at world Y `-10318`, velocity `2580`, projected Y `28`. Their next three
+updates had identical world Y `-7738`, `-5158`, `-2578` and projected Y
+`54`, `73`, `95`. Both reached projected Y `121` at frame 3065. The modification
+therefore did not place this effect on the ground immediately: the rapid
+descent was already present in original SH2.
+
+The transplanted SH1 movement nevertheless differed in a concrete way. SH1
+tests the old height before adding velocity (`0x1D75CE`), so it stored the
+positive overshoot `2` for one update. On the next update, its branch at
+`0x1D7576`–`0x1D758A` clamped the height without reducing depth. At frame 3067,
+the original SH2 depth was `5577`, while the transplant retained `5737`.
+Replacing artwork and pose timing does not require this movement difference.
+The corresponding correction should retain SH2's movement, projection,
+lifetime and cleanup, while updating the donor pose and shared cache separately.
+That separation must not be described as keeping explosions stationary in the
+air, since native SH2 itself moves these effects toward the ground.
+
+The private traces, disassemblies, reproduction script and machine-readable
+result are under `/tmp/sh-explosion-mod-20261006/airborne`; `analyze.py`
+generates `AIRBORNE_CAUSE.json`. The result covers two ordinary enemy
+destructions in stage one, not every stage, actor or boss effect.
+
+## Separation of host movement and donor animation
+
+The v0.1.13 candidate implements that separation. Its wrapper first executes
+the original SH2 handler, including motion, projection, lifetime and cleanup.
+If the native handler marks the object free (`+0x20 = 0xFF`), the wrapper returns
+without touching it. For a surviving object, a separate generated routine
+updates the donor's shared pose, cache and source-size selection. No SH1 motion
+or free-list code is copied into this version.
+
+The visual state machine retains the donor's eleven poses and quotient-based
+timing. Its last-pose hold now lasts only while the host object remains alive.
+In particular, a short-lived boss particle need not display all eleven poses;
+the modification does not prolong its native lifetime or delay boss accounting
+to complete the visual sequence.
+
+The candidate with SHA-256
+`3b02448a61073b0133c0c40962945eb1b5f1410266f4ce64f51ed6c9611d67ec`
+was tested in original and enabled modes for 3,180 steps each. All 34 common
+observations of two naturally triggered ordinary explosions matched in world
+X, Y, vertical velocity, depth and projected X/Y, including the first airborne
+sample and the ground clamp. Both objects appeared and disappeared at the same
+sampled frames. The earlier frame-3067 discrepancy is gone: both modes now
+report depth `5577` and projected position `(2, 121)`. These are object-state
+comparisons, not a claim that the complete rendered images match after changing
+the artwork.
+
+A fresh 3,400-step forced-position check also exercised the generated visual
+routine. It again produced poses 1–11 at clocks
+`891, 892, 896, 900, 904, 908, 912, 916, 920, 924, 928`. All 44 source image
+payloads matched their VRAM destinations, and all 17 observed uploads matched
+the expected 8,576-byte payload. Creation of the second effect at frame 3090
+preserved the current pose-5 cache until the handler restarted it at frame 3092.
+Pose 11 remained active through frame 3212, clock 951; unlike the older copied
+SH1 handler, the new wrapper then allowed SH2's native lifetime to remove the
+object despite the diagnostic keeping its position in view.
+
+The read-only trajectory result is
+`/tmp/sh-explosion-mod-20261006/airborne/V13_POSITION_COMPARISON.json`.
+The forced-position harness and payload comparisons are under
+`/tmp/sh-explosion-followup-20261006/forced`, with the result in
+`forced-sh2-reference/RESULT.json`. The public optional-ROM tests additionally
+check that all three native SH2 handlers remain byte-identical, that every
+wrapper invokes its native handler before the freed-object check and visual
+work, and that the 17 hostile-actor/particle initializer changes affect only
+their validated method operands. These checks passed with address and undefined
+behavior sanitizers; boss progression and wider stage coverage are recorded
+separately from this timing reference.
+
+Two additional synthetic comparisons used the later candidate with SHA-256
+`a24a64df9057e9140b646994bed75f890e906dd7ebf22e2a97cf56b8cbc27a67`.
+An existing object was initialized once with controlled position, velocity,
+depth, timer and method, then allowed to run freely. The original particle
+handler `0x137AFC` and its wrapper had identical coordinates across 62 samples,
+with the same native cleanup event and first freed sample at frame 3119,
+timer 30. The tracked-death handler `0x137CF0` and its wrapper matched across
+122 samples, including their delay, timer and shared count. Both freed the
+object at sample 3179, timer 60, and decremented `0xFF3858` from 7 to 6 exactly
+once through the original cleanup instruction.
+
+One particle timer sample was 23 in original mode and 22 in enabled mode at
+frame 3103; both were 23 at the next sample. The comparisons therefore do not
+claim identical instruction timing or zero CPU cost. Coordinates and the native
+cleanup events still matched. These tests enter the steady wrappers directly;
+they do not replace the separate first-use boss-initialization and progression
+checks. Their private harness and complete result are in
+`/tmp/sh-explosion-followup-20261006/isolate/NATIVE_WRAPPER_COMPARISON.json`.

@@ -1,18 +1,22 @@
-# Optional SH1 enemy explosions in SH2
+# Optional SH1 explosion artwork and timing in SH2
 
-This experimental option replaces the selected ordinary-enemy explosions in
-Space Harrier II with artwork and the shared animation sequence taken from the
-user's original Space Harrier ROM. It is a gameplay modification, separate from
+This experimental option replaces recognized ordinary-enemy and boss-death
+explosions in Space Harrier II with artwork and the shared animation sequence
+taken from the user's original Space Harrier ROM. SH2 retains control of object
+positions, movement, lifetime, removal and boss progression. It is a gameplay modification, separate from
 the core's faithful default emulation. **Original SH2** remains the default.
 
 ## Using the option
 
 Place the supported original `jp_jp_space_harrier.smp` beside the SH2 ROM or in
-the frontend's system directory. Set the SH2 enemy-explosion core option
-(`mame_sh2_enemy_explosions`) to **SH1 Artwork and Timing**, then close and reload
-the content. A frontend reset (`retro_reset`) does not reload the ROM or change
-the selected mode. The same-directory file is checked first; a valid
-system-directory copy can also be used.
+the frontend's system directory. Set **SH2 Explosions**
+(`mame_sh2_enemy_explosions`) to **SH1 Artwork and Timing** or **Original SH2**.
+Changing this option automatically restarts the complete game on the next
+Libretro update. The restart rebuilds the cartridge from the original ROM and
+skips native auto-save loading for that restart, so an old auto-save cannot
+immediately undo the new mode. Normal close/load auto-save behavior is retained.
+The same-directory donor is checked first; a valid system-directory copy can
+also be used.
 
 The loader verifies the original SH2 identity and the donor's size and SHA-1.
 The supported SH1 donor is 0x3E0000 bytes with SHA-1
@@ -21,12 +25,22 @@ rejected donor data leaves the original explosions in place and produces a
 frontend message. Neither ROM file is modified. No donor artwork, palette bytes
 or original guest-code bytes are distributed in the repository.
 
-Changes take effect when the content is closed and reloaded. Enabled-mode
-Libretro save states have a versioned marker and cannot be loaded in original
-mode; original states cannot be loaded in enabled mode. This prevents restored
+Enabled-mode Libretro save states use version 2 of the mode marker and cannot
+be loaded in original mode; original states cannot be loaded in enabled mode.
+Both SH2 modes reserve the same state-buffer capacity, including sixteen bytes
+for the marker, so a frontend can allocate once before any option changes.
+Original-mode states keep their native payload followed by sixteen zero bytes;
+loading also accepts the legacy native payload without that padding.
+Version-1 modified states from v0.1.12 are rejected because their guest method
+pointers refer to a different implementation. This prevents restored
 pointers from referring to resources that are absent in the other mode.
+Recognized SH2 content reserves the same state-buffer capacity in both modes,
+so an automatic mode change cannot outgrow a frontend's cached buffer. Original
+mode stores its native payload followed by 16 zero bytes; active mode uses those
+16 bytes as its versioned prefix. Older unpadded original states remain loadable;
+nonzero padding, unexpected sizes and mismatched mode/version are rejected.
 MAME's separate relative-path disk states and auto-save mechanism use a
-`sh2-sh1-explosions-v1` subdirectory only after successful activation, keeping
+`sh2-sh1-explosions-v2` subdirectory only after successful activation, keeping
 those states separate as well. Missing or invalid donor data retains the
 original state namespace, matching the mode actually loaded. The folder is
 chosen for each save/load operation without changing persistent MAME options.
@@ -46,8 +60,7 @@ is insufficient. The replacement requires all three conditions:
 
 All other calls continue through the original constructor. In particular, the
 shared scenery methods, player-collision caller `0x1798EA`, unknown methods and
-custom reaction callbacks, including the boss paths examined during the audit,
-are not replaced. The original SH2 explosion artwork and descriptors remain
+custom reaction callbacks are not intercepted by this ordinary-enemy route. The original SH2 explosion artwork and descriptors remain
 intact for those uses and for fallback.
 
 The audited level-spawn code contains 72 direct calls to the actor factory at
@@ -79,22 +92,52 @@ confirmed from their actual ROM geometry and runtime objects. The static spawn
 map covers these registered families across the level scripts; dynamically
 created objects outside this map remain original rather than being guessed.
 
+Boss support uses separate, explicit native death-effect methods. The allocator
+at `0x18FC3A` installs particle method `0x137AFC` at two instruction sites. The
+adapter replaces those method operands with a visual wrapper. Fifteen audited
+tracked hostile-actor death initializers install method `0x137CF0`; their
+method operands use a corresponding wrapper. These include boss components
+and other counted hostile actors, rather than exclusively whole bosses. The initializers, allocation, sound and damage logic
+remain native. The boss controller `0x139396` still creates its particles and
+performs its normal completion accounting.
+
+Every update calls the original SH2 handler first: `0x137F0A` for ordinary
+effects, `0x137AFC` for boss particles, or `0x137CF0` for tracked deaths. All
+native removal paths mark object byte `0x20` as `0xFF`; the wrapper returns
+immediately when it sees that mark. It does not restore a descriptor, upload
+artwork or relink a freed object. In particular, the tracked method's decrement
+of boss counter `0xFF3858` and the separate boss controller remain intact.
+New boss particles acquire the replacement on their first native update.
+
 The replacement uses eleven poses, each with four source sizes: 16×16, 48×40,
 80×64 and 112×88. These are distance levels, not four extra animation frames.
-The original SH1 handler is copied from the authenticated donor and its known
-addresses are relocated to the host's corresponding state and routines. The
-host projection tables and immediate constructor-time size selection remain
-SH2's. See [the timing reference](SH2_EXPLOSION_TIMING.md) for the verified donor
-clock, geometry, palette cycle and the explicitly identified host adaptations.
+Only artwork, palette and composition records are copied from the donor.
+Generated guest code implements the verified shared animation rule; no SH1
+motion, clipping, lifetime or free-list code is transplanted. SH2's projection
+and descriptor-driven size selection are retained. See
+[the timing reference](SH2_EXPLOSION_TIMING.md) for the verified donor clock,
+geometry, palette cycle and the explicitly identified host adaptations.
+
+An aerial explosion can still fall toward the ground: native SH2 sets vertical
+velocity to `-(Y >> 2)`, bringing the observed aerial effect to ground level in
+four game updates. Keeping native SH2 movement removes the earlier transplant's
+small Y overshoot and one-update depth lag; it does not invent a floating effect.
 
 All live modified explosions share the same texture cache and animation phase,
 as in the donor. A new explosion resets that phase; the next handler update
 loads pose one. Later poses advance when the game clock divided by four changes,
-and pose eleven is held until motion or clipping removes the object. There is
+and pose eleven is held while the native SH2 object remains alive. There is
 no invented fixed eleven-times-eight-video-frame lifetime. With another modified
 effect already active, its shared pixels are retained until that update. Without
-another active effect, pose one is preloaded so the first display has defined
-graphics; the handler still initializes its phase at its own next update.
+another active effect, the ordinary-enemy constructor preloads pose one so its
+first display has defined graphics; its handler initializes phase at its next
+update. Pending boss wrappers already animate during initialization, so they
+perform a single upload in that update rather than duplicating a cold preload.
+Boss particles retain their shorter native lifetime and need not display all
+eleven poses. Rapid particle creation also restarts the shared phase repeatedly,
+so an active burst can stay on the early images. Native age limits and the
+completion-counter rule remain unchanged; additional guest execution can still
+extend wall-clock time, as measured below.
 
 Palette color 8 has its own six-step cycle, independent of new explosions.
 All eleven verified increments of the SH2 game clock are routed through a shared
@@ -113,9 +156,10 @@ tile counts and donor pointer bounds before constructing the candidate.
 
 | Area | Purpose |
 | --- | --- |
-| `0x380100`–`0x3808FF` | Constructor, update guard, first upload and palette adapters |
+| `0x380100`–`0x3808FF` | Constructor, three native-first wrappers, trampoline and palette adapter |
 | `0x380900` | Recognized actor-method table |
-| `0x381000` | Relocated SH1 handler copied from the local donor |
+| `0x380A00`–`0x380EFF` | Visual initialization, pending particle/tracked wrappers and LOD selector |
+| `0x381000` | Generated shared animation and image-upload routine |
 | `0x382000` | Eleven groups of four descriptors |
 | `0x382400` | Relocated piece geometry |
 | `0x384000`–`0x39B07F` | 44 image payloads, totaling 94,336 bytes |
@@ -131,17 +175,51 @@ and 1,534 pieces do not use the extended sprite-palette bit added by the adapter
 That scan establishes separation from these assets, not from every conceivable
 custom SAT-writing routine.
 
-Before creation and each subsequent handler call, the adapter checks the host's
+Before ordinary-enemy activation and after each native handler, the adapter checks the host's
 tile-loading cursor at `0xFF3842`. If it has advanced beyond tile `0x6F4`, the
 adapter uses the original SH2 effect instead of writing into potentially occupied
-cache space. The activation and fallback counters are retained in emulated RAM
+cache space. Returning an active effect to its native handler does not restart
+its age, delay or movement; the original descriptor's size selection is restored.
+The activation and fallback counters are retained in emulated RAM
 for diagnostic traces. This is a bounded guard, not a proof that every stage's
 asset lifetime has been exhaustively characterized.
 
 ## Executed validation and remaining limits
 
-The machine-readable checks are recorded in
-[SH2_EXPLOSION_VALIDATION.json](SH2_EXPLOSION_VALIDATION.json). The final
+Current checks are recorded in
+[SH2_EXPLOSION_V013_VALIDATION.json](SH2_EXPLOSION_V013_VALIDATION.json).
+The native-first update matched X, Y, vertical velocity, depth and projected
+coordinates for 34 samples across two ordinary explosions. A separate diagnostic
+confirmed all eleven shared poses and all 44 donor payloads after the rewrite.
+The stage-four run again observed seven modified enemy destructions with zero
+cache fallbacks. Frontend tests cover automatic mode changes, state isolation
+and missing-donor behavior; the manifest identifies the tested core hashes.
+
+The boss check used the final candidate in both modes and deliberately installed
+the native death controller in a valid live object during stage one. Its position
+and speed were controlled, and only that controller's random-number calls used
+fixed inputs. This is a controlled death-sequence test, not a naturally defeated
+boss. Both modes created 21 particles; all 21 enabled particles used SH1 artwork,
+with zero cache fallbacks. Each reached native age 30 and was removed. The
+controller reached age 41, decremented the boss counter from one to zero once,
+and the counter remained zero for the rest of the run. Matching random inputs
+produced identical particle world coordinates, and captures visibly showed the
+different artwork.
+
+The extra guest work delayed the completion-counter change by 22 video frames
+in this fixture (frame 3149 in original mode, 3171 with SH1 artwork). The last
+particle disappeared at frames 3208 and 3237 respectively. The shared burst
+reached pose eight before the last native particle expired. These measurements
+preserve the distinction between unchanged lifetime rules and changed execution
+cost. Ordinary boss scatter is not expected to match across separate modes:
+the game's random routine reads the VDP beam counter, which can change when
+additional instructions run. Every boss battle and custom effect path has not
+been exercised.
+
+The earlier checks are recorded in
+[SH2_EXPLOSION_VALIDATION.json](SH2_EXPLOSION_VALIDATION.json). The following
+stage-coverage and clock-overhead measurements were established for v0.1.12;
+they do not by themselves validate the later boss wrappers. Its final
 9,000-step stage-one run used ordinary scripted movement and firing, with lives
 held at nine solely to continue the diagnostic through the first boss approach.
 Enemy positions, animation state and destruction logic were not forced in that
@@ -183,4 +261,4 @@ the source artwork, transferred bytes and shared animation rules are verified,
 but identical host raster timing, every stage, every boss, every custom sprite
 path and complete-game behavior are not claimed. The larger graphics uploads
 also consume guest execution time. These limits are why the option is explicit,
-restart-only and disabled by default.
+disabled by default and applied through a complete game restart.

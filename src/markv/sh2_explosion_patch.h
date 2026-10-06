@@ -15,11 +15,22 @@ inline std::uint32_t longword(const std::uint8_t *p) { return (std::uint32_t(wor
 inline void put_word(std::uint8_t *p, std::uint16_t v) { p[0] = v >> 8; p[1] = v; }
 inline void put_long(std::uint8_t *p, std::uint32_t v) { put_word(p, v >> 16); put_word(p + 2, v); }
 
-// Original guest code and artwork are read from the user's authenticated donor.
-// Only the adapter instructions and relocation addresses are distributed here.
+// Artwork and palette data are read from the authenticated donor. Generated
+// visual adapters call the original SH2 motion, lifetime and cleanup handlers.
 constexpr std::uint32_t constructor = 0x380100, update = 0x380300;
-constexpr std::uint32_t initial_load = 0x380500, trampoline = 0x380700;
-constexpr std::uint32_t tick = 0x380800, handler = 0x381000;
+constexpr std::uint32_t particle_update = 0x380400, tracked_update = 0x380500;
+constexpr std::uint32_t trampoline = 0x380700, tick = 0x380800;
+constexpr std::uint32_t initialize = 0x380a00, particle_pending = 0x380c00;
+constexpr std::uint32_t tracked_pending = 0x380d00, select_lod = 0x380e00;
+constexpr std::uint32_t handler = 0x381000;
+// Only the visual methods installed by the native boss particle allocator and
+// tracked death initializers change. Boss controllers and counters stay native.
+constexpr std::uint32_t particle_sites[] = {0x18fc88, 0x18fe36};
+constexpr std::uint32_t tracked_sites[] = {
+    0x0cba62, 0x0cbc24, 0x137c88, 0x158d9a, 0x164910,
+    0x16d53c, 0x16d8bc, 0x16deca, 0x17328c, 0x173b26,
+    0x173dc6, 0x18bb30, 0x194ef4, 0x19550c, 0x1956a2
+};
 constexpr std::uint32_t clock_sites[] = {
     0x09d8b0, 0x09ec9e, 0x09ee8c, 0x09f2d2, 0x09f2ec, 0x165d86,
     0x175f86, 0x177264, 0x178f3c, 0x18f060, 0x18f654
@@ -101,40 +112,6 @@ struct code {
     void target(std::uint32_t p) { put_word(rom + p, std::uint16_t(at - p)); }
 };
 
-inline std::uint32_t relocated(std::uint32_t address)
-{
-    if (address >= 0xd84 && address < 0x114c)
-        return descriptors + address - 0xd84;
-    switch (address) {
-    case 0xff3d0c: return 0xff3882; // Game speed.
-    case 0xff1c40: return 0xff38cc; // Horizontal world drift.
-    case 0xff1c38: return phase;
-    case 0xff1c3c: return quotient;
-    case 0xff1c3e: return 0xff3880; // Low word of the homologous SH2 game clock.
-    case 0xff1c0a: return cache_base;
-    case 0xff3d16: return slots;
-    case 0xff40a2: return 0xff38a2;
-    case 0xff40a4: return 0xff38a4;
-    case 0xff3ca4: return 0xff3310; // SH2 free object list.
-    case 0xff4088: return 0xff38ce;
-    case 0xff40b8: return 0xff38f2;
-    case 0x3c63e2: return 0x365944; // Preserve SH2's projection at its own depths.
-    case 0x0c83d4: return 0x0a2390; // Same (source,destination,tile_count) ABI.
-    default: return address;
-    }
-}
-
-inline void copy_relocated(std::uint8_t *rom, const std::uint8_t *donor,
-                           std::uint32_t source, std::uint32_t end, std::uint32_t dest)
-{
-    std::copy(donor + source, donor + end, rom + dest);
-    for (std::uint32_t p = source; p + 4 <= end; p += 2) {
-        const auto old = longword(donor + p);
-        const auto replacement = relocated(old);
-        if (old != replacement)
-            put_long(rom + dest + p - source, replacement);
-    }
-}
 } // namespace sh2_explosion_detail
 
 // Apply only to an already compatibility-patched, big-endian SH2 image in a
@@ -153,6 +130,13 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
         return false;
     for (auto site : clock_sites)
         if (std::memcmp(rom + site, expected_tick, 6))
+            return false;
+
+    for (auto site : particle_sites)
+        if (word(rom + site) != 0x217c || longword(rom + site + 2) != 0x137afc || word(rom + site + 6) != 0x10)
+            return false;
+    for (auto site : tracked_sites)
+        if (word(rom + site) != 0x217c || longword(rom + site + 2) != 0x137cf0 || word(rom + site + 6) != 0x10)
             return false;
 
     for (const auto &spawn : enemy_spawns) {
@@ -230,7 +214,6 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
         }
     }
     std::copy_n(donor + 0x393aea, 32, rom + palette);
-    copy_relocated(rom, donor, 0x1d7404, 0x1d7e84, handler);
 
     // Original entry, callable without recursing through the installed hook.
     std::copy_n(expected_constructor, 8, rom + trampoline);
@@ -258,68 +241,126 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
     c.target(recognized_method);
     c.w(0x0c79); c.w(first_tile); c.l(0xff3842); auto no_room = c.branch(0x6200);
     c.w(0x2f2f); c.w(4); c.absolute(0x4eb9, trampoline); c.w(0x588f);
-    c.w(0x48e7); c.w(0x3c3c); // d2-d5/a2-a5, as in the donor handler.
-    c.w(0x246f); c.w(0x24);
-    // A new effect must not restart another live effect's shared pixels before
-    // the donor's first update. With no live effect, preload a defined image;
-    // no cached-valid flag survives across stage loads that reuse this VRAM.
-    c.w(0x7a00); c.absolute(0x2079, 0xff38f2); c.w(0x303c); c.w(255);
-    const auto cache_scan = c.at;
-    c.w(0xb1fc); c.l(0xff0000); auto cache_scan_low = c.branch(0x6500);
-    c.w(0xb1fc); c.l(0xffffb4); auto cache_scan_high = c.branch(0x6400);
-    c.w(0xb1ca); auto cache_self = c.branch(0x6700);
-    c.w(0x0ca8); c.l(update); c.w(0x10); auto cache_other = c.branch(0x6600);
-    c.w(0x0c28); c.w(0xfe); c.w(0x20); auto cache_dead = c.branch(0x6400);
-    c.w(0x7a01); auto cache_live = c.branch(0x6000);
-    c.target(cache_self); c.target(cache_other); c.target(cache_dead);
-    c.w(0x2068); c.w(0x18); c.w(0x51c8); c.w(std::uint16_t(cache_scan - c.at));
-    c.target(cache_scan_low); c.target(cache_scan_high); c.target(cache_live);
-    c.w(0x257c); c.l(update); c.w(0x10);
-    c.w(0x157c); c.w(3); c.w(0x22);
-    c.w(0x33fc); c.w(first_tile); c.l(cache_base);
-    c.absolute(0x4279, phase);
-    c.absolute(0x52b9, activations);
-    c.absolute(0x41f9, palette); c.absolute(0x43f9, 0xc004e0);
-    c.w(0x700f); const auto palette_loop = c.at;
-    c.w(0x32d8); c.w(0x51c8); c.w(std::uint16_t(palette_loop - c.at));
-    c.absolute(0x3039, palette_colour); c.absolute(0x33c0, 0xc004f0);
-    c.w(0x4a85); auto keep_live_pixels = c.branch(0x6600);
-    c.absolute(0x4eb9, initial_load);
-    c.target(keep_live_pixels);
-    c.w(0x257c); c.l(descriptors); c.w(0x1c);
-    // The first update initializes phase at its own clock in both cases.
-    c.absolute(0x4279, phase);
-    // Initial LOD/zoom, matching the common game's descriptor-driven selector.
-    c.w(0x302a); c.w(0x0a); c.w(0xec40); c.w(0x48c0); c.w(0xd080);
-    c.absolute(0x41f9, 0x366666); c.w(0x3230); c.w(0x0800);
-    c.w(0x3401); c.w(0xe04a); c.w(0xe24a); c.w(0x0c42); c.w(3);
-    auto lod_ok = c.branch(0x6300); c.w(0x7403); c.target(lod_ok);
-    c.w(0x1542); c.w(0x20); c.w(0xc4fc); c.w(22);
-    c.w(0x206a); c.w(0x1c); c.w(0x7000); c.w(0x1030); c.w(0x2806);
-    c.w(0x7600); c.w(0x3628); c.w(0x12); c.w(0xd083); c.w(0xd080);
-    c.absolute(0x43f9, 0x365e66); c.w(0x3031); c.w(0x0800);
-    c.w(0xc2c0); c.w(0x700c); c.w(0xe0a9); c.w(0x3541); c.w(0x40);
-    c.w(0x4cdf); c.w(0x3c3c); c.w(0x4e75);
+    c.w(0x2f3c); c.l(update); c.w(0x2f2f); c.w(8);
+    c.absolute(0x4eb9, initialize); c.w(0x508f); c.w(0x4e75);
     c.target(no_room); c.absolute(0x52b9, fallbacks);
     c.target(ordinary); c.target(nonzero_reaction); c.target(unknown_method);
     c.absolute(0x4ef9, trampoline);
     if (c.at >= update) return false;
 
-    // Guard an already-active effect against a later asset load using the cache.
-    c.at = update;
-    c.w(0x0c79); c.w(first_tile); c.l(0xff3842); auto run = c.branch(0x6300);
-    c.w(0x206f); c.w(4);
-    c.w(0x217c); c.l(0x137f0a); c.w(0x10);
-    c.w(0x217c); c.l(0x744); c.w(0x1c);
-    c.w(0x117c); c.w(1); c.w(0x22);
-    c.w(0x4268); c.w(0x2e); c.w(0x4268); c.w(8);
-    c.absolute(0x52b9, fallbacks); c.absolute(0x4ef9, 0x137f0a);
-    c.target(run); c.absolute(0x4ef9, handler);
+    // Execute the host handler first, including unlink/free and boss accounting.
+    // Every native cleanup exit sets state 20 to FF. Never rewrite that object.
+    // On a cache conflict retain the native descriptor and restore its handler;
+    // do not restart its lifetime, delay, velocity or boss completion counter.
+    const auto emit_wrapper = [&](std::uint32_t dest, std::uint32_t native,
+                                  std::uint32_t steady, bool pending) {
+        c.at = dest; c.w(0x48e7); c.w(0x3020); // d2-d3/a2.
+        c.w(0x246f); c.w(0x10); c.w(0x242a); c.w(0x1c);
+        c.w(0x2f0a); c.absolute(0x4eb9, native); c.w(0x588f);
+        c.w(0x0c2a); c.w(0xff); c.w(0x20); auto dead = c.branch(0x6700);
+        c.w(0x0c79); c.w(first_tile); c.l(0xff3842); auto no_cache = c.branch(0x6200);
+        if (pending) {
+            c.w(0x2f3c); c.l(steady); c.w(0x2f0a);
+            c.absolute(0x4eb9, initialize); c.w(0x508f);
+        } else {
+            c.w(0x2542); c.w(0x1c); // Keep the shared donor descriptor between uploads.
+        }
+        c.w(0x2f0a); c.absolute(0x4eb9, handler); c.w(0x588f);
+        auto done = c.branch(0x6000);
+        c.target(no_cache); c.w(0x257c); c.l(native); c.w(0x10);
+        c.w(0x157c); c.w(1); c.w(0x22); c.absolute(0x52b9, fallbacks);
+        c.w(0x2f0a); c.absolute(0x4eb9, select_lod); c.w(0x588f);
+        c.target(dead); c.target(done); c.w(0x4cdf); c.w(0x040c); c.w(0x4e75);
+        return c.at < dest + 0x100;
+    };
+    if (!emit_wrapper(update, 0x137f0a, update, false) ||
+        !emit_wrapper(particle_update, 0x137afc, particle_update, false) ||
+        !emit_wrapper(tracked_update, 0x137cf0, tracked_update, false) ||
+        !emit_wrapper(particle_pending, 0x137afc, particle_update, true) ||
+        !emit_wrapper(tracked_pending, 0x137cf0, tracked_update, true)) return false;
 
-    // Exact donor pose-zero upload, without advancing the object's position.
-    c.at = initial_load; c.w(0x7400);
-    copy_relocated(rom, donor, 0x1d7498, 0x1d7528, c.at);
-    c.at += 0x90; c.w(0x4e75);
+    // Visual initialization takes (object, steady_method). Preload only when no
+    // other live mod effect is using the shared cache. The first update still
+    // initializes its clock quotient, exactly as a new SH1 shared animation.
+    c.at = initialize; c.w(0x48e7); c.w(0x3c3c);
+    c.w(0x246f); c.w(0x24);
+    c.w(0x7a00); c.absolute(0x2079, 0xff38f2); c.w(0x303c); c.w(255);
+    const auto cache_scan = c.at;
+    c.w(0xb1fc); c.l(0xff0000); auto cache_scan_low = c.branch(0x6500);
+    c.w(0xb1fc); c.l(0xffffb4); auto cache_scan_high = c.branch(0x6400);
+    c.w(0xb1ca); auto cache_self = c.branch(0x6700);
+    c.w(0x0ca8); c.l(update); c.w(0x10); auto cache_ordinary = c.branch(0x6700);
+    c.w(0x0ca8); c.l(particle_update); c.w(0x10); auto cache_particle = c.branch(0x6700);
+    c.w(0x0ca8); c.l(tracked_update); c.w(0x10); auto cache_other = c.branch(0x6600);
+    c.target(cache_ordinary); c.target(cache_particle);
+    c.w(0x0c28); c.w(0xfe); c.w(0x20); auto cache_dead = c.branch(0x6400);
+    c.w(0x7a01); auto cache_live = c.branch(0x6000);
+    c.target(cache_self); c.target(cache_other); c.target(cache_dead);
+    c.w(0x2068); c.w(0x18); c.w(0x51c8); c.w(std::uint16_t(cache_scan - c.at));
+    c.target(cache_scan_low); c.target(cache_scan_high); c.target(cache_live);
+    c.w(0x256f); c.w(0x28); c.w(0x10);
+    c.w(0x157c); c.w(3); c.w(0x22);
+    c.w(0x33fc); c.w(first_tile); c.l(cache_base);
+    c.absolute(0x4279, phase); c.absolute(0x52b9, activations);
+    c.absolute(0x41f9, palette); c.absolute(0x43f9, 0xc004e0);
+    c.w(0x700f); const auto palette_loop = c.at;
+    c.w(0x32d8); c.w(0x51c8); c.w(std::uint16_t(palette_loop - c.at));
+    c.absolute(0x3039, palette_colour); c.absolute(0x33c0, 0xc004f0);
+    c.w(0x257c); c.l(descriptors); c.w(0x1c);
+    c.w(0x4a85); auto keep_live_pixels = c.branch(0x6600);
+    // Pending boss wrappers animate immediately in this same update. Only the
+    // ordinary constructor needs a cold preload before its later first update.
+    c.w(0x0caf); c.l(update); c.w(0x28); auto pending_upload = c.branch(0x6600);
+    c.w(0x2f0a); c.absolute(0x4eb9, handler); c.w(0x588f);
+    c.target(keep_live_pixels); c.target(pending_upload); c.absolute(0x4279, phase);
+    c.w(0x2f0a); c.absolute(0x4eb9, select_lod); c.w(0x588f);
+    c.w(0x4cdf); c.w(0x3c3c); c.w(0x4e75);
+    if (c.at >= particle_pending) return false;
+
+    // SH1's shared visual state machine: phase zero initializes at this clock;
+    // each new (clock >> 2) advances once, and pose eleven remains selected.
+    // No donor position, velocity, lifetime, clipping or free-list code is used.
+    c.at = handler; c.w(0x48e7); c.w(0x3c3c); c.w(0x246f); c.w(0x24);
+    c.w(0x7400); c.absolute(0x3439, phase);
+    c.absolute(0x3039, 0xff3880); c.w(0xe448);
+    c.w(0x4a42); auto first_pose = c.branch(0x6700);
+    c.absolute(0xb079, quotient); auto same_quotient = c.branch(0x6700);
+    c.target(first_pose); c.absolute(0x33c0, quotient);
+    c.w(0x0c42); c.w(10); auto final_pose = c.branch(0x6200);
+    c.w(0x2002); c.w(0xc0fc); c.w(88); c.absolute(0x47f9, descriptors);
+    c.w(0xd7c0); c.w(0x254b); c.w(0x1c); // pose base to object's descriptor.
+    c.w(0x7800); c.absolute(0x3839, cache_base); c.w(0x7a03);
+    c.absolute(0x49f9, slots); c.absolute(0x4bf9, 0x0a2390);
+    const auto upload_loop = c.at;
+    c.w(0x7000); c.w(0x302b); c.w(4); c.w(0x2f00);
+    c.w(0x2004); c.w(0xeb88); c.w(0x0680); c.l(0xd10000);
+    c.w(0x2f00); c.w(0x2f13); c.w(0x4e95); c.w(0x4fef); c.w(12);
+    c.w(0x7000); c.w(0x302b); c.w(8); c.w(0xd080);
+    c.w(0x3204); c.w(0x0241); c.w(0x7ff); c.w(0x0041); c.w(0x800);
+    c.w(0x3981); c.w(0x0800);
+    c.w(0x7000); c.w(0x302b); c.w(4); c.w(0xd880);
+    c.w(0x47eb); c.w(22); c.w(0x51cd); c.w(std::uint16_t(upload_loop - c.at));
+    c.w(0x5242); c.absolute(0x33c2, phase);
+    c.target(same_quotient); c.target(final_pose);
+    c.w(0x2f0a); c.absolute(0x4eb9, select_lod); c.w(0x588f);
+    c.w(0x4cdf); c.w(0x3c3c); c.w(0x4e75);
+    if (c.at >= descriptors) return false;
+
+    // The native descriptor-driven scale rule also handles a fallback to the
+    // original three-source art. Only LOD/zoom change, never X/Y/Z or projection.
+    c.at = select_lod; c.w(0x48e7); c.w(0x3020); c.w(0x246f); c.w(0x10);
+    c.w(0x302a); c.w(0x0a); c.w(0xec40); c.w(0x48c0); c.w(0xd080);
+    c.absolute(0x41f9, 0x366666); c.w(0x3230); c.w(0x0800);
+    c.w(0x206a); c.w(0x1c); c.w(0x7400); c.w(0x1428); c.w(11);
+    c.w(0x3601); c.w(0xc6c2); c.w(0x700b); c.w(0xe0ab); c.w(0x5342);
+    c.w(0xb642); auto lod_ok = c.branch(0x6300); c.w(0x3602); c.target(lod_ok);
+    c.w(0x1543); c.w(0x20); c.w(0xc6fc); c.w(22);
+    c.w(0x7000); c.w(0x1030); c.w(0x3806);
+    c.w(0x7400); c.w(0x3428); c.w(0x12); c.w(0xd082); c.w(0xd080);
+    c.absolute(0x43f9, 0x365e66); c.w(0x3031); c.w(0x0800);
+    c.w(0xc2c0); c.w(0x700c); c.w(0xe0a9); c.w(0x3541); c.w(0x40);
+    c.w(0x4cdf); c.w(0x040c); c.w(0x4e75);
+    if (c.at >= handler) return false;
 
     // Same game-clock cadence as SH1. Cover every reconstructed increment path,
     // including 18F060 used by active gameplay. A shared subroutine preserves
@@ -341,6 +382,8 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
     c.absolute(0x33c0, palette_colour); c.absolute(0x33c0, 0xc004f0);
     c.target(tick_done); c.w(0x4cdf); c.w(3); c.w(0x44df); c.w(0x4e75);
 
+    for (auto site : particle_sites) put_long(rom + site + 2, particle_pending);
+    for (auto site : tracked_sites) put_long(rom + site + 2, tracked_pending);
     put_word(rom + 0x139b84, 0x4ef9); put_long(rom + 0x139b86, constructor);
     put_word(rom + 0x139b8a, 0x4e71);
     for (auto site : clock_sites) {

@@ -21,7 +21,8 @@ inline std::string donor_next_to(const char *content_path)
 inline void apply(std::uint8_t *rom, std::size_t image_size, std::size_t capacity,
                   bool recognized_sh2, const char *content_path)
 {
-    if (!requested || !recognized_sh2 || image_size != 0x380000)
+    eligible = recognized_sh2 && image_size == 0x380000;
+    if (!requested || !eligible)
         return;
 
     const std::array<std::string, 2> candidates = {

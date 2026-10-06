@@ -78,21 +78,29 @@ See [Troubleshooting](docs/TROUBLESHOOTING.md) if the core or game does not load
 
 Put your original `jp_jp_space_harrier.smp` next to the SH2 ROM, or in
 RetroArch's **System/BIOS** directory. In **Quick Menu > Core Options >
-Emulation Hacks**, set **SH2 Enemy Explosions (Restart Required)** to
-**SH1 Artwork and Timing**, then close and reload the content. The ordinary
-**Restart** command only resets the running machine; it does not reload the ROM.
+Emulation Hacks**, set **SH2 Explosions** to **SH1 Artwork and Timing**.
+Changing this option automatically restarts SH2 from the beginning when gameplay
+resumes. The replacement covers ordinary enemies and boss explosion particles.
 
-The default is **Original SH2**. Choose it and reload to disable the patch.
-This feature uses the SH1 ROM as the source of its artwork and animation code;
-no game graphics are included in the core. Neither ROM file is modified.
+The default is **Original SH2**. Choose it to restart with the original effects.
+This feature reads its artwork and palette from the SH1 ROM and reproduces the
+source animation cadence. No game graphics are included in the core. Neither ROM file is modified.
 An absent or unsupported SH1 ROM leaves the original animation active and
 displays a message. SH1 itself is unaffected by this option.
 
 Save states belong to the selected mode: the core rejects a state from the
-other mode. MAME automatic saves use a separate folder for the modified mode.
-Start a new game after switching the setting.
+other mode. Modified-mode states from 0.1.12 are also incompatible with 0.1.13.
+MAME automatic saves use a separate folder for the modified mode. Switching the
+option starts a fresh game rather than resuming an automatic save.
+
+Ordinary explosions descend rapidly toward the ground in original SH2 as well.
+The modification keeps SH2's positions, movement and removal rules while using
+SH1's graphics and pose cadence.
 
 This optional modification is experimental. Its extra guest instructions can
-cause small timing changes: the measured introduction differs briefly on
-19 images, and the audio stream differs at sample level. An audible difference
-has not been established. Keep **Original SH2** for the unmodified experience.
+slow dense effects: a controlled boss burst delayed its completion by 22 video
+frames (about 0.37 seconds). Boss particles can disappear before displaying all
+eleven SH1 poses because they retain SH2's lifetime. Earlier measurements on
+0.1.12 also found small introduction-image and audio-sample differences; an
+audible difference has not been established. Keep **Original SH2** for the
+unmodified experience.

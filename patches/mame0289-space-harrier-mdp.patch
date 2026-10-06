@@ -1552,11 +1552,68 @@
  }
  
  void retro_reset(void)
-@@ -896,6 +900,14 @@
-    if (!retro_pause)
+@@ -883,6 +887,45 @@
+    coin_inserted = 0;
+ }
+ 
++// Full-path content is owned by the frontend; retain a local copy while the
++// old machine is destroyed and the same ROM is loaded under the new setting.
++static bool restart_for_explosion_option_change()
++{
++   if (!retro_load_ok)
++      return false;
++   struct retro_variable option = {CORE_NAME "_sh2_enemy_explosions", NULL};
++   if (!environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &option) || !option.value)
++      return false;
++   const bool wanted = !strcmp(option.value, "sh1");
++   if (wanted == sh_mdp_explosions::requested)
++      return false;
++   if (!sh_mdp_explosions::eligible)
++   {
++      sh_mdp_explosions::requested = wanted;
++      return false;
++   }
++
++   const std::string path(RPATH);
++   if (path.empty())
++      return false;
++   log_cb(RETRO_LOG_INFO, "SH2 explosion setting changed; restarting content.\n");
++   retro_unload_game();
++   sh_mdp_explosions::restart_from_beginning = true;
++   const struct retro_game_info content = {path.c_str(), NULL, 0, NULL};
++   const bool loaded = retro_load_game(&content);
++   sh_mdp_explosions::restart_from_beginning = false;
++   if (!loaded)
++   {
++      retro_pause = -1;
++      sh_mdp_explosions::active = false;
++      sh_mdp_explosions::eligible = false;
++      sh_mdp_explosions::notification = sh_mdp_explosions::result::reload_failed;
++   }
++   else if (!wanted && sh_mdp_explosions::eligible)
++      sh_mdp_explosions::notification = sh_mdp_explosions::result::original_restored;
++   return true;
++}
++
+ void retro_run(void)
+ {
+    bool updated = false;
+@@ -890,15 +933,24 @@
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
+    {
+       check_variables();
+-      update_runtime_variables(false);
+-   }
+-
+-   if (!retro_pause)
++      if (!restart_for_explosion_option_change())
++         update_runtime_variables(false);
++   }
++
++   if (retro_load_ok && !retro_pause)
        retro_main_loop();
     RLOOP = 1;
-+
+ 
 +   const auto explosion_result = sh_mdp_explosions::notification.exchange(sh_mdp_explosions::result::none);
 +   if (const char *text = sh_mdp_explosions::message(explosion_result))
 +   {
@@ -1564,10 +1621,14 @@
 +      struct retro_message message = {text, 360};
 +      environ_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &message);
 +   }
- 
++
     /* Automatic loading fast-forward */
-    if (autoloadfastforward)
-@@ -932,6 +944,21 @@
+-   if (autoloadfastforward)
++   if (retro_load_ok && autoloadfastforward)
+       retro_autoloadfastforwarding();
+ 
+    /* LED interface */
+@@ -932,6 +984,24 @@
  bool retro_load_game(const struct retro_game_info *info)
  {
     retro_load_ok = false;
@@ -1578,9 +1639,12 @@
 +   output_audio_buffer.size = 0;
 +   RLOOP = 1;
 +   ENDEXEC = 0;
++   mame_reset = -1;
++   coin_inserted = 0;
 +
 +   sh_mdp_explosions::requested = false;
 +   sh_mdp_explosions::active = false;
++   sh_mdp_explosions::eligible = false;
 +   sh_mdp_explosions::notification = sh_mdp_explosions::result::none;
 +   sh_mdp_explosions::system_directory = retro_system_directory ? retro_system_directory : "";
 +   struct retro_variable explosion_option = {CORE_NAME "_sh2_enemy_explosions", NULL};
@@ -1589,7 +1653,7 @@
  
     check_variables();
  
-@@ -962,7 +989,20 @@
+@@ -962,7 +1032,20 @@
        strcpy(RPATH, info->path);
     }
  
@@ -1611,7 +1675,7 @@
  
     /* Force success with empty content */
     if (!RPATH[0])
-@@ -988,11 +1028,21 @@
+@@ -988,19 +1071,34 @@
     if (     mame_machine_manager::instance() != NULL
           && mame_machine_manager::instance()->machine() != NULL
           && mame_machine_manager::instance()->machine()->options().autosave()
@@ -1632,34 +1696,57 @@
 +   audio_ready = false;
 +   output_audio_buffer.size = 0;
 +   sh_mdp_explosions::active = false;
++   sh_mdp_explosions::eligible = false;
 +   sh_mdp_explosions::notification = sh_mdp_explosions::result::none;
  }
  
  size_t retro_serialize_size(void)
-@@ -1000,12 +1050,21 @@
+ {
     if (     mame_machine_manager::instance() != NULL
- 	      && mame_machine_manager::instance()->machine() != NULL
- 	      && ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
+-	      && mame_machine_manager::instance()->machine() != NULL
+-	      && ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
 -      return ram_state::get_size(mame_machine_manager::instance()->machine()->save());
++         && mame_machine_manager::instance()->machine() != NULL
++         && ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
++      // A runtime mode change must not grow a buffer cached by the frontend.
++      // Original SH2 reserves trailing zeros; active mode uses the same space
++      // for its versioned prefix. Other games retain their native state size.
 +      return ram_state::get_size(mame_machine_manager::instance()->machine()->save())
-+            + (sh_mdp_explosions::active ? sizeof(sh_mdp_explosions::state_tag) : 0);
++            + (sh_mdp_explosions::eligible ? sizeof(sh_mdp_explosions::state_tag) : 0);
  
     return 0;
  }
- bool retro_serialize(void *data, size_t size)
+@@ -1008,9 +1106,27 @@
  {
-+   if (sh_mdp_explosions::active)
-+   {
-+      if (!data || size < sizeof(sh_mdp_explosions::state_tag))
-+         return false;
-+      memcpy(data, sh_mdp_explosions::state_tag, sizeof(sh_mdp_explosions::state_tag));
-+      data = static_cast<uint8_t *>(data) + sizeof(sh_mdp_explosions::state_tag);
-+      size -= sizeof(sh_mdp_explosions::state_tag);
-+   }
     save_error error = STATERR_NOT_FOUND;
     if (     mame_machine_manager::instance() != NULL
- 	      && mame_machine_manager::instance()->machine() != NULL
-@@ -1018,6 +1077,16 @@
+-	      && mame_machine_manager::instance()->machine() != NULL
+-	      && ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
++         && mame_machine_manager::instance()->machine() != NULL
++         && ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
++   {
++      const size_t payload = ram_state::get_size(mame_machine_manager::instance()->machine()->save());
++      if (sh_mdp_explosions::eligible)
++      {
++         const size_t envelope = sizeof(sh_mdp_explosions::state_tag);
++         if (!data || size < payload + envelope)
++            return false;
++         if (sh_mdp_explosions::active)
++         {
++            memcpy(data, sh_mdp_explosions::state_tag, envelope);
++            data = static_cast<uint8_t *>(data) + envelope;
++         }
++         else
++            memset(static_cast<uint8_t *>(data) + payload, 0, envelope);
++         // MAME's buffer API requires its exact native payload size.
++         size = payload;
++      }
+       error = mame_machine_manager::instance()->machine()->save().write_buffer((u8*)data, size);
++   }
+ 
+    if (error != STATERR_NONE)
+       log_cb(RETRO_LOG_ERROR, "State save error %d.\n", error);
+@@ -1018,11 +1134,42 @@
  }
  bool retro_unserialize(const void *data, size_t size)
  {
@@ -1668,14 +1755,41 @@
 +      log_cb(RETRO_LOG_ERROR, "State load rejected: SH2 explosion patch setting or version differs.\n");
 +      return false;
 +   }
-+   if (sh_mdp_explosions::active)
-+   {
-+      data = static_cast<const uint8_t *>(data) + sizeof(sh_mdp_explosions::state_tag);
-+      size -= sizeof(sh_mdp_explosions::state_tag);
-+   }
     save_error error = STATERR_NOT_FOUND;
     if (     mame_machine_manager::instance() != NULL
           && mame_machine_manager::instance()->machine() != NULL
+-         &&	ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
++         && ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
++   {
++      const size_t payload = ram_state::get_size(mame_machine_manager::instance()->machine()->save());
++      const size_t envelope = sizeof(sh_mdp_explosions::state_tag);
++      if (sh_mdp_explosions::active)
++      {
++         if (size != payload + envelope)
++            return false;
++         data = static_cast<const uint8_t *>(data) + envelope;
++         size = payload;
++      }
++      else if (sh_mdp_explosions::eligible)
++      {
++         // Accept legacy unpadded original states as well as the fixed-size
++         // current envelope, but never silently ignore arbitrary trailing data.
++         if (size == payload + envelope)
++         {
++            const auto *padding = static_cast<const uint8_t *>(data) + payload;
++            for (size_t i = 0; i < envelope; ++i)
++               if (padding[i] != 0)
++                  return false;
++            size = payload;
++         }
++         else if (size != payload)
++            return false;
++      }
+       error = mame_machine_manager::instance()->machine()->save().read_buffer((u8*)data, size);
++   }
+ 
+    if (error != STATERR_NONE)
+       log_cb(RETRO_LOG_ERROR, "State load error %d.\n", error);
 --- a/src/emu/audio_effects/filter.cpp
 +++ b/src/emu/audio_effects/filter.cpp
 @@ -26,6 +26,19 @@ audio_effect_filter::audio_effect_filter(speaker_device *speaker, u32 sample_rat
@@ -1706,9 +1820,9 @@
  struct retro_core_option_v2_definition option_defs_us[] = {
 +   {
 +      CORE_NAME "_sh2_enemy_explosions",
-+      "SH2 Enemy Explosions (Restart Required)",
++      "SH2 Explosions",
 +      NULL,
-+      "Use SH1's enemy explosion artwork and animation timing in SH2. Requires the original jp_jp_space_harrier.smp beside the SH2 ROM or in the system folder. Applies a patch in memory; the ROM file stays unchanged. Restart content after changing. Save states must use the same setting.",
++      "Use SH1's explosion artwork and animation timing for SH2 enemies and bosses. Requires the original jp_jp_space_harrier.smp beside the SH2 ROM or in the system folder. Applies a patch in memory; the ROM file stays unchanged. Changing this option restarts SH2 from the beginning. Save states must use the same setting and patch version.",
 +      NULL,
 +      "hacks",
 +      {
@@ -1743,6 +1857,21 @@
  #include "fileio.h"
  #include "http.h"
  #include "image.h"
+@@ -303,12 +304,12 @@
+ 		m_video->begin_recording(filename, movie_recording::format::AVI);
+ 
+ 	const char *savegame = options().state();
+-	if (savegame[0] != 0)
++	if (savegame[0] != 0 && !sh_mdp_explosions::restart_from_beginning)
+ 	{
+ 		// if we're coming in with a savegame request, process it now
+ 		schedule_load(savegame);
+ 	}
+-	else if (options().autosave())
++	else if (options().autosave() && !sh_mdp_explosions::restart_from_beginning)
+ 	{
+ 		// if we're in autosave mode, schedule a load
+ 		// m_save.supported() won't be set until save state registrations are finalised
 @@ -644,6 +645,10 @@
  		// take into account the statename option
  		const char *stateopt = options().state_name();
@@ -1750,7 +1879,7 @@
 +		// Disk/autosave states bypass the Libretro envelope. Select the folder
 +		// per operation without changing options retained across content loads.
 +		if (sh_mdp_explosions::active)
-+			statename += PATH_SEPARATOR "sh2-sh1-explosions-v1";
++			statename += PATH_SEPARATOR "sh2-sh1-explosions-v2";
  		result = string_format("%s%s%s.sta", statename, PATH_SEPARATOR, filename);
  	}
  	return result;

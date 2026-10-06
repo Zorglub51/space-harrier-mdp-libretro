@@ -24,6 +24,10 @@ ROM_INFO = {
 }
 CLOCK_SITES = (0x09d8b0, 0x09ec9e, 0x09ee8c, 0x09f2d2, 0x09f2ec,
                0x165d86, 0x175f86, 0x177264, 0x178f3c, 0x18f060, 0x18f654)
+PARTICLE_SITES = (0x18fc88, 0x18fe36)
+TRACKED_SITES = (0x0cba62, 0x0cbc24, 0x137c88, 0x158d9a, 0x164910,
+                 0x16d53c, 0x16d8bc, 0x16deca, 0x17328c, 0x173b26,
+                 0x173dc6, 0x18bb30, 0x194ef4, 0x19550c, 0x1956a2)
 
 
 def word(data, offset):
@@ -196,6 +200,37 @@ class PrivateExplosionPayloadTests(CompiledProbe):
             size = self.base[record + 10] * 12
             self.assertEqual(self.output[parts:parts + size], self.base[parts:parts + size])
 
+    def test_native_motion_and_cleanup_run_before_visual_wrappers(self):
+        # All three original handlers, including their free-list writes and
+        # the tracked-death counter decrement, must remain byte-identical.
+        for start, end in ((0x137afc, 0x137c78), (0x137cf0, 0x137f0a),
+                           (0x137f0a, 0x13811e)):
+            self.assertEqual(self.output[start:end], self.base[start:end])
+        for wrapper, native in ((0x380300, 0x137f0a), (0x380400, 0x137afc),
+                                (0x380500, 0x137cf0), (0x380c00, 0x137afc),
+                                (0x380d00, 0x137cf0)):
+            with self.subTest(wrapper=f"{wrapper:06x}"):
+                # Save preserved registers and the old descriptor, then invoke
+                # the original handler before any visual mutation. Returning
+                # a freed object (state FF) must branch directly to the epilogue.
+                prefix = (bytes.fromhex("48e73020246f0010242a001c2f0a4eb9") +
+                          struct.pack(">I", native) +
+                          bytes.fromhex("588f0c2a00ff00206700"))
+                self.assertEqual(self.output[wrapper:wrapper + len(prefix)], prefix)
+                displacement = struct.unpack_from(">h", self.output, wrapper + len(prefix))[0]
+                target = wrapper + len(prefix) + displacement
+                self.assertEqual(self.output[target:target + 6], bytes.fromhex("4cdf040c4e75"))
+
+    def test_hostile_actor_and_boss_particle_sites_only_change_the_method(self):
+        for sites, native, wrapper in ((PARTICLE_SITES, 0x137afc, 0x380c00),
+                                       (TRACKED_SITES, 0x137cf0, 0x380d00)):
+            for site in sites:
+                with self.subTest(site=f"{site:06x}"):
+                    expected = bytes.fromhex("217c") + struct.pack(">I", native) + bytes.fromhex("0010")
+                    self.assertEqual(self.base[site:site + 8], expected)
+                    expected = bytes.fromhex("217c") + struct.pack(">I", wrapper) + bytes.fromhex("0010")
+                    self.assertEqual(self.output[site:site + 8], expected)
+
     def test_classifier_matches_actor_factory_signatures_and_excludes_scenery(self):
         entries = self.run_probe("classifier")
         self.assertEqual(len(entries), 51)
@@ -217,7 +252,8 @@ class PrivateExplosionPayloadTests(CompiledProbe):
 
     def test_original_rom_changes_are_confined_to_validated_guest_operands(self):
         allowed = bytearray(len(self.base))
-        hook_ranges = [(0x139b84, 0x139b8c)] + [(site, site + 6) for site in CLOCK_SITES]
+        hook_ranges = ([(0x139b84, 0x139b8c)] + [(site, site + 6) for site in CLOCK_SITES] +
+                       [(site + 2, site + 6) for site in PARTICLE_SITES + TRACKED_SITES])
         for first, end in hook_ranges:
             allowed[first:end] = b"\1" * (end - first)
         references = 0
@@ -249,6 +285,8 @@ class PrivateExplosionPayloadTests(CompiledProbe):
                  ("actor_factory_target", "sh2", 0x0a4b56, b"\0\0\0\0"),
                  ("actor_reaction", "sh2", 0x0a4b68, b"\0\0"),
                  ("last_actor_factory", "sh2", 0x0a5ade, b"\0\0"),
+                 ("boss_particle_method", "sh2", 0x18fc8a, b"\0\0\0\0"),
+                 ("tracked_death_method", "sh2", 0x1956a4, b"\0\0\0\0"),
                  ("donor_entry", "sh1", 0x1d7404, b"\0\0"),
                  ("pixel_pointer_wrap", "sh1", 0xd84, b"\xff\xff\xff\xf0"),
                  ("piece_pointer_wrap", "sh1", 0xd90, b"\xff\xff\xff\xf0"))

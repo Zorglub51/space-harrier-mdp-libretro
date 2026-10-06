@@ -77,6 +77,7 @@ int main(int argc, char **argv) {
     sh_mdp_explosions::system_directory = argv[2];
     std::vector<std::uint8_t> rom(0x400000, 0xa5);
     sh_mdp_explosions::apply(rom.data(), std::stoul(argv[6]), rom.size(), sh2, argv[1]);
+    if (sh_mdp_explosions::eligible != (sh2 && std::stoul(argv[6]) == 0x380000)) return 8;
     const bool changed = std::any_of(rom.begin(), rom.end(), [](auto b) { return b != 0xa5; });
     std::cout << sh_mdp_explosions::active << ' ' << int(sh_mdp_explosions::notification.load())
               << ' ' << changed << '\n';
@@ -86,7 +87,7 @@ int main(int argc, char **argv) {
     if (!state_matches(old_state, sizeof(old_state), false) || state_matches(old_state, sizeof(old_state), true)) return 3;
     if (!state_matches(mod_state, sizeof(mod_state), true) || state_matches(mod_state, sizeof(mod_state), false)) return 4;
     if (state_matches(mod_state, 8, true) || state_matches(mod_state, 8, false)) return 5;
-    mod_state[8] = 2;
+    mod_state[8] = 1; // The previous published modification is incompatible.
     if (state_matches(mod_state, sizeof(mod_state), true) || state_matches(mod_state, sizeof(mod_state), false)) return 6;
     if (state_matches(nullptr, 0, false) || state_matches(nullptr, 0, true)) return 7;
 }

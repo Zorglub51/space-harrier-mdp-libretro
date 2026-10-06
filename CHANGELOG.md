@@ -6,6 +6,55 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.13] - 2026-10-06
+
+### SH2 explosion option and positioning
+
+- Changing **SH2 Explosions** now restarts the loaded SH2 game automatically,
+  applying the selected ROM mode before execution resumes. Previously the
+  setting only applied after closing and reloading content, and a soft reset
+  retained the old effect. The option remains disabled by default.
+- Keep the new setting latched even when the SH1 donor is missing or invalid,
+  preventing repeated restarts on unrelated option updates. Changing this
+  SH2-only option does not restart SH1.
+- Start option-triggered restarts from the beginning, even with MAME automatic
+  saves enabled. Normal content loads retain their automatic-save behavior.
+- Preserve SH2's native explosion movement and removal rules while importing
+  SH1 artwork, palette and pose cadence. Original SH2 already brings ordinary
+  airborne explosions to the ground in four game updates, about 0.13 seconds.
+  The previous transplanted movement could overshoot ground height and lose
+  one depth update; the visual-only adapter removes that difference.
+- Extend the replacement to boss explosion particles while retaining the
+  native destruction controller, object cleanup and boss-completion counters.
+- Use modified-state format 2 and a new native-state subfolder. Modified states
+  from 0.1.12 are rejected. Reserve the same Libretro state capacity in both
+  SH2 modes so frontends can keep one buffer across option changes. Original
+  states add zero padding; legacy original states remain loadable.
+- Keep automatic fast-forward from accessing a missing machine if an internal
+  reload fails, allowing the reload-failure message to reach the frontend.
+
+### Validation and experimental limits
+
+- Verify Original → SH1 → Original → SH1 changes within one frontend session,
+  including threaded execution, automatic saves and a queued reset. Same-mode
+  output repeats exactly; incompatible states are rejected without changing
+  the running machine. Default-off SH2 and SH1 retain the 0.1.11 video and PCM
+  in the measured 3,400-step and 2,400-step sequences respectively.
+- Match all 34 sampled positions across two ordinary explosions to native SH2.
+  Verify all eleven donor poses and all 44 image payloads in a separate
+  diagnostic, and seven stage-four replacements with no cache fallback.
+- Exercise a controlled boss death sequence: 21 particles use SH1 artwork,
+  all follow native removal rules, and the boss-completion counter decrements
+  exactly once. This is a forced death sequence, not a complete boss playthrough.
+- Added guest execution has a measurable cost: that boss burst completes its
+  counter update 22 video frames later. Shared animation restarts and SH2's
+  particle lifetime mean the burst reaches pose eight before removal, rather
+  than displaying all eleven poses. Full all-stage and all-boss coverage is
+  not claimed. The original mode remains unchanged.
+- The configured suite runs 108 tests: 96 pass and 12 optional native-reference
+  checks are skipped. The ROM adapter also passes address and undefined-behavior
+  sanitizers with the private original ROMs.
+
 ## [0.1.12] - 2026-10-06
 
 ### Optional SH1 enemy explosions in SH2

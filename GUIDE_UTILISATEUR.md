@@ -83,25 +83,34 @@ mémoire. Il ne modifie jamais votre fichier `.smp`.
 Placez votre ROM originale `jp_jp_space_harrier.smp` à côté de celle de SH2,
 ou dans le répertoire **System/BIOS** de RetroArch. Dans **Menu rapide >
 Options du cœur > Emulation Hacks**, choisissez **SH1 Artwork and Timing**
-pour **SH2 Enemy Explosions (Restart Required)**, puis fermez et rechargez
-le contenu. La commande **Redémarrer** seule réinitialise la machine sans
-recharger la ROM et ne suffit donc pas.
+pour **SH2 Explosions**. Le changement relance automatiquement SH2 depuis
+le début lorsque vous reprenez le jeu. Le remplacement concerne les ennemis
+ordinaires et les particules d’explosion des boss.
 
-Le réglage par défaut est **Original SH2**. Sélectionnez-le puis rechargez
-le jeu pour désactiver le patch. Le cœur extrait les dessins et le code
-d’animation de votre ROM SH1 ; aucun fichier ROM n’est modifié. Si SH1 manque
+Le réglage par défaut est **Original SH2**. Sélectionnez-le pour relancer
+le jeu avec ses effets d’origine. Le cœur extrait les dessins et la palette
+de votre ROM SH1 et reproduit sa cadence d’animation ; aucun fichier ROM n’est modifié. Si SH1 manque
 ou ne correspond pas à la version attendue, l’animation originale est conservée
 et un message vous en informe. Cette option n’affecte pas le jeu SH1.
 
 Les sauvegardes instantanées sont propres au mode choisi : le cœur refuse
-celles de l’autre mode. Les sauvegardes automatiques MAME utilisent un dossier
-séparé pour le mode modifié. Recommencez une partie après avoir changé le réglage.
+celles de l’autre mode. Les états du mode modifié créés avec la version 0.1.12
+ne sont pas compatibles avec la 0.1.13. Les sauvegardes automatiques MAME utilisent
+un dossier séparé pour le mode modifié. Changer l’option commence une nouvelle
+partie sans recharger une sauvegarde automatique.
+
+Les explosions ordinaires descendent rapidement vers le sol dans SH2 d’origine
+également. Le mod conserve les positions, les déplacements et les règles de
+disparition de SH2, avec les dessins et la cadence des poses de SH1.
 
 Ce mod facultatif est expérimental. Le temps pris par ses instructions peut
-produire de petits écarts de timing : 19 images d’introduction sont brièvement
-différentes dans le parcours mesuré, et le flux audio diffère au niveau des
-échantillons. Une différence audible n’a pas été établie. Gardez **Original SH2**
-pour retrouver le comportement d’origine.
+ralentir les effets denses : une rafale de boss contrôlée a retardé sa fin de
+22 images vidéo, soit environ 0,37 seconde. Les particules de boss peuvent
+disparaître avant d’afficher les onze poses de SH1, car elles gardent leur durée
+de vie de SH2. Les mesures précédentes sur la 0.1.12 relevaient aussi de petits
+écarts d’image dans l’introduction et d’échantillons audio ; une différence
+audible n’a pas été établie. Gardez **Original SH2** pour retrouver le
+comportement d’origine.
 
 ## Commandes conseillées
 

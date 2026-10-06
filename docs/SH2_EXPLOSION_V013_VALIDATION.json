@@ -1,0 +1,808 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "platform": "macOS arm64",
+  "feature": "SH2 runtime explosion option restart, native SH2 motion and boss effects",
+  "release_candidate_core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+  "candidate_difference": "Core2 avoids a duplicate cold-cache preload during the pending boss first update. Core4 adds fixed-capacity Libretro state serialization and a failed-reload fast-forward guard; its guest ROM patch is unchanged from core2. Each section retains its actual tested binary identity.",
+  "baseline_core_sha256": "2d599feb150c90b263db19f0e94ac918805c069b70302aee281ec1a84a106f2b",
+  "option": {
+    "key": "mame_sh2_enemy_explosions",
+    "default": "original",
+    "enabled": "sh1",
+    "application": "GET_VARIABLE_UPDATE restarts the running SH2 content internally; the frontend does not unload or load between phases.",
+    "enabled_state_version": 2,
+    "native_relative_state_namespace": "sh2-sh1-explosions-v2"
+  },
+  "integration": [
+    {
+      "passed": true,
+      "frames": 3400,
+      "input": "reference",
+      "style": "default",
+      "thread_mode": "enabled",
+      "auto_save": true,
+      "reset_before_toggle": true,
+      "donor_kind": "valid",
+      "rom_sha1": "80f576af01d6413c0b92073e2f947b0431f12a74",
+      "case": "threaded-auto-toggle",
+      "core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+      "runtime": {
+        "modes": [
+          "original",
+          "sh1",
+          "original",
+          "sh1"
+        ],
+        "frontend_load_calls": 1,
+        "frontend_unload_calls_during_test": 0,
+        "state_buffer_allocated_at_load": true,
+        "cached_state_capacity": 9219460,
+        "autosave_checks": {
+          "original_file_exists_before_return": true,
+          "separate_mod_file_exists_before_return": true,
+          "original_file_unchanged_while_mod_runs": true,
+          "mod_file_unchanged_while_original_runs": true,
+          "exactly_two_state_paths": true
+        },
+        "guard_checks_passed": 77,
+        "state_size_constant": true,
+        "phases": [
+          {
+            "style": "original",
+            "expected_active": false,
+            "mod_state_tag": false,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "45fe0bfcda32b6a0de475fb18ac5b4acada7a1f821c6fdb0ac8ad6dfad485146",
+              "audio_sha256": "496bd3c1fb2307d938816ce27c77af1025daf3dc4b7d58584e08dad49c913417",
+              "video_frames": 3399,
+              "audio_stereo_frames": 2724300
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [],
+            "option_queries": 0,
+            "initial_autoload_ui_excluded_from_fresh_reference": true,
+            "unchanged_update": {
+              "passed": true,
+              "frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": []
+            }
+          },
+          {
+            "style": "sh1",
+            "expected_active": true,
+            "mod_state_tag": true,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "5873bebfd8730e7476a483a89ad19ceb5b345d94788ebdcbe05e7071c85dce0b",
+              "audio_sha256": "2267eba64c6115ef0c5a005ead13187dbe8321328a9235daf14a77c935e6ef8a",
+              "video_frames": 3399,
+              "audio_stereo_frames": 2724300
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [
+              "SH2: SH1 enemy and boss explosions enabled."
+            ],
+            "option_queries": 2,
+            "fresh_start_prefix_frames": 600,
+            "fresh_start_prefix_matches": true,
+            "foreign_state_rejected": true,
+            "state_unchanged_after_rejection": true,
+            "unchanged_update": {
+              "passed": true,
+              "frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": []
+            }
+          },
+          {
+            "style": "original",
+            "expected_active": false,
+            "mod_state_tag": false,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "2323d8f512590417ed62796297a2810302edfecaf0015269b8d7d79e7768d340",
+              "audio_sha256": "496bd3c1fb2307d938816ce27c77af1025daf3dc4b7d58584e08dad49c913417",
+              "video_frames": 3399,
+              "audio_stereo_frames": 2724300
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [
+              "SH2: original explosions restored. Game restarted."
+            ],
+            "option_queries": 2,
+            "original_state_envelope": {
+              "trailing_zero_bytes": 16,
+              "padding_is_zero": true,
+              "postload_changed_bytes": 10,
+              "postload_first_changed_offsets": [
+                9218409,
+                9218442,
+                9218443,
+                9218444,
+                9218445,
+                9218446,
+                9218447,
+                9218448
+              ],
+              "legacy_original_accepted": true,
+              "legacy_postload_matches_padded": true,
+              "future_frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "padded_future": {
+                "video_sha256": "073b0118a78bf996bacd052513774408f0a831e1a7b75ff77504a332ec33db57",
+                "audio_sha256": "d71b369b9364e2a9fed28a63f54c05740173b3e2d3e1b71fe90614dbc86951f5",
+                "video_frames": 120,
+                "audio_stereo_frames": 96128
+              },
+              "legacy_future": {
+                "video_sha256": "073b0118a78bf996bacd052513774408f0a831e1a7b75ff77504a332ec33db57",
+                "audio_sha256": "d71b369b9364e2a9fed28a63f54c05740173b3e2d3e1b71fe90614dbc86951f5",
+                "video_frames": 120,
+                "audio_stereo_frames": 96128
+              },
+              "passed": true
+            },
+            "fresh_start_prefix_frames": 600,
+            "fresh_start_prefix_matches": true,
+            "clean_original_stream_matches": {
+              "video_sha256": true,
+              "audio_sha256": true,
+              "audio_stereo_frames": true
+            },
+            "foreign_state_rejected": true,
+            "state_unchanged_after_rejection": true,
+            "unchanged_update": {
+              "passed": true,
+              "frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": []
+            }
+          },
+          {
+            "style": "sh1",
+            "expected_active": true,
+            "mod_state_tag": true,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "5873bebfd8730e7476a483a89ad19ceb5b345d94788ebdcbe05e7071c85dce0b",
+              "audio_sha256": "2267eba64c6115ef0c5a005ead13187dbe8321328a9235daf14a77c935e6ef8a",
+              "video_frames": 3399,
+              "audio_stereo_frames": 2724300
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [
+              "SH2: SH1 enemy and boss explosions enabled."
+            ],
+            "option_queries": 2,
+            "fresh_start_prefix_frames": 600,
+            "fresh_start_prefix_matches": true,
+            "same_mode_fresh_stream": {
+              "video_difference": null,
+              "audio_difference": null
+            },
+            "foreign_state_rejected": true,
+            "state_unchanged_after_rejection": true,
+            "unchanged_update": {
+              "passed": true,
+              "frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": []
+            }
+          }
+        ]
+      },
+      "messages": [
+        "SH2: SH1 enemy and boss explosions enabled.",
+        "SH2: original explosions restored. Game restarted.",
+        "SH2: SH1 enemy and boss explosions enabled."
+      ],
+      "option_update_notifications": 7,
+      "actual_option_queries": {
+        "option_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true
+      },
+      "clean_startup_reference": {
+        "core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+        "thread_mode": "enabled",
+        "auto_save": false,
+        "stream": {
+          "video_sha256": "2323d8f512590417ed62796297a2810302edfecaf0015269b8d7d79e7768d340",
+          "audio_sha256": "496bd3c1fb2307d938816ce27c77af1025daf3dc4b7d58584e08dad49c913417",
+          "video_frames": 3399,
+          "audio_stereo_frames": 2724300
+        }
+      },
+      "private_report_sha256": "34b03a04f9d429820986adeb023494295f8a2945db995f2981d83097e92579f0"
+    },
+    {
+      "passed": true,
+      "frames": 3400,
+      "input": "reference",
+      "style": "default",
+      "thread_mode": "disabled",
+      "auto_save": false,
+      "reset_before_toggle": false,
+      "donor_kind": "missing",
+      "rom_sha1": "80f576af01d6413c0b92073e2f947b0431f12a74",
+      "case": "default-off",
+      "core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+      "stream": {
+        "video_sha256": "2323d8f512590417ed62796297a2810302edfecaf0015269b8d7d79e7768d340",
+        "audio_sha256": "496bd3c1fb2307d938816ce27c77af1025daf3dc4b7d58584e08dad49c913417",
+        "video_frames": 3399,
+        "audio_stereo_frames": 2724300
+      },
+      "mod_state_tag": false,
+      "baseline_equal": {
+        "video_sha256": true,
+        "audio_sha256": true,
+        "audio_stereo_frames": true
+      },
+      "save_load": {
+        "passed": true,
+        "frames": 120,
+        "video_difference": null,
+        "audio_difference": null
+      },
+      "private_report_sha256": "a03e6d0270a337dd8fbda72d31c5aa30445cc15de3a9c956f9f0daa5653debfb"
+    },
+    {
+      "passed": true,
+      "frames": 2400,
+      "input": "scripted",
+      "style": "sh1",
+      "thread_mode": "disabled",
+      "auto_save": false,
+      "reset_before_toggle": false,
+      "donor_kind": "missing",
+      "rom_sha1": "e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72",
+      "case": "sh1-unchanged",
+      "core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+      "stream": {
+        "video_sha256": "8b350b405082d1d1c1d3391101c00d0bc63f0bfd007e6dd7c0181d0567e2515e",
+        "audio_sha256": "f4dad3b0ee2e081a360ab2a300ac10a5ee21b65637d002b644d37113f6802f81",
+        "video_frames": 2399,
+        "audio_stereo_frames": 1923265
+      },
+      "mod_state_tag": false,
+      "baseline_equal": {
+        "video_sha256": true,
+        "audio_sha256": true,
+        "audio_stereo_frames": true
+      },
+      "save_load": {
+        "passed": true,
+        "frames": 120,
+        "video_difference": null,
+        "audio_difference": null
+      },
+      "private_report_sha256": "f84047050f976605811ed8eb67c383b19086dfe3cf3daece8de36633ba851c78"
+    },
+    {
+      "passed": true,
+      "frames": 3750,
+      "input": "stage4fire",
+      "style": "sh1",
+      "thread_mode": "disabled",
+      "auto_save": false,
+      "reset_before_toggle": false,
+      "donor_kind": "valid",
+      "rom_sha1": "80f576af01d6413c0b92073e2f947b0431f12a74",
+      "case": "enabled-state-stage4",
+      "core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+      "stream": {
+        "video_sha256": "3d9ba24249860b21b4f06ac1f3316302bace2d4a6011370ebae95e6cb9656c4e",
+        "audio_sha256": "0b31131d6a32b6ce2b22984f25d36c778acb526826ead074803101f7bb281008",
+        "video_frames": 3749,
+        "audio_stereo_frames": 3004662
+      },
+      "mod_state_tag": true,
+      "save_load": {
+        "passed": true,
+        "frames": 120,
+        "video_difference": null,
+        "audio_difference": null
+      },
+      "private_report_sha256": "6e4faaf1caaa6784e4a617cb3ab313f111c973f60accba8c34ddbd8b4856a17e"
+    },
+    {
+      "passed": true,
+      "frames": 1200,
+      "input": "attract",
+      "style": "default",
+      "thread_mode": "enabled",
+      "auto_save": false,
+      "reset_before_toggle": false,
+      "donor_kind": "missing",
+      "rom_sha1": "80f576af01d6413c0b92073e2f947b0431f12a74",
+      "case": "missing-toggle",
+      "core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+      "runtime": {
+        "modes": [
+          "original",
+          "sh1",
+          "original"
+        ],
+        "frontend_load_calls": 1,
+        "frontend_unload_calls_during_test": 0,
+        "state_buffer_allocated_at_load": true,
+        "cached_state_capacity": 9219460,
+        "guard_checks_passed": 52,
+        "state_size_constant": true,
+        "phases": [
+          {
+            "style": "original",
+            "expected_active": false,
+            "mod_state_tag": false,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "dbab4da49f5c38d574b3080422f934ae768d419c92d399133a51210247842ecb",
+              "audio_sha256": "38ff610c923a412ef065df4d4affd69ca918177b56f4ab0acead2072f412f37b",
+              "video_frames": 1199,
+              "audio_stereo_frames": 962032
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [],
+            "option_queries": 0,
+            "unchanged_update": {
+              "passed": true,
+              "frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": []
+            }
+          },
+          {
+            "style": "sh1",
+            "expected_active": false,
+            "mod_state_tag": false,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "dbab4da49f5c38d574b3080422f934ae768d419c92d399133a51210247842ecb",
+              "audio_sha256": "38ff610c923a412ef065df4d4affd69ca918177b56f4ab0acead2072f412f37b",
+              "video_frames": 1199,
+              "audio_stereo_frames": 962032
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [
+              "SH2: original explosions retained. Put jp_jp_space_harrier.smp beside SH2 or in the system folder, then restart content."
+            ],
+            "option_queries": 2,
+            "fresh_start_prefix_frames": 600,
+            "fresh_start_prefix_matches": true,
+            "same_mode_fresh_stream": {
+              "video_difference": null,
+              "audio_difference": null
+            },
+            "unchanged_update": {
+              "passed": true,
+              "frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": []
+            }
+          },
+          {
+            "style": "original",
+            "expected_active": false,
+            "mod_state_tag": false,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "dbab4da49f5c38d574b3080422f934ae768d419c92d399133a51210247842ecb",
+              "audio_sha256": "38ff610c923a412ef065df4d4affd69ca918177b56f4ab0acead2072f412f37b",
+              "video_frames": 1199,
+              "audio_stereo_frames": 962032
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [
+              "SH2: original explosions restored. Game restarted."
+            ],
+            "option_queries": 2,
+            "original_state_envelope": {
+              "trailing_zero_bytes": 16,
+              "padding_is_zero": true,
+              "postload_changed_bytes": 9,
+              "postload_first_changed_offsets": [
+                9218409,
+                9218442,
+                9218443,
+                9218444,
+                9218445,
+                9218446,
+                9218447,
+                9218448
+              ],
+              "legacy_original_accepted": true,
+              "legacy_postload_matches_padded": true,
+              "future_frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "padded_future": {
+                "video_sha256": "b47abd99170169fd051abc8f10bc87d464515a8074c18cdadb7b66ead784bcb3",
+                "audio_sha256": "6eeb95f04705ce399f34f9fc0ce1d2ce8f8cd374eecb95d737d987ec4d643089",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "legacy_future": {
+                "video_sha256": "b47abd99170169fd051abc8f10bc87d464515a8074c18cdadb7b66ead784bcb3",
+                "audio_sha256": "6eeb95f04705ce399f34f9fc0ce1d2ce8f8cd374eecb95d737d987ec4d643089",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "passed": true
+            },
+            "fresh_start_prefix_frames": 600,
+            "fresh_start_prefix_matches": true,
+            "same_mode_fresh_stream": {
+              "video_difference": null,
+              "audio_difference": null
+            },
+            "unchanged_update": {
+              "passed": true,
+              "frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": []
+            }
+          }
+        ]
+      },
+      "messages": [
+        "SH2: original explosions retained. Put jp_jp_space_harrier.smp beside SH2 or in the system folder, then restart content.",
+        "SH2: original explosions restored. Game restarted."
+      ],
+      "option_update_notifications": 5,
+      "actual_option_queries": {
+        "option_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true
+      },
+      "private_report_sha256": "8cff996c51c0e119b79c8b4c5c8e7854cdb083f9c8a3d0b3b603f7175b88d172"
+    },
+    {
+      "passed": true,
+      "frames": 2400,
+      "input": "scripted",
+      "style": "default",
+      "thread_mode": "disabled",
+      "auto_save": false,
+      "reset_before_toggle": false,
+      "donor_kind": "missing",
+      "rom_sha1": "e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72",
+      "case": "sh1-ignore-toggle",
+      "core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+      "runtime": {
+        "modes": [
+          "original",
+          "sh1",
+          "original"
+        ],
+        "frontend_load_calls": 1,
+        "frontend_unload_calls_during_test": 0,
+        "state_buffer_allocated_at_load": true,
+        "scope": "SH1 ignores this SH2-only option and must continue without restarting.",
+        "cached_state_capacity": 9219444,
+        "guard_checks_passed": 12,
+        "phases": [
+          {
+            "frames": 120,
+            "requested_style": "sh1",
+            "video_difference": null,
+            "audio_difference": null,
+            "new_messages": [],
+            "passed": true
+          },
+          {
+            "frames": 120,
+            "requested_style": "original",
+            "video_difference": null,
+            "audio_difference": null,
+            "new_messages": [],
+            "passed": true
+          }
+        ]
+      },
+      "messages": [],
+      "option_update_notifications": 2,
+      "actual_option_queries": {
+        "option_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true
+      },
+      "private_report_sha256": "9c6443129bb2700083bbcf53637955910ac5841c3d97572a804be82ef114a0f2"
+    }
+  ],
+  "baseline_comparison": {
+    "default-off": {
+      "baseline_core_sha256": "2d599feb150c90b263db19f0e94ac918805c069b70302aee281ec1a84a106f2b",
+      "candidate_core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+      "equal": {
+        "video_sha256": true,
+        "audio_sha256": true,
+        "audio_stereo_frames": true
+      }
+    },
+    "sh1-unchanged": {
+      "baseline_core_sha256": "2d599feb150c90b263db19f0e94ac918805c069b70302aee281ec1a84a106f2b",
+      "candidate_core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+      "equal": {
+        "video_sha256": true,
+        "audio_sha256": true,
+        "audio_stereo_frames": true
+      }
+    }
+  },
+  "stage4fire": {
+    "core_sha256": "3b02448a61073b0133c0c40962945eb1b5f1410266f4ce64f51ed6c9611d67ec",
+    "frontend_frames": 9000,
+    "lua_frames_observed": 8998,
+    "input": "Start pulses at 700/1300/1900/2500; Right pulses at 2020/2180/2360; held fire and Up/Right/Down/Left every 90 frames after 2600.",
+    "diagnostic_mutation": "SH2 lives byte held at BCD9 after frame2600. No object position, velocity, counters, or graphics changed by this probe.",
+    "constructors": 7,
+    "mod_activations": 7,
+    "vram_fallbacks": 0,
+    "constructors_by_method_and_caller": [
+      {
+        "original_method": "0AF9CC",
+        "caller": "171E7A",
+        "count": 1
+      },
+      {
+        "original_method": "0D4D44",
+        "caller": "171E7A",
+        "count": 3
+      },
+      {
+        "original_method": "0D6BAA",
+        "caller": "171E7A",
+        "count": 1
+      },
+      {
+        "original_method": "0DAE0E",
+        "caller": "1719DC",
+        "count": 1
+      },
+      {
+        "original_method": "14393A",
+        "caller": "171F36",
+        "count": 1
+      }
+    ],
+    "stream": {
+      "video_sha256": "e59e012dad96436049faf6bbdbaaf84d391559b2f58e480021ec69f280df78de",
+      "audio_sha256": "d8f04b2edfe215cb5a101b3383531159efaa3e7ca99013e5e5fad3d1b39536ba",
+      "video_frames": 8999,
+      "audio_stereo_frames": 7210071
+    },
+    "private_report_sha256": "f32635ecee088dd439b372ffc9c2cf9c350930ca7bf6044bc09164529a0d30ad",
+    "scope": "Stage 4 ordinary effects; boss completion is tested separately."
+  },
+  "ordinary_motion": {
+    "core_sha256": "3b02448a61073b0133c0c40962945eb1b5f1410266f4ce64f51ed6c9611d67ec",
+    "frames_per_mode": 3180,
+    "natural_explosions": 2,
+    "common_samples": 34,
+    "compared_fields": [
+      "x",
+      "y",
+      "vy",
+      "z",
+      "sx",
+      "sy"
+    ],
+    "different_samples": 0,
+    "original_only_samples": 0,
+    "enabled_only_samples": 0,
+    "same_creation_and_removal_frames": true,
+    "diagnostic_mutations": false,
+    "scope": "Two naturally created ordinary enemy explosions; read-only taps, 3180 frames per mode, same core and reference inputs.",
+    "private_report_sha256": "e6c6e98fd5ce30962996201a73f75afad4cb26d14f2c6fe22a6773f82c02d004"
+  },
+  "donor_animation": {
+    "core_sha256": "3b02448a61073b0133c0c40962945eb1b5f1410266f4ce64f51ed6c9611d67ec",
+    "frontend_frames": 3400,
+    "diagnostic_mutation": "Diagnostic forced position/depth/vertical velocity only; actual SH2 guest handlers and game counters untouched",
+    "complete_poses": 11,
+    "matching_lod_payloads": 44,
+    "matching_uploads": 17,
+    "cache_bytes": 8576,
+    "pose_clocks": [
+      891,
+      892,
+      896,
+      900,
+      904,
+      908,
+      912,
+      916,
+      920,
+      924,
+      928
+    ],
+    "warm_creation": {
+      "frame": 3090,
+      "clock": 890,
+      "cached_pose": 5,
+      "cache_writes_unchanged": true,
+      "bytes_unchanged": true,
+      "next_initialization_frame": 3092,
+      "next_initialization_clock": 891
+    },
+    "last_observed_pose": 11,
+    "scope": "Visual donor data and shared animation cadence. Native SH2 lifetime can end before every pose is visible in ordinary play.",
+    "private_report_sha256": "820e844a00aebcedc52b5071d972c709ee747d9e431ddd02f8b808abe57b8b78"
+  },
+  "regression_sensitivity": {
+    "baseline_v0_1_12_core_sha256": "851917729d919bd91a739c85fe0b0d586daf4e74e345fc2ca9306adab745ea9c",
+    "old_core_runtime_toggle_passed": false,
+    "failure": "The old core does not apply the requested sh1 mode at GET_VARIABLE_UPDATE; state remains unmodified.",
+    "private_report_sha256": "e431dd3f7c123f6948acec4125964a2d3173f8c32859a308a5d2262ad67291ac"
+  },
+  "limitations": [
+    "The initial cold native-autosave load may display a missing-state popup. Fresh internal restarts intentionally skip autoload and are compared with a separate clean process without autosave, not with that popup.",
+    "The enabled mod adds guest CPU work; video, audio timing and HV-seeded random values may differ. Default-off stream equality does not imply pixel-perfect enabled gameplay.",
+    "Private reports contain hashes and traces. This public manifest includes no game graphics, audio, ROM bytes, RAM dumps, or save-state payloads.",
+    "Actual RetroArch UI interaction and other operating systems are outside this headless macOS arm64 run."
+  ],
+  "boss_death": {
+    "core_sha256": "a24a64df9057e9140b646994bed75f890e906dd7ebf22e2a97cf56b8cbc27a67",
+    "frontend_frames_per_mode": 3400,
+    "scope": "controlled native boss death sequence",
+    "diagnostic_mutation": "At Lua frame3060, an existing object is assigned native boss controller139396 with one outstanding boss, depth4096 and Y=-256. Game speed is held160 and only boss-controller RNG is fixed. No input after3060.",
+    "native_particles_per_mode": 21,
+    "boss_mod_activations": 21,
+    "total_mod_activations_including_prior_ordinary_effect": 22,
+    "vram_fallbacks": 0,
+    "all_particle_native_ages_before_unlink": 30,
+    "same_particle_world_coordinates_with_controlled_rng": true,
+    "controller_final_age_per_mode": 41,
+    "boss_counter_decrements_per_mode": 1,
+    "boss_counter_still_zero_at_video_frame": 3398,
+    "completion_video_frame": {
+      "original": 3149,
+      "sh1": 3171
+    },
+    "last_live_particle_video_frame": {
+      "original": 3208,
+      "sh1": 3237
+    },
+    "completion_delay_video_frames": 22,
+    "highest_observed_shared_pose": 8,
+    "trace_sha256": {
+      "original": {
+        "controller.tsv": "c2b5f5e2502e4192e2aff2933e3701b32d480eca059a01f7decc29bc2256831f",
+        "particles.tsv": "f5b6ba7b05212ddbf802d2f54cdfa28ccdacb5cd7a1f7029ed5dbee4f64aba0c",
+        "events.tsv": "fc76e8614c441642488388b49562b0c6676e1af3aec3772041fa30337ec6c516"
+      },
+      "sh1": {
+        "controller.tsv": "42d1a989e3cb257d3d11b2a640dd2d0b0771b9aef98c9304b3252399667fd361",
+        "particles.tsv": "bdf08c1ed8408c617477bfb5b57057bc7e64a990c5ce105374cd475665f4fd2c",
+        "events.tsv": "7eac6e96aae3dd1e943394392b03e4e83bf37983c71cc2a7f8d4d49af68c8af9"
+      }
+    },
+    "limitations": [
+      "The controller was forced in stage1, not reached by naturally defeating a boss.",
+      "Native particle/cleanup rules are preserved, but additional guest execution changes wall-clock timing and background behavior.",
+      "The deterministic RNG intervention proves matching particle world coordinates; native random scatter need not match across modes because RNG reads the VDP beam counter.",
+      "Burst restarts keep early shared poses active; remaining particles expire before all11poses (final maximumphase8).",
+      "Earlier private probes atdepth0x4000 were outside SH2 useful LOD range and are excluded from final claims."
+    ],
+    "private_report_sha256": "ff0249eb2257651f4836e525b3d03a379dcd9a9aea8db162bd5f4f4feb079ee0"
+  },
+  "unit_suite": {
+    "tests": 108,
+    "passed": 96,
+    "skipped": 12,
+    "scope": "Parent-reported complete configured suite on final production changes; separate from the private-ROM runtime checks in this manifest."
+  },
+  "isolated_native_wrapper_lifecycles": {
+    "core_sha256": "a24a64df9057e9140b646994bed75f890e906dd7ebf22e2a97cf56b8cbc27a67",
+    "runs": 4,
+    "frontend_frames_per_run": 3220,
+    "diagnostic_mutation": "At frame 3058, one naturally allocated ordinary explosion is initialized once with controlled coordinates, velocity, depth, timer, delay, method and shared hostile count. Subsequent fields are not forced; real original guest handlers execute. Enabled cases use steady wrappers, not first-use particle initialization.",
+    "cases": [
+      {
+        "kind": "particle",
+        "native_handler": "137AFC",
+        "wrapper": "380400",
+        "common_frame_samples": 62,
+        "first_free_frame": 3119,
+        "death_timer": 30,
+        "coordinate_velocity_delay_count_differences": 0,
+        "timer_differences": [
+          {
+            "frame": 3103,
+            "field": "timer",
+            "original": 23,
+            "enabled": 22
+          }
+        ],
+        "same_native_cleanup_events": true,
+        "same_first_free_frame": true,
+        "tracked_count_before": 7,
+        "tracked_count_after": 7,
+        "timer_boundary_samples": {
+          "original": {
+            "3103": "23",
+            "3104": "23"
+          },
+          "enabled": {
+            "3103": "22",
+            "3104": "23"
+          }
+        },
+        "tracked_count_decrements": 0
+      },
+      {
+        "kind": "tracked",
+        "native_handler": "137CF0",
+        "wrapper": "380500",
+        "common_frame_samples": 122,
+        "first_free_frame": 3179,
+        "death_timer": 60,
+        "coordinate_velocity_delay_count_differences": 0,
+        "timer_differences": [],
+        "same_native_cleanup_events": true,
+        "same_first_free_frame": true,
+        "tracked_count_before": 7,
+        "tracked_count_after": 6,
+        "tracked_count_decrements": 1,
+        "native_decrement_pc": "137E22"
+      }
+    ],
+    "limitations": "Synthetic lifecycle/movement check, not an actual boss battle. One particle timer sample differs by one between original and enabled at a video-frame boundary and agrees again next frame; no zero-cost or atomic end-of-frame equivalence is claimed. Cleanup bus events and first-free frames match exactly.",
+    "private_report_sha256": "806376cb268010538f5255576c142e22e8ad403743a63e4c338c75c58f98b16a"
+  },
+  "integration_core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+  "ordinary_geometry_core_sha256": "3b02448a61073b0133c0c40962945eb1b5f1410266f4ce64f51ed6c9611d67ec",
+  "fixed_capacity_regression_control": {
+    "core_sha256": "a24a64df9057e9140b646994bed75f890e906dd7ebf22e2a97cf56b8cbc27a67",
+    "frames_per_mode": 600,
+    "state_buffer_allocated_at_load": true,
+    "initial_cached_capacity": 9219444,
+    "failed_as_expected": true,
+    "error": "RuntimeError: serialization size changed from cached 9219444 to 9219460",
+    "scope": "The strengthened public test fails at the first option activation on core2; no buffer capacity is reallocated.",
+    "private_report_sha256": "c394611740a6338940e18927101a173e2056ad6965a0eb1563c3a9327d2d463d"
+  },
+  "failed_content_restart": {
+    "core_sha256": "4e35ed0fd53eb60b9bbfc3b9955d4fc497cf5bc99b02ab834156f318dbe04129",
+    "messages": [
+      "SH2: content restart failed. Close and reload the ROM."
+    ],
+    "case": "auto-reload failure with automatic loading fast-forward enabled",
+    "option_queried": true,
+    "option_query_count": 3,
+    "thread_mode_option_queried": true,
+    "auto_save_option_queried": true,
+    "option_update_notifications": 1,
+    "returned_after_failed_reload": true,
+    "failure_message": true,
+    "cleaned_up": true,
+    "diagnostic_mutation": "Only an isolated temporary .cmd is invalidated before option change. Original ROMs and current RetroArch session are untouched.",
+    "returned_retro_run_calls": 3,
+    "frontend_fast_forward_override_supported": true,
+    "private_report_sha256": "a0a82a13824b1c384b0cf72ba7d7527cf96ebbb8cceb7952fe43861c32860833"
+  },
+  "state_format": {
+    "sh2_capacity_bytes": 9219460,
+    "sh2_legacy_original_payload_bytes": 9219444,
+    "original_trailing_zero_bytes": 16,
+    "active_prefix_bytes": 16,
+    "active_prefix_version": 2,
+    "buffer_guard_bytes_each_side": 32,
+    "cached_buffer_reused_across_option_restarts": true,
+    "legacy_original_and_padded_postload_equal": true,
+    "legacy_and_padded_future_video_pcm_frames": 120,
+    "note": "MAME postload callbacks change9-10 serialized bytes in these captures. Equality is required between the padded and legacy restoration results, followed by identical future video/PCM; pre-load versus post-load byte equality is not asserted."
+  }
+}
