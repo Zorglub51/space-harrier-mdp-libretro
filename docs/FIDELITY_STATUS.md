@@ -116,7 +116,11 @@ content. Its automatic input sequence reaches SH2 stage 4 or SH1 gameplay.
 | Status and counters | The native horizontal byte is zero; the port supplies bits consumed by the games' random-state update. Status bits also differ | Isolate the counter effect and establish the native flag/vertical-phase mapping |
 | Reconstructed game hooks | The [static SH2 audit](MDP_HOOK_AUDIT.md) checks 77 symmetry-based restorations, but most complete blocks still lack isolated execution comparisons | Prioritize hooks reached in remaining SH2 glitches, then broaden coverage |
 | Compatibility guards | Divide guards, SH1 tree insertion, shot counter and boss-exit handling include empirical choices | Original hook/game-state execution for each affected case |
-| Reset and reload | Save/load is tested; wider reset/reload sequences remain | Default-state and repeated-content tests on all platforms |
+| Reset and reload | A second content load fails in the same core library; video/Z80 memory survives reset unlike the analyzed M2 reset command | Fix parser lifetime and compare reset state; see the [system audit](MDP_SYSTEM_AUDIT.md) |
+| ROM loading | Only half the padding is initialized; no padding reads observed in the two attract traces | Fill the entire allocation tail deterministically |
+| Interrupt expiration | Native unacknowledged H/V requests expire where the inherited MAME latches remain set | Late-enable and masked-IRQ game traces before attributing scene differences |
+| Direct VRAM byte writes | Native writes duplicate the byte; both portable banks merge only one lane | Extend byte normalization; no such writes in the four traced sequences |
+| Audio options | The sound-CPU overclock option misses this machine's Z80 tag | Correct or remove the ineffective option; default-sound fidelity remains separately unproved |
 | Host presentation | Actual M2 GPU texture format and active shaders are not established | Trace texture upload and presentation configuration |
 | Scene/platform coverage | Only the stated scenes have native pixel comparisons; interactive testing is mainly on Mac | More stages, bosses, menus and Windows/Linux sessions |
 

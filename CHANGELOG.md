@@ -17,6 +17,12 @@ GitHub release notes are generated directly from the corresponding entry.
 - Identified a counter-read difference that reaches both games' random-state
   update: M2 returns a zero horizontal byte, while the port supplies changing
   horizontal bits. Wider game-state and timing consequences remain to be measured.
+- Added native IRQ-expiration and direct-VRAM byte references. Documented
+  retained reset state, partially uninitialized ROM padding, and the ineffective
+  sound-CPU overclock option, with explicit limits on observed gameplay impact.
+- Added an opt-in Libretro reload regression that reproduces the current second-
+  load failure in the same core library, including switching from SH1 to SH2.
+  These are audit findings and reproduction tools, not released fixes.
 
 ## [0.1.11] - 2026-10-05
 
