@@ -1,14 +1,15 @@
 --- a/src/devices/bus/megadrive/md_slot.cpp
 +++ b/src/devices/bus/megadrive/md_slot.cpp
-@@ -45,6 +45,7 @@
+@@ -45,6 +45,8 @@
  
  #include "emu.h"
  #include "md_slot.h"
 +#include "sh1_mdp_rom.h"
++#include "sh2_explosion_loader.h"
  
  //**************************************************************************
  //  GLOBAL VARIABLES
-@@ -310,6 +311,7 @@
+@@ -310,6 +312,7 @@
  
  std::pair<std::error_condition, std::string> base_md_cart_slot_device::call_load()
  {
@@ -16,7 +17,7 @@
  	if (m_cart)
  	{
  		m_type = SEGA_STD;
-@@ -362,6 +364,8 @@
+@@ -362,10 +365,15 @@
  	m_cart->rom_alloc(length);
  	ROM = m_cart->get_rom_base();
  	memcpy((uint8_t *)ROM, get_software_region("rom"), get_software_region_length("rom"));
@@ -25,7 +26,14 @@
  
  	// if we allocated a ROM larger that the file (e.g. due to uneven cart size), set remaining space to 0xff
  	if (length > get_software_region_length("rom"))
-@@ -508,6 +512,9 @@
+ 		memset(ROM + get_software_region_length("rom")/2, 0xffff, (length - get_software_region_length("rom"))/2);
++
++	sh_mdp_explosions::apply(reinterpret_cast<uint8_t *>(ROM), get_software_region_length("rom"),
++		length, m_sh2_text_compat, filename());
+ 
+ 	if ((slot_name = get_feature("slot")) == nullptr)
+ 		m_type = SEGA_STD;
+@@ -508,10 +516,14 @@
  		fread(ROM, len);
  	}
  
@@ -35,7 +43,12 @@
  	// if we allocated a ROM larger that the file (e.g. due to uneven cart size), set remaining space to 0xff
  	if (len > (tmplen - offset))
  		memset(m_cart->get_rom_base() + (tmplen - offset)/2, 0xffff, (len - tmplen + offset)/2);
-@@ -541,6 +548,7 @@
+ 
++	sh_mdp_explosions::apply(ROM, tmplen - offset, len, m_sh2_text_compat, filename());
+ 
+ 	// STEP 4: determine the cart type (to deal with sram/eeprom & pirate mappers)
+ 	m_type = get_cart_type(ROM, tmplen - offset);
+@@ -541,6 +553,7 @@
  
  void base_md_cart_slot_device::call_unload()
  {
@@ -1508,7 +1521,15 @@
  	if (m_32x)
 --- a/src/osd/libretro/libretro-internal/libretro.cpp
 +++ b/src/osd/libretro/libretro-internal/libretro.cpp
-@@ -714,9 +714,9 @@
+@@ -18,6 +18,7 @@
+ #include "libretro.h"
+ #include "libretro_shared.h"
+ #include "libretro_core_options.h"
++#include "bus/megadrive/sh2_explosion_options.h"
+ 
+ /* forward decls / externs / prototypes */
+ 
+@@ -714,9 +715,9 @@
  {
     memset(info, 0, sizeof(*info));
  
@@ -1520,7 +1541,55 @@
     info->need_fullpath    = true;
     info->block_extract    = true;
  }
-@@ -962,7 +962,20 @@
+@@ -874,7 +875,10 @@
+ {
+    free_output_audio_buffer();
+    if (retro_load_ok)
++   {
+       retro_finish();
++      retro_load_ok = false;
++   }
+ }
+ 
+ void retro_reset(void)
+@@ -896,6 +900,14 @@
+    if (!retro_pause)
+       retro_main_loop();
+    RLOOP = 1;
++
++   const auto explosion_result = sh_mdp_explosions::notification.exchange(sh_mdp_explosions::result::none);
++   if (const char *text = sh_mdp_explosions::message(explosion_result))
++   {
++      log_cb(RETRO_LOG_INFO, "%s\n", text);
++      struct retro_message message = {text, 360};
++      environ_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &message);
++   }
+ 
+    /* Automatic loading fast-forward */
+    if (autoloadfastforward)
+@@ -932,6 +944,21 @@
+ bool retro_load_game(const struct retro_game_info *info)
+ {
+    retro_load_ok = false;
++   retro_pause = 0;
++   first_run = true;
++   draw_this_frame = true;
++   audio_ready = false;
++   output_audio_buffer.size = 0;
++   RLOOP = 1;
++   ENDEXEC = 0;
++
++   sh_mdp_explosions::requested = false;
++   sh_mdp_explosions::active = false;
++   sh_mdp_explosions::notification = sh_mdp_explosions::result::none;
++   sh_mdp_explosions::system_directory = retro_system_directory ? retro_system_directory : "";
++   struct retro_variable explosion_option = {CORE_NAME "_sh2_enemy_explosions", NULL};
++   if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &explosion_option) && explosion_option.value)
++      sh_mdp_explosions::requested = !strcmp(explosion_option.value, "sh1");
+ 
+    check_variables();
+ 
+@@ -962,7 +989,20 @@
        strcpy(RPATH, info->path);
     }
  
@@ -1542,6 +1611,71 @@
  
     /* Force success with empty content */
     if (!RPATH[0])
+@@ -988,11 +1028,21 @@
+    if (     mame_machine_manager::instance() != NULL
+          && mame_machine_manager::instance()->machine() != NULL
+          && mame_machine_manager::instance()->machine()->options().autosave()
+-         && (mame_machine_manager::instance()->machine()->system().flags & MACHINE_SUPPORTS_SAVE) != 0)
++         && mame_machine_manager::instance()->machine()->save().supported())
+ 	  mame_machine_manager::instance()->machine()->immediate_save("auto");
+ 
+-   if (retro_pause == 0)
+-      retro_pause = -1;
++   // Closing content must release its machine before the next load creates
++   // another one, even when the frontend retains the initialized core library.
++   if (retro_load_ok)
++   {
++      retro_finish();
++      retro_load_ok = false;
++   }
++   retro_pause = -1;
++   audio_ready = false;
++   output_audio_buffer.size = 0;
++   sh_mdp_explosions::active = false;
++   sh_mdp_explosions::notification = sh_mdp_explosions::result::none;
+ }
+ 
+ size_t retro_serialize_size(void)
+@@ -1000,12 +1050,21 @@
+    if (     mame_machine_manager::instance() != NULL
+ 	      && mame_machine_manager::instance()->machine() != NULL
+ 	      && ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
+-      return ram_state::get_size(mame_machine_manager::instance()->machine()->save());
++      return ram_state::get_size(mame_machine_manager::instance()->machine()->save())
++            + (sh_mdp_explosions::active ? sizeof(sh_mdp_explosions::state_tag) : 0);
+ 
+    return 0;
+ }
+ bool retro_serialize(void *data, size_t size)
+ {
++   if (sh_mdp_explosions::active)
++   {
++      if (!data || size < sizeof(sh_mdp_explosions::state_tag))
++         return false;
++      memcpy(data, sh_mdp_explosions::state_tag, sizeof(sh_mdp_explosions::state_tag));
++      data = static_cast<uint8_t *>(data) + sizeof(sh_mdp_explosions::state_tag);
++      size -= sizeof(sh_mdp_explosions::state_tag);
++   }
+    save_error error = STATERR_NOT_FOUND;
+    if (     mame_machine_manager::instance() != NULL
+ 	      && mame_machine_manager::instance()->machine() != NULL
+@@ -1018,6 +1077,16 @@
+ }
+ bool retro_unserialize(const void *data, size_t size)
+ {
++   if (!sh_mdp_explosions::state_matches(data, size, sh_mdp_explosions::active))
++   {
++      log_cb(RETRO_LOG_ERROR, "State load rejected: SH2 explosion patch setting or version differs.\n");
++      return false;
++   }
++   if (sh_mdp_explosions::active)
++   {
++      data = static_cast<const uint8_t *>(data) + sizeof(sh_mdp_explosions::state_tag);
++      size -= sizeof(sh_mdp_explosions::state_tag);
++   }
+    save_error error = STATERR_NOT_FOUND;
+    if (     mame_machine_manager::instance() != NULL
+          && mame_machine_manager::instance()->machine() != NULL
 --- a/src/emu/audio_effects/filter.cpp
 +++ b/src/emu/audio_effects/filter.cpp
 @@ -26,6 +26,19 @@ audio_effect_filter::audio_effect_filter(speaker_device *speaker, u32 sample_rat
@@ -1564,3 +1698,59 @@
  }
  
  void audio_effect_filter::reset_lowpass_active()
+--- a/src/osd/libretro/libretro-internal/libretro_core_options.h
++++ b/src/osd/libretro/libretro-internal/libretro_core_options.h
+@@ -83,6 +83,20 @@
+ };
+ 
+ struct retro_core_option_v2_definition option_defs_us[] = {
++   {
++      CORE_NAME "_sh2_enemy_explosions",
++      "SH2 Enemy Explosions (Restart Required)",
++      NULL,
++      "Use SH1's enemy explosion artwork and animation timing in SH2. Requires the original jp_jp_space_harrier.smp beside the SH2 ROM or in the system folder. Applies a patch in memory; the ROM file stays unchanged. Restart content after changing. Save states must use the same setting.",
++      NULL,
++      "hacks",
++      {
++         { "original", "Original SH2" },
++         { "sh1", "SH1 Artwork and Timing" },
++         { NULL, NULL },
++      },
++      "original"
++   },
+    {
+       CORE_NAME "_thread_mode",
+       "Thread Mode",
+--- a/src/osd/libretro/libretro-internal/retro_init.cpp
++++ b/src/osd/libretro/libretro-internal/retro_init.cpp
+@@ -696,6 +696,9 @@
+ 
+ static void parse_cmdline(const char *argv)
+ {
++   // Each content load owns a fresh command line, including shorter arguments.
++   ARGUC = 0;
++   memset(ARGUV, 0, sizeof(ARGUV));
+    int c,c2;
+    char buffer[4096];
+    enum states
+--- a/src/emu/machine.cpp
++++ b/src/emu/machine.cpp
+@@ -17,6 +17,7 @@
+ #include "debugger.h"
+ #include "dirtc.h"
+ #include "emuopts.h"
++#include "../devices/bus/megadrive/sh2_explosion_options.h"
+ #include "fileio.h"
+ #include "http.h"
+ #include "image.h"
+@@ -644,6 +645,10 @@
+ 		// take into account the statename option
+ 		const char *stateopt = options().state_name();
+ 		std::string statename = get_statename(stateopt);
++		// Disk/autosave states bypass the Libretro envelope. Select the folder
++		// per operation without changing options retained across content loads.
++		if (sh_mdp_explosions::active)
++			statename += PATH_SEPARATOR "sh2-sh1-explosions-v1";
+ 		result = string_format("%s%s%s.sta", statename, PATH_SEPARATOR, filename);
+ 	}
+ 	return result;

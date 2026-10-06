@@ -20,7 +20,7 @@ if [[ "${actual_commit}" != "${expected_commit}" ]]; then
     exit 1
 fi
 
-if git -C "${mame_tree}" apply --check "${patch_file}"; then
+if git -C "${mame_tree}" apply --check "${patch_file}" 2>/dev/null; then
     git -C "${mame_tree}" apply "${patch_file}"
 elif ! git -C "${mame_tree}" apply --reverse --check "${patch_file}"; then
     echo "The MAME tree is neither clean nor already patched." >&2
@@ -30,5 +30,9 @@ fi
 python3 "${repo_root}/scripts/generate_rom_patch_header.py" \
     "${repo_root}/rompatch/patch.py" \
     "${generated_header}"
+
+for header in "${repo_root}"/src/markv/sh2_explosion_*.h; do
+    cp "${header}" "${mame_tree}/src/devices/bus/megadrive/"
+done
 
 echo "Prepared ${mame_tree} for Space Harrier MDP."

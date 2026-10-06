@@ -78,6 +78,31 @@ manuellement.
 C’est tout : le cœur reconnaît la ROM originale et applique les corrections en
 mémoire. Il ne modifie jamais votre fichier `.smp`.
 
+## Explosions de SH1 dans SH2 — option facultative
+
+Placez votre ROM originale `jp_jp_space_harrier.smp` à côté de celle de SH2,
+ou dans le répertoire **System/BIOS** de RetroArch. Dans **Menu rapide >
+Options du cœur > Emulation Hacks**, choisissez **SH1 Artwork and Timing**
+pour **SH2 Enemy Explosions (Restart Required)**, puis fermez et rechargez
+le contenu. La commande **Redémarrer** seule réinitialise la machine sans
+recharger la ROM et ne suffit donc pas.
+
+Le réglage par défaut est **Original SH2**. Sélectionnez-le puis rechargez
+le jeu pour désactiver le patch. Le cœur extrait les dessins et le code
+d’animation de votre ROM SH1 ; aucun fichier ROM n’est modifié. Si SH1 manque
+ou ne correspond pas à la version attendue, l’animation originale est conservée
+et un message vous en informe. Cette option n’affecte pas le jeu SH1.
+
+Les sauvegardes instantanées sont propres au mode choisi : le cœur refuse
+celles de l’autre mode. Les sauvegardes automatiques MAME utilisent un dossier
+séparé pour le mode modifié. Recommencez une partie après avoir changé le réglage.
+
+Ce mod facultatif est expérimental. Le temps pris par ses instructions peut
+produire de petits écarts de timing : 19 images d’introduction sont brièvement
+différentes dans le parcours mesuré, et le flux audio diffère au niveau des
+échantillons. Une différence audible n’a pas été établie. Gardez **Original SH2**
+pour retrouver le comportement d’origine.
+
 ## Commandes conseillées
 
 Le jeu utilise une manette standard :

@@ -8,6 +8,14 @@ Native evidence uses the same original ELF hash recorded in the earlier audit.
 
 ## Reloading content fails while the core library remains loaded
 
+**Update in 0.1.12:** the parser and machine lifetime defects below are fixed.
+The core now clears each launch argument list and destroys the closed machine
+before another load, avoiding a subsequent cleanup crash. Two-load and
+Original → SH1 explosions → Original checks pass both with and without a
+deinit/init cycle; the returning original mode retains identical video and PCM.
+The observations below document the original 0.1.11 failure. The reset findings
+in later sections are separate and remain unresolved.
+
 The first load succeeds and runs 600 frontend steps. After `retro_unload_game`,
 the second `retro_load_game` returns false in each tested sequence:
 

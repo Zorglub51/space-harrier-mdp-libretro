@@ -1,0 +1,433 @@
+{
+  "schema_version": 1,
+  "date": "2026-10-06",
+  "platform": "macOS arm64",
+  "feature": "Optional SH1 enemy explosions in SH2",
+  "core_sha256": {
+    "baseline_v0_1_11": "2d599feb150c90b263db19f0e94ac918805c069b70302aee281ec1a84a106f2b",
+    "candidate_v1": "cfa1ca413e4261b6222b05bf5b621e64d9b94cb7f6eaaf4fbcebb82312ba9c07",
+    "candidate_v2": "120d82d323a79feb3dd16dbaa1d4e8f661f328e43992d7b5b02c39d3af7634b2",
+    "candidate_v3": "f107478240a0b1213c54469bcd8455816666f289b492ba8f7769e13784284595",
+    "candidate_v4": "7eb1908b81cd1aaeb61be7782611bd44866af7b39adffa91321d42f9a1d0d872",
+    "candidate_v5": "a2e3cfcac6c5c7ac3439571d3bb85813b38cb56ff98302db4b8dfd12e9211f31",
+    "candidate_v7": "851917729d919bd91a739c85fe0b0d586daf4e74e345fc2ca9306adab745ea9c"
+  },
+  "option": {
+    "key": "mame_sh2_enemy_explosions",
+    "default": "original",
+    "enabled": "sh1",
+    "application": "Content load; restart content to change mode."
+  },
+  "rom_identity": {
+    "SH1_sha1": "e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72",
+    "SH2_sha1": "80f576af01d6413c0b92073e2f947b0431f12a74"
+  },
+  "integration": [
+    {
+      "case": "c1-missing",
+      "core": "candidate_v1",
+      "frames": 2400,
+      "donor_kind": "missing",
+      "donor_location": "system",
+      "passed": true,
+      "mod_state_tag": false,
+      "notification": [
+        "SH2: original explosions retained. Put jp_jp_space_harrier.smp beside SH2 or in the system folder, then restart content."
+      ],
+      "identical_to_baseline_v0_1_11": true
+    },
+    {
+      "case": "public-v3-wrong",
+      "core": "candidate_v3",
+      "frames": 2400,
+      "donor_kind": "wrong-sha1",
+      "donor_location": "system",
+      "passed": true,
+      "mod_state_tag": false,
+      "notification": [
+        "SH2: original explosions retained. The SH1 donor ROM is unreadable or not the supported original version."
+      ],
+      "identical_to_baseline_v0_1_11": true
+    },
+    {
+      "case": "c1-enabled-system",
+      "core": "candidate_v1",
+      "frames": 2400,
+      "donor_kind": "valid",
+      "donor_location": "system",
+      "passed": true,
+      "mod_state_tag": true,
+      "notification": [
+        "SH2: SH1 enemy explosions enabled."
+      ]
+    },
+    {
+      "case": "c2-enabled-cart",
+      "core": "candidate_v2",
+      "frames": 2400,
+      "donor_kind": "valid",
+      "donor_location": "cart",
+      "passed": true,
+      "mod_state_tag": true,
+      "notification": [
+        "SH2: SH1 enemy explosions enabled."
+      ]
+    },
+    {
+      "case": "reject_original_state_in_mod",
+      "core": "candidate_v2",
+      "accepted": false,
+      "serialized_state_unchanged": true
+    },
+    {
+      "case": "reject_mod_state_in_original",
+      "core": "candidate_v2",
+      "accepted": false,
+      "serialized_state_unchanged": true
+    },
+    {
+      "case": "v5-default",
+      "core": "candidate_v5",
+      "frames": 3400,
+      "input": "reference",
+      "passed": true,
+      "mod_state_tag": false,
+      "stream": {
+        "video_frames": 3399,
+        "video_sha256": "2323d8f512590417ed62796297a2810302edfecaf0015269b8d7d79e7768d340",
+        "audio_stereo_frames": 2724300,
+        "audio_sha256": "496bd3c1fb2307d938816ce27c77af1025daf3dc4b7d58584e08dad49c913417"
+      },
+      "identical_to_baseline_v0_1_11": {
+        "video_sha256": true,
+        "audio_sha256": true,
+        "audio_stereo_frames": true
+      }
+    },
+    {
+      "case": "v5-sh1",
+      "core": "candidate_v5",
+      "frames": 2400,
+      "input": "scripted",
+      "passed": true,
+      "mod_state_tag": false,
+      "stream": {
+        "video_frames": 2399,
+        "video_sha256": "8b350b405082d1d1c1d3391101c00d0bc63f0bfd007e6dd7c0181d0567e2515e",
+        "audio_stereo_frames": 1923265,
+        "audio_sha256": "f4dad3b0ee2e081a360ab2a300ac10a5ee21b65637d002b644d37113f6802f81"
+      },
+      "identical_to_baseline_v0_1_11": {
+        "video_sha256": true,
+        "audio_sha256": true,
+        "audio_stereo_frames": true
+      },
+      "save_load": {
+        "frames": 120,
+        "passed": true,
+        "video_difference": null,
+        "audio_difference": null
+      }
+    },
+    {
+      "case": "v5-state-stage4",
+      "core": "candidate_v5",
+      "frames": 3750,
+      "input": "stage4fire",
+      "passed": true,
+      "mod_state_tag": true,
+      "stream": {
+        "video_frames": 3749,
+        "video_sha256": "3d9ba24249860b21b4f06ac1f3316302bace2d4a6011370ebae95e6cb9656c4e",
+        "audio_stereo_frames": 3004662,
+        "audio_sha256": "f49987c8c5c42f748abe5de77a154a2f1395e46b0b05217cf909696c155b47a4"
+      },
+      "save_load": {
+        "frames": 120,
+        "passed": true,
+        "video_difference": null,
+        "audio_difference": null
+      }
+    },
+    {
+      "case": "v7-state-stage4",
+      "core": "candidate_v7",
+      "frames": 3750,
+      "input": "stage4fire",
+      "passed": true,
+      "mod_state_tag": true,
+      "save_load": {
+        "frames": 120,
+        "passed": true,
+        "video_difference": null,
+        "audio_difference": null
+      },
+      "stream_identical_to_v5": {
+        "video_sha256": true,
+        "audio_sha256": true,
+        "audio_stereo_frames": true
+      }
+    }
+  ],
+  "reload": [
+    {
+      "case": "v4-reload-same",
+      "core": "candidate_v4",
+      "lifecycle": "same-init",
+      "passed": true,
+      "frames_per_load": 600,
+      "loads": 2,
+      "all_loads_succeeded": true,
+      "same_rom_streams_identical": true
+    },
+    {
+      "case": "v4-reload-deinit",
+      "core": "candidate_v4",
+      "lifecycle": "deinit-init",
+      "passed": true,
+      "frames_per_load": 600,
+      "loads": 2,
+      "all_loads_succeeded": true,
+      "same_rom_streams_identical": true
+    },
+    {
+      "case": "v4-mode-same",
+      "core": "candidate_v4",
+      "lifecycle": "same-init",
+      "passed": true,
+      "frames_per_load": 600,
+      "loads": 3,
+      "all_loads_succeeded": true,
+      "modes": [
+        "original",
+        "sh1",
+        "original"
+      ],
+      "state_tags": [
+        false,
+        true,
+        false
+      ],
+      "original_streams_identical": true
+    },
+    {
+      "case": "v4-mode-deinit",
+      "core": "candidate_v4",
+      "lifecycle": "deinit-init",
+      "passed": true,
+      "frames_per_load": 600,
+      "loads": 3,
+      "all_loads_succeeded": true,
+      "modes": [
+        "original",
+        "sh1",
+        "original"
+      ],
+      "state_tags": [
+        false,
+        true,
+        false
+      ],
+      "original_streams_identical": true
+    }
+  ],
+  "game_driven_scenarios": [
+    {
+      "case": "stage1_with_fire",
+      "core": "candidate_v5",
+      "frames": 9000,
+      "diagnostic_lives_held_at_9": true,
+      "position_or_animation_forcing": false,
+      "generic_constructors": 7,
+      "activations": 4,
+      "vram_fallbacks": 0,
+      "excluded_scenery_constructor_calls": 3,
+      "excluded_callers": [
+        "1798EA",
+        "1719DC",
+        "171E7A"
+      ],
+      "palette_cycle_events": 481,
+      "palette_events_outside_clock_modulo8_equals2": 0,
+      "first_boss_approach_inspected": true,
+      "boss_defeat_verified": false,
+      "stream": {
+        "video_frames": 8999,
+        "video_sha256": "28c894c62865450a3d52b8e7f2f171b175481e5861f79db861f4e17c2e946767",
+        "audio_stereo_frames": 7210071,
+        "audio_sha256": "69c7623edb0175f0b131f5e888e2c8e9f27ebff387803132c0f6dfbcefff384e"
+      }
+    },
+    {
+      "case": "stage4_with_fire",
+      "core": "candidate_v5",
+      "frames": 9000,
+      "diagnostic_lives_held_at_9": true,
+      "position_or_animation_forcing": false,
+      "input": "Start at 700/1300/1900/2500 for 8 steps; Right at 2020/2180/2360 for 3 steps; fire with Up/Right/Down/Left rotation every 90 steps after 2600.",
+      "generic_constructors": 7,
+      "activations": 7,
+      "vram_fallbacks": 0,
+      "constructor_callers": {
+        "171E7A": 5,
+        "171F36": 1,
+        "1719DC": 1
+      },
+      "ordinary_enemy_methods": {
+        "0AF9CC": 1,
+        "0D6BAA": 1,
+        "0D4D44": 3,
+        "14393A": 1,
+        "0DAE0E": 1
+      },
+      "previous_v4_same_inputs": {
+        "activations": 1,
+        "constructors": 7,
+        "vram_fallbacks": 0
+      },
+      "stream": {
+        "video_frames": 8999,
+        "video_sha256": "1c154332a41334d37832811ae4325c344c569f126f46550dc6d9574c0a816013",
+        "audio_stereo_frames": 7210071,
+        "audio_sha256": "5cfec50d9fa568d45c12c7c2d9addee097e738049429cd4b0755bc59dbffd46b"
+      },
+      "coverage_limit": "No scenery constructor occurred in this exact trajectory; scenery exclusion is covered by the stage1 trace. Boss defeat and all stage4 enemies are not claimed."
+    }
+  ],
+  "forced_animation": {
+    "core": "candidate_v3",
+    "frames": 3400,
+    "forced_fields": [
+      "object position",
+      "positive depth",
+      "vertical velocity"
+    ],
+    "game_counters_and_handlers_unmodified": true,
+    "complete_poses": 11,
+    "LOD_payloads_matched": 44,
+    "cache_uploads_matched": 17,
+    "cache_bytes_per_upload": 8576,
+    "all_44_source_payloads_match": true,
+    "complete_sequence_game_clocks": [
+      891,
+      892,
+      896,
+      900,
+      904,
+      908,
+      912,
+      916,
+      920,
+      924,
+      928
+    ],
+    "second_creation_preserves_existing_cache_until_first_handler": true,
+    "version_limit": "The forced eleven-pose diagnostic used v3 at positive depth. Later guest changes fix signed negative-depth LOD (v4) and broaden constructor classification (v5); the donor animation body is unchanged. This remains a v3 result, not a new v5/v7 capture."
+  },
+  "enabled_clock_hook_cost": {
+    "core": "candidate_v3",
+    "frames": 2600,
+    "changed_video_frames": 19,
+    "first_changed_frame": 2508,
+    "changed_pixels_at_first_frame": 77,
+    "palette_store_redirected_to_RAM_still_matches_enabled_video_and_PCM": true,
+    "restoring_original_clock_instructions_matches_baseline_video_and_PCM": true,
+    "conclusion": "Enabled guest clock hooks add CPU work and change raster timing and PCM before the first explosion. The experiment rules out the palette index 120 store as the cause of these early differences. Disabled-mode comparisons remain exact."
+  },
+  "coverage_limits": [
+    "Not a full-game or all-enemy/all-boss validation. First boss approach was inspected, not boss defeat.",
+    "Game-driven long runs hold the diagnostic life counter at 9; they do not force object positions or animation.",
+    "The full eleven-pose sequence uses an explicitly forced positive-depth diagnostic; ordinary gameplay may unlink effects earlier.",
+    "Loader, cross-mode, reload and forced-animation tests retain their actual candidate version. The version_scope field identifies later changes.",
+    "No claim of pixel- or PCM-identical gameplay with the optional mode enabled. No ROM, image, audio, or save-state payload is included. Native MAME absolute state paths explicitly chosen by the user bypass automatic namespacing; the Libretro state tag remains independent."
+  ],
+  "version_scope": {
+    "candidate_v4": "Negative-depth LOD and content lifecycle fixes; reload tests use this actual core.",
+    "candidate_v5": "Expanded ordinary-enemy classifier; long runtime and disabled-mode comparisons use this core.",
+    "candidate_v7": "Same guest code as v5; uses save().supported() for autosave and namespaces relative native state paths without mutating persistent options. Autosave and active save/load are retested on this core."
+  },
+  "configured_test_suite": {
+    "total": 106,
+    "passed": 94,
+    "skipped": 12
+  },
+  "mame_autosave": {
+    "core": "candidate_v7",
+    "passed": true,
+    "option": "mame_auto_save=enabled",
+    "lifecycle": "same-init",
+    "modes": [
+      "original",
+      "sh1",
+      "original",
+      "sh1"
+    ],
+    "frames_per_load": 600,
+    "checks": {
+      "one_original_path": true,
+      "one_separate_mod_path": true,
+      "original_unchanged_while_mod_active": true,
+      "same_original_path_on_third": true,
+      "mod_unchanged_on_third": true,
+      "first_original_started_fresh": true,
+      "mod_did_not_load_original": true,
+      "third_restored_original_marker": true,
+      "fourth_restored_mod_marker": true,
+      "original_unchanged_on_fourth": true,
+      "same_mod_path_on_fourth": true,
+      "marker_written_each_run": true
+    },
+    "diagnostic": "A synthetic marker at otherwise unused RAM FE00F0 identifies the loaded file; no game logic or ROM is modified. Each mode must restore its own earlier marker.",
+    "files_by_run": [
+      {
+        "mode": "original",
+        "files": {
+          "mame/states/megadrij/auto.sta": {
+            "sha256": "0c25aecfb7063b30f4fac1a6a1f9aaf0fa32eb0fa23571fbdb9afccc6069912b",
+            "size": 138972
+          }
+        }
+      },
+      {
+        "mode": "sh1",
+        "files": {
+          "mame/states/megadrij/auto.sta": {
+            "sha256": "0c25aecfb7063b30f4fac1a6a1f9aaf0fa32eb0fa23571fbdb9afccc6069912b",
+            "size": 138972
+          },
+          "mame/states/megadrij/sh2-sh1-explosions-v1/auto.sta": {
+            "sha256": "dc48b82276af4a405a1522742c27baddf7b67faf49608cdf6f336acf1d42ba69",
+            "size": 139054
+          }
+        }
+      },
+      {
+        "mode": "original",
+        "files": {
+          "mame/states/megadrij/auto.sta": {
+            "sha256": "94a6a45ce310490ca9f97b80a43ff725bff6121daa0af14b36d78a560c005dd3",
+            "size": 163243
+          },
+          "mame/states/megadrij/sh2-sh1-explosions-v1/auto.sta": {
+            "sha256": "dc48b82276af4a405a1522742c27baddf7b67faf49608cdf6f336acf1d42ba69",
+            "size": 139054
+          }
+        }
+      },
+      {
+        "mode": "sh1",
+        "files": {
+          "mame/states/megadrij/auto.sta": {
+            "sha256": "94a6a45ce310490ca9f97b80a43ff725bff6121daa0af14b36d78a560c005dd3",
+            "size": 163243
+          },
+          "mame/states/megadrij/sh2-sh1-explosions-v1/auto.sta": {
+            "sha256": "585d05de5ca0e3e96c79581aef7afc58fab261d87aa8f9311379ce06e18e1ad0",
+            "size": 163334
+          }
+        }
+      }
+    ]
+  },
+  "validated_candidate": "candidate_v7"
+}

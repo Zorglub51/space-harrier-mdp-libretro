@@ -116,7 +116,7 @@ content. Its automatic input sequence reaches SH2 stage 4 or SH1 gameplay.
 | Status and counters | The native horizontal byte is zero; the port supplies bits consumed by the games' random-state update. Status bits also differ | Isolate the counter effect and establish the native flag/vertical-phase mapping |
 | Reconstructed game hooks | The [static SH2 audit](MDP_HOOK_AUDIT.md) checks 77 symmetry-based restorations, but most complete blocks still lack isolated execution comparisons | Prioritize hooks reached in remaining SH2 glitches, then broaden coverage |
 | Compatibility guards | Divide guards, SH1 tree insertion, shot counter and boss-exit handling include empirical choices | Original hook/game-state execution for each affected case |
-| Reset and reload | A second content load fails in the same core library; video/Z80 memory survives reset unlike the analyzed M2 reset command | Fix parser lifetime and compare reset state; see the [system audit](MDP_SYSTEM_AUDIT.md) |
+| Reset and reload | Content reload is fixed in 0.1.12; video/Z80 memory still survives reset unlike the analyzed M2 reset command | Compare reset state; see the [system audit](MDP_SYSTEM_AUDIT.md) |
 | ROM loading | Only half the padding is initialized; no padding reads observed in the two attract traces | Fill the entire allocation tail deterministically |
 | Interrupt expiration | Native unacknowledged H/V requests expire where the inherited MAME latches remain set | Late-enable and masked-IRQ game traces before attributing scene differences |
 | Direct VRAM byte writes | Native writes duplicate the byte; both portable banks merge only one lane | Extend byte normalization; no such writes in the four traced sequences |

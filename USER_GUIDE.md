@@ -73,3 +73,26 @@ starts the game. Remap these under **Quick Menu > Controls > Port 1 Controls** i
 needed.
 
 See [Troubleshooting](docs/TROUBLESHOOTING.md) if the core or game does not load.
+
+## Optional SH1 explosions in SH2
+
+Put your original `jp_jp_space_harrier.smp` next to the SH2 ROM, or in
+RetroArch's **System/BIOS** directory. In **Quick Menu > Core Options >
+Emulation Hacks**, set **SH2 Enemy Explosions (Restart Required)** to
+**SH1 Artwork and Timing**, then close and reload the content. The ordinary
+**Restart** command only resets the running machine; it does not reload the ROM.
+
+The default is **Original SH2**. Choose it and reload to disable the patch.
+This feature uses the SH1 ROM as the source of its artwork and animation code;
+no game graphics are included in the core. Neither ROM file is modified.
+An absent or unsupported SH1 ROM leaves the original animation active and
+displays a message. SH1 itself is unaffected by this option.
+
+Save states belong to the selected mode: the core rejects a state from the
+other mode. MAME automatic saves use a separate folder for the modified mode.
+Start a new game after switching the setting.
+
+This optional modification is experimental. Its extra guest instructions can
+cause small timing changes: the measured introduction differs briefly on
+19 images, and the audio stream differs at sample level. An audible difference
+has not been established. Keep **Original SH2** for the unmodified experience.

@@ -76,6 +76,10 @@ def main() -> int:
         raise RuntimeError("The prepared MAME checkout lacks its generated ROM adapter.")
     if header.read_text(encoding="utf-8") != render(load_patch_module(ROOT / "rompatch/patch.py")):
         raise RuntimeError("The prepared MAME checkout has a stale generated ROM adapter.")
+    for source in (ROOT / "src/markv").glob("sh2_explosion_*.h"):
+        prepared = header.parent / source.name
+        if not prepared.is_file() or prepared.read_bytes() != source.read_bytes():
+            raise RuntimeError(f"The prepared MAME checkout has a missing or stale {source.name}.")
     if not (ROOT / "CHANGELOG.md").is_file():
         raise RuntimeError("CHANGELOG.md is required in release packages.")
     output = Path(os.environ.get("PACKAGE_OUTPUT_DIR", str(ROOT / "out"))).resolve()

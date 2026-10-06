@@ -84,6 +84,12 @@ published as an artifact. `SH_MDP_STATE_FRAMES` can extend the replay window.
 
 ## Scope and status
 
+An optional **SH2 Enemy Explosions** core setting imports SH1's original
+eleven-pose enemy explosion sequence and its timing from your own SH1 ROM.
+It is disabled by default and applies to the supported SH2 ROM in memory.
+See the [user guide](USER_GUIDE.md#optional-sh1-explosions-in-sh2) for setup and
+the [timing reference](docs/SH2_EXPLOSION_TIMING.md) for the donor behavior.
+
 Fidelity work covers SH1 and SH2 through targeted comparisons with M2. The first
 portable SH1 hook translation is
 checked against 31 measured executions of the original ARM block; the collision

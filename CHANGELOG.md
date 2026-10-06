@@ -6,6 +6,61 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.12] - 2026-10-06
+
+### Optional SH1 enemy explosions in SH2
+
+- Add the experimental **SH2 Enemy Explosions** core option. The default is
+  **Original SH2**; **SH1 Artwork and Timing** applies an in-memory ROM patch
+  when content loads. Closing and reloading content applies either choice.
+- Read the original eleven-pose animation, all four source sizes and palette
+  from the user's authenticated `jp_jp_space_harrier.smp`, placed beside SH2
+  or in the frontend system directory. No ROM or game graphics are distributed,
+  and neither source file is modified. Missing or invalid donors retain the
+  original effect and display a message.
+- Identify 50 ordinary-enemy methods from verified actor-creation sites across
+  all four generic collision paths, including the stage-4 robot families.
+  Preserve the original player, scenery and boss/custom callbacks. Copy SH1's shared animation handler and
+  preserve its four-update pose cadence, synchronized first-pose duration,
+  restart when another explosion appears, final-pose hold and palette cycle.
+  Use the source drawings directly with SH2's distance projection and scaling.
+- Keep the original SH2 graphics, use a separate palette and bounded shared
+  graphics cache, and revert an effect to its original animation if a later
+  asset allocation would overlap the cache. No fallback occurred in the tested
+  stage-1 and stage-4 runs.
+- Tag modified-mode Libretro save states and reject incompatible modes before
+  loading their contents. Keep MAME disk/automatic states in a separate folder
+  when the patch is active. Same-mode save/load reproduces video and audio.
+
+### Content reload and validation
+
+- Clear retained launch arguments and release the previous MAME machine when
+  content closes. Reloading and switching Original → SH1 → Original now work
+  with or without a deinit/init cycle, without the previous cleanup crash.
+- Fix MAME automatic saves on content close by querying the current save
+  manager's support status; the legacy system-flag check was always false.
+- Default-off SH2 output matches 0.1.11 video and PCM over 3,400 control steps;
+  SH1 matches over 2,400. Save/load reproduces 120 subsequent steps in both
+  games, including an active modified explosion. Missing/invalid donor and
+  cross-mode state rejection checks also pass.
+- Execute all eleven imported poses in a diagnostic that holds an explosion
+  in view. Match all 44 source graphics byte-for-byte against uploaded VRAM,
+  and verify the shared restart and final-pose hold. Two 9,000-step scripted
+  runs observe four modified effects in stage 1 and seven in stage 4, including
+  the cannon robots. Lives are held at nine solely to continue these diagnostic
+  runs; enemy positions and destruction logic are not forced. The first boss
+  approach is visually inspected, but boss destruction is not tested.
+- All 94 configured automated tests pass; 12 optional native-reference checks
+  are skipped when their external observations are not configured. The new ROM
+  adapter also passes address and undefined-behavior sanitizers with the private
+  original ROMs.
+- Known experimental-mode limitation: added guest instructions change raster
+  timing in 19 introduction images (3–96 pixels per image in the measured run).
+  Controlled probes isolate this to instruction cost, not palette interference.
+  The enabled PCM stream also differs at sample level; audibility has not been
+  assessed. The default mode has no such changes. Full all-stage playthrough
+  coverage is not claimed.
+
 ### Fidelity investigation
 
 - Added 160 synthetic native video-port reference sequences and documented
@@ -20,9 +75,9 @@ GitHub release notes are generated directly from the corresponding entry.
 - Added native IRQ-expiration and direct-VRAM byte references. Documented
   retained reset state, partially uninitialized ROM padding, and the ineffective
   sound-CPU overclock option, with explicit limits on observed gameplay impact.
-- Added an opt-in Libretro reload regression that reproduces the current second-
-  load failure in the same core library, including switching from SH1 to SH2.
-  These are audit findings and reproduction tools, not released fixes.
+- Added an opt-in Libretro reload regression that reproduces the second-
+  load failure in 0.1.11, including switching from SH1 to SH2. The reload defect
+  is fixed above; the other audit findings remain investigation results.
 
 ## [0.1.11] - 2026-10-05
 
