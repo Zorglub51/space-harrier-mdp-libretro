@@ -97,6 +97,46 @@ int main(){
  r[(0xff387c-0xfe0000)/2]=1;v.sh2_markvi_capture();v.sh2_markvi_finalize();
  v.sh2_markvi_dma(0xff3080,0xe000,0x140);assert(v.m_markvi_ready[2]&&v.m_markvi_ram[2][0]==0x5678);
  v.sh2_markvi_dma(0xff6000,0xe000,0x140);assert(!v.m_markvi_ready[2]);
+ // At higher CPU clocks the same producer finishes another generation
+ // before its overflow DMA. Its authenticated tail may have another count,
+ // but must not replace or retime the displayed complete host snapshot.
+ r[(0xff387c-0xfe0000)/2]=0;r[0]=0x1234;
+ r[(0xff140a-0xfe0000)/2]=1;r[(0xff118a-0xfe0000)/2]=0x88;
+ v.sh2_markvi_capture();v.sh2_markvi_finalize();upload(0xff415e,0xe000,0x140);
+ assert(v.m_markvi_ready[2]&&v.m_markvi_ram[2][0]==0x1234);
+ v.m_markvi_smooth_valid=true;
+ v.m_markvi_sprites.push_back({128,0,1,128,0x1000});
+ r[0]=0x5678;r[(0xff140a-0xfe0000)/2]=2;r[(0xff118a-0xfe0000)/2]=0x99;
+ v.sh2_markvi_capture();v.sh2_markvi_finalize();
+ upload(0xff118a,0xe270,8);
+ assert(v.m_markvi_ready[2]&&v.m_markvi_ram[2][0]==0x1234);
+ assert(v.m_markvi_smooth_valid&&v.m_markvi_sprites.size()==1);
+ assert(v.m_markvi_tail[2][0x140]==1); // Keep the active generation intact.
+ // Neither a wrong count nor a modified prefix is authenticated by the newer tail.
+ upload(0xff118a,0xe278,4);assert(!v.m_markvi_ready[2]);
+ upload(0xff415e,0xe000,0x140);
+ assert(v.m_markvi_ready[2]&&v.m_markvi_ram[2][0]==0x5678);
+ r[0]=0x9abc;r[(0xff140a-0xfe0000)/2]=3;r[(0xff118a-0xfe0000)/2]=0xaa;
+ v.sh2_markvi_capture();v.sh2_markvi_finalize();
+ v.vram[0xe000/2]^=1;upload(0xff118a,0xe268,12);assert(!v.m_markvi_ready[2]);
+ upload(0xff415e,0xe000,0x140);
+ // A subsequent unfinished producer or arbitrary RAM edit still cannot pass.
+ r[(0xff118a-0xfe0000)/2]=0xbb;v.sh2_markvi_capture();
+ upload(0xff118a,0xe268,12);assert(!v.m_markvi_ready[2]);
+ v.sh2_markvi_finalize();upload(0xff415e,0xe000,0x140);
+ r[(0xff118a-0xfe0000)/2]=0xcc;
+ upload(0xff118a,0xe268,12);assert(!v.m_markvi_ready[2]);
+ // The opposite bank supports a completed generation with fewer pieces,
+ // but an overflow from the other bank must not authenticate that frame.
+ r[(0xff387c-0xfe0000)/2]=1;r[0]=0x1111;
+ r[(0xff168c-0xfe0000)/2]=2;r[(0xff140c-0xfe0000)/2]=0x11;
+ v.sh2_markvi_capture();v.sh2_markvi_finalize();upload(0xff3080,0xe000,0x140);
+ r[0]=0x2222;r[(0xff168c-0xfe0000)/2]=1;r[(0xff140c-0xfe0000)/2]=0x22;
+ v.sh2_markvi_capture();v.sh2_markvi_finalize();upload(0xff140c,0xe278,4);
+ assert(v.m_markvi_ready[2]&&v.m_markvi_ram[2][0]==0x1111);
+ upload(0xff118a,0xe278,4);assert(!v.m_markvi_ready[2]);
+ upload(0xff3080,0xe000,0x140);
+ assert(v.m_markvi_ready[2]&&v.m_markvi_ram[2][0]==0x2222);
 }
 '''.replace('METHODS',methods)
         with tempfile.TemporaryDirectory() as tmp:

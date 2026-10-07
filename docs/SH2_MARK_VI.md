@@ -43,10 +43,15 @@ this partition's masked geometry/count at constructor completion, then copies
 that signature alongside the displayed snapshot on the full SAT upload.
 
 An overflow upload preserves an already active host list only when its source,
-length, destination, stride, masked geometry and the untouched SAT prefix match
-that displayed signature. The producer may already be rebuilding, so checking
-its current ready flag would incorrectly reject a valid display. The host list
-already includes both partitions before quotas; no second piece list is added.
+length, destination, stride, masked geometry and the untouched SAT prefix are
+validated. The producer may already be rebuilding, so the displayed signature
+remains valid independently of its current ready flag. With CPU overclocking,
+the same bank may even have completed its next generation before the partial
+upload occurs. Version 0.1.20 also accepts that completed bank's exact overflow
+signature/count, provided the untouched VRAM prefix still matches the displayed
+head. It retains the displayed complete geometry until the next full head
+upload; it does not promote the next generation on an overflow DMA. The host
+list already includes both partitions before quotas; no second list is added.
 Unknown writes/fills, mismatches and external clears still invalidate the list.
 This prevents old title sprites from appearing with newly loaded stage artwork.
 No framebuffer persistence or game-side overclock is used.
@@ -159,3 +164,33 @@ refresh observations before the fix and none afterwards. The same corrected
 burst passed at 120 Hz and with native Deflicker ON1. It uses a synthetic boss
 controller and controlled particle coordinates, not a natural boss-1 defeat;
 other intentional or unidentified blinking is not certified absent.
+
+## Overclocked producer regression (0.1.20)
+
+[SH2_MARK_VI_V020_VALIDATION.json](SH2_MARK_VI_V020_VALIDATION.json) records the
+additional bug reported after 0.1.18. At 400% CPU speed, 129 rejected overflow
+uploads in a stage 5 collision run all matched the latest completed tail of the
+same bank. The displayed prefix remained intact, and the transfers occurred
+during vertical blanking. The three columns remained visible in game object
+data; their SH1 explosion cache was inactive. Thus neither deliberate blinking,
+tile-cache exhaustion nor transfers during visible scanlines explained the gaps.
+
+The extended authentication removes the invalidations without advancing the
+displayed snapshot early. Six before/after runs cover 100/200/400% CPU clocks,
+native and 120 Hz rendering, 4:3 and widescreen, SH1 and original explosions,
+Deflicker OFF/game/ON1/ON2, and threaded execution. All preserve full PCM and
+sampled RAM/CPU state. Original rendering, the default-clock collision sequence
+and the tested ON2 sequence retain their video hashes. The 400% widescreen
+120 Hz collision window has 68 invalid refreshes before the fix and zero after.
+
+A separate first-boss run uses normal aiming/firing inputs and keeps player lives
+at nine to reach the scene. Boss HP, RNG and object data are not changed by the
+diagnostic. At 400%, widescreen, 120 Hz and SH1 artwork, the native destruction
+controller runs on frames 8931–9015 in both builds. Its 21 explosion activations,
+particle traces, sampled RAM and 8,011,106 stereo audio frames match. Invalid
+refreshes in the 8931–9100 destruction window fall from 49 to zero.
+
+Two 0.1.19 save states taken at odd/even presentation phases load in 0.1.20 and
+replay 240 frames deterministically; their audio matches the older core.
+The saved-state layout is unchanged. These are specific regression checks,
+not certification that every animation in both games is free of defects.

@@ -932,7 +932,7 @@
  }
  
  u16 sega315_5313_device::data_port_r()
-@@ -1396,8 +1731,350 @@
+@@ -1396,8 +1731,361 @@
  
  */
  
@@ -966,17 +966,28 @@
 +	}
 +	else if (was_active && count && count <= 0x140 && !(count & 3) &&
 +		(source & 0xffffff) == m_markvi_source[2] &&
-+		count == u32(m_markvi_tail[2][0x140]) * 4 &&
 +		address == sat_base + 0x280 - count * 2)
 +	{
 +		// SH2 0ADF10/0AE02C uploads the overflow partition on the following
-+		// refresh. It belongs to the same completed constructor, whose host
-+		// list already includes these pieces before quotas. Validate against
-+		// the displayed snapshot: the producer may already be rebuilding.
++		// refresh. Faster CPUs can finish another generation of this same
++		// producer before that upload, including a different overflow count.
++		// Authenticate either completed tail, plus the untouched displayed
++		// head. Keep the complete active host list until the next head upload:
++		// the quota-dependent overflow does not advance its presentation time.
 +		const u16 *native = reinterpret_cast<const u16 *>(m_space68k->get_read_ptr(source & 0xffffff));
-+		bool same = native != nullptr;
-+		for (unsigned i = 0; same && i < count; ++i)
-+			same = (native[i] & mask(i)) == m_markvi_tail[2][i];
++		const auto matches_tail = [&](unsigned bank) -> bool
++		{
++			if (!native || count != u32(m_markvi_tail[bank][0x140]) * 4)
++				return false;
++			for (unsigned i = 0; i < count; ++i)
++				if ((native[i] & mask(i)) != m_markvi_tail[bank][i])
++					return false;
++			return true;
++		};
++		const unsigned bank = (source & 0xffffff) == 0xff140c ? 1 : 0;
++		bool same = matches_tail(2) ||
++			((source & 0xffffff) == (bank ? 0xff140c : 0xff118a) &&
++			 m_markvi_ready[bank] && matches_tail(bank));
 +		for (unsigned i = 0; same && i < 0x140 - count; ++i)
 +			same = (mdp_vram_word((sat_base >> 1) + i) & mask(i)) == m_markvi_sat[2][i];
 +		m_markvi_ready[2] = same;
@@ -1283,7 +1294,7 @@
  	const int ytile_shift = (m_imode == 3) ? 4 : 3;
  	const int yline_mask = (m_imode == 3) ? 0xf : 0x7;
  	gfx_element *spr_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
-@@ -1416,7 +2093,7 @@
+@@ -1416,7 +2104,7 @@
  	}
  
  	/* Clear our Render Buffer */
@@ -1292,7 +1303,7 @@
  
  	{
  		int ypos, xpos, addr;
-@@ -1596,6 +2273,9 @@
+@@ -1596,6 +2284,9 @@
  	tile.pri =   (tile_dat & 0x8000) >> 15;
  	u16 code =   (tile_dat & 0x07ff);
  
@@ -1302,7 +1313,7 @@
  	if (m_imode == 3)
  		code &= 0x3ff;
  
-@@ -1662,8 +2342,321 @@
+@@ -1662,8 +2353,321 @@
  }
  
  /* Clean up this function (!) */
@@ -1624,7 +1635,7 @@
  	gfx_element *tile_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
  	u16 base_w = 0;
  
-@@ -1687,7 +2680,7 @@
+@@ -1687,7 +2691,7 @@
  	/* Clear our Render Buffer */
  	for (int x = 0; x < horz; x++)
  	{
@@ -1633,7 +1644,7 @@
  	}
  
  	memset(m_highpri_renderline.get(), 0, horz);
-@@ -1847,7 +2840,7 @@
+@@ -1847,7 +2851,7 @@
  	int vscroll;
  	/* Low Priority B Tiles */
  	{
@@ -1642,7 +1653,7 @@
  		{   /* 20x 16x1 blocks */
  			int vcolumn;
  
-@@ -1910,6 +2903,7 @@
+@@ -1910,6 +2914,7 @@
  		}
  		/* END */
  	}
@@ -1650,7 +1661,7 @@
  	/* Low Priority A Tiles + Window(!) */
  
  	{
-@@ -1934,7 +2928,8 @@
+@@ -1934,7 +2939,8 @@
  
  		/* Non Window Part */
  
@@ -1660,7 +1671,7 @@
  		{   /* 20x 16x1 blocks */
  		//  int xx;
  			int vcolumn;
-@@ -2004,6 +2999,25 @@
+@@ -2004,6 +3010,25 @@
  	}
  		/* END */
  
@@ -1686,7 +1697,7 @@
  /* MEGADRIVE_REG0C_SHADOW_HIGLIGHT */
  	/* Low Priority Sprites */
  	for (int x = 0; x < horz; x++)
-@@ -2139,9 +3153,9 @@
+@@ -2139,9 +3164,9 @@
  			if (!MEGADRIVE_REG0_SPECIAL_PAL) // 3 bit color mode, correct?
  				clut &= 0x49; // (1 << 6) | (1 << 3) | (1 << 0);
  
@@ -1699,7 +1710,7 @@
  		}
  	}
  
-@@ -2155,7 +3169,13 @@
+@@ -2155,7 +3180,13 @@
  		else
  			m_render_line_raw[srcx] = 0x000;
  
@@ -1714,7 +1725,7 @@
  		{
  			if (dat & 0x10000)
  			{
-@@ -2217,7 +3237,21 @@
+@@ -2217,7 +3248,21 @@
  		}
  	}
  
@@ -1737,7 +1748,7 @@
  		m_32x_scanline_helper_func(scanline);
  	if (!m_32x_scanline_func.isnull())
  	{
-@@ -2239,10 +3273,24 @@
+@@ -2239,10 +3284,24 @@
  
  	if (scanline >= 0 && scanline < m_visible_scanlines)
  	{
@@ -1766,7 +1777,7 @@
  	}
  }
  
-@@ -2366,6 +3414,7 @@
+@@ -2366,6 +3425,7 @@
  	/* note, add 240 mode + init new timings! */
  	scr_mul = m_lcm_scaling ? hres_mul[get_hres()] : 1;
  	scr_width = hres[get_hres()] * scr_mul;

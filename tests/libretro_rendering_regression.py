@@ -34,6 +34,7 @@ class RenderingFrontend(ExplosionFrontend):
         self.resolution = None
         self.double_rate = False
         self.reject_120 = False
+        self.cpu_overclock = b"default"
         self.aspect = b"original"
         self.rendering = rendering.encode()
         self.deflicker = deflicker.encode()
@@ -56,6 +57,9 @@ class RenderingFrontend(ExplosionFrontend):
             self.double_rate = info.timing.fps > 100
         if command == 15:
             v = C.cast(data, C.POINTER(Variable)).contents
+            if v.key == b'mame_cpu_overclock':
+                v.value = self.cpu_overclock
+                return True
             if self.resolution and v.key in (b'mame_alternate_renderer', b'mame_altres'):
                 v.value = b'enabled' if v.key == b'mame_alternate_renderer' else self.resolution
                 return True
@@ -103,7 +107,9 @@ def main():
     p.add_argument('--aspect', default='original', choices=['original','widescreen'])
     p.add_argument('--aspect-toggle', action='store_true')
     p.add_argument('--deflicker', default='game', choices=['game','off','on1','on2'])
-    p.add_argument('--input', default='reference', choices=['reference','stage3fire','stage4fire','stage5fire','scripted','attract'])
+    p.add_argument('--input', default='reference', choices=['reference','stage3fire','stage4fire','stage5fire','stage5crash','scripted','attract'])
+    p.add_argument('--cpu-overclock', default='default', choices=['default','100','150','200','250','300','350','400'])
+    p.add_argument('--require-markvi', metavar='START:END', help='Require the extended sprite list on every native refresh in this inclusive gameplay window')
     p.add_argument('--frames', type=int, default=7000)
     p.add_argument('--state-frames', type=int, default=120)
     p.add_argument('--baseline', type=Path)
@@ -122,8 +128,18 @@ def main():
     if a.frames < 240 or a.state_frames < 1:
         p.error('at least 240 frames and a positive replay window are required')
     game = IDENTITIES[hashlib.sha1(a.rom.read_bytes()).hexdigest()][0]
+    watch = None
+    if a.require_markvi:
+        try:
+            watch = tuple(map(int, a.require_markvi.split(':')))
+            assert len(watch) == 2 and 0 < watch[0] <= watch[1]
+            assert game == 2 and a.rendering in ('mark_vi', 'mark_vi_120')
+            assert watch[1] < a.frames // (2 if a.rendering == 'mark_vi_120' else 1) - 2
+        except (ValueError, AssertionError):
+            p.error('--require-markvi needs a completed START:END gameplay window with SH2 Mark VI rendering')
     report = dict(passed=False, game=game, rendering=a.rendering, deflicker=a.deflicker, aspect=a.aspect,
-                  input=a.input, frames=a.frames, threaded=a.threaded,
+                  input=a.input, frames=a.frames, threaded=a.threaded, cpu_overclock=a.cpu_overclock,
+                  explosions='sh1' if a.donor else 'original',
                   core_sha256=hashlib.sha256(a.core.read_bytes()).hexdigest(), messages=[])
     if a.capture_dir:
         a.capture_dir.mkdir(parents=True, exist_ok=True)
@@ -155,11 +171,32 @@ FRAME=emu.add_machine_frame_notifier(function()
 end)
 STOP=emu.add_machine_stop_notifier(function() out:close() end)
 ''')
+            if watch:
+                # Scalar diagnostics only; do not publish guest memory or artwork.
+                with script.open('a') as lua:
+                    lua.write(f'''
+local ready=nil
+for tag,dev in pairs(manager.machine.devices) do
+ if tag:find('vdp') then
+  for key,index in pairs(dev.items) do
+   if key:match('m_markvi_ready$') then ready=emu.item(index) end
+  end
+ end
+end
+assert(ready,'missing Mark VI state')
+local state=assert(io.open("{temp/'markvi.tsv'}","w"))
+MARKVI=emu.add_machine_frame_notifier(function()
+ if frame>={watch[0]} and frame<={watch[1]} then
+  state:write(string.format('%d\\t%d\\n',frame,ready:read(2)));state:flush()
+ end
+end)
+''')
             content = temp/'game.cmd'
             content.write_text(f'megadrij -skip_gameinfo -autoboot_delay 0 -autoboot_script {script} -cart {rom}\n')
             f = RenderingFrontend(a.core.resolve(), content, 'sh1' if a.donor else 'original', a.input, report,
                                   rendering=a.rendering, deflicker=a.deflicker, capture_dir=a.capture_dir)
             f.aspect = a.aspect.encode()
+            f.cpu_overclock = a.cpu_overclock.encode()
             f.resolution = a.resolution.encode() if a.resolution else None
             report['resolution'] = a.resolution
             f.reject_120 = a.reject_120
@@ -199,6 +236,11 @@ STOP=emu.add_machine_stop_notifier(function() out:close() end)
                     f.rendering=a.rendering.encode();f.option_update_pending=True
                 stream=f.run_window(1,a.frames)
                 report['stream']=stream.summary()
+                if watch:
+                    rows=[tuple(map(int,line.split())) for line in (temp/'markvi.tsv').read_text().splitlines()]
+                    inactive=[frame for frame,active in rows if not active]
+                    report['markvi_watch']={'start':watch[0], 'end':watch[1], 'observed':len(rows), 'inactive_frames':inactive}
+                    assert len(rows)==watch[1]-watch[0]+1 and not inactive, report['markvi_watch']
                 if not a.resolution:
                     assert f.last_frame[1] == (426 if a.aspect == 'widescreen' else 320), f.last_frame[1:]
                 if a.rendering == 'mark_vi_120' and game == 2 and not a.reject_120:

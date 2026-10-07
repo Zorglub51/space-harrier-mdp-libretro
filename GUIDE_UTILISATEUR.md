@@ -118,6 +118,9 @@ ROM supplémentaire n'est nécessaire ; le fichier ROM reste inchangé. Deflicke
 peut rester sur OFF : Mark VI supprime les quotas d'affichage indépendamment.
 La 0.1.18 corrige les retours intermittents au rendu limité lors du transfert
 du complément de la liste de sprites.
+La 0.1.20 traite également le cas où le processeur overclocké a déjà terminé
+la génération suivante, corrigeant les bandes manquantes reproduites dans
+les colonnes à 200 % et 400 %.
 
 À 120 Hz, la logique du jeu, les collisions, la lecture des commandes et le son
 conservent leur cadence et leur vitesse d'origine. Le cœur interpole les
@@ -132,7 +135,7 @@ Si le frontend refuse le changement de fréquence, un message s'affiche et la
 fréquence précédente est conservée. Aucun overclock du processeur émulé n'est
 nécessaire ; l'ordinateur doit pouvoir assurer le rendu supplémentaire.
 
-**Les états des anciennes versions ne sont pas compatibles avec la 0.1.19.**
+**Les états antérieurs à la 0.1.19 ne sont pas compatibles avec le format actuel.**
 Les trois réglages utilisent le même nouveau format. Conservez le même mode
 pour une reprise visuellement identique. Les états incluent la demi-image et
 l'audio en attente, et occupent environ 60 Mo avant compression ; la taille

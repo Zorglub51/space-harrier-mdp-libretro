@@ -1,0 +1,316 @@
+{
+  "version": "0.1.20",
+  "date": "2026-10-08",
+  "core_sha256": "9a4a95645fabcb30f0fc82afbc04540e8b36f288f4f7950d98ecd5749581496f",
+  "previous_core_sha256": "982303b9e3682858180d449ffd85a7ad3e1d4e599a9ca4e26905b576d830aae9",
+  "public_tests": {
+    "passed": 113,
+    "skipped_optional_native_oracle": 12
+  },
+  "lifecycle_sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "stage5_reproduction": {
+    "description": "Select stage 5, leave the player stationary without firing and collide with the incoming columns. No guest RAM changes.",
+    "before_v019_markvi_inactive_refreshes_3200_3500": 68,
+    "after_v020_markvi_inactive_refreshes_3200_3500": 0,
+    "whole_scene_cpu400_native_changed_video_frames": 129
+  },
+  "cases": [
+    {
+      "passed": true,
+      "rendering": "mark_vi",
+      "aspect": "original",
+      "deflicker": "off",
+      "cpu_overclock": "default",
+      "input": "stage5crash",
+      "frames": 4500,
+      "threaded": false,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 3200,
+        "end": 3500,
+        "observed": 301,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "5d8b40dc13c7199821c6594db1533c2160d0c151d274e6acbdb54ba5ae5ff6b9",
+        "samples": 39,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "cpu100-native",
+      "explosions": "sh1"
+    },
+    {
+      "passed": true,
+      "rendering": "mark_vi",
+      "aspect": "original",
+      "deflicker": "on1",
+      "cpu_overclock": "200",
+      "input": "stage5crash",
+      "frames": 4500,
+      "threaded": false,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 129
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 3200,
+        "end": 3500,
+        "observed": 301,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "820eb533572747d3cf413989b729741a5797b4b486a5f1f3be35b4ec44ea1e29",
+        "samples": 39,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "cpu200-native",
+      "explosions": "original"
+    },
+    {
+      "passed": true,
+      "rendering": "mark_vi",
+      "aspect": "original",
+      "deflicker": "off",
+      "cpu_overclock": "400",
+      "input": "stage5crash",
+      "frames": 4500,
+      "threaded": false,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 129
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 3200,
+        "end": 3500,
+        "observed": 301,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "7b7850aa27634dd1888f0ce582b253769f0ee4af4356567f8d7a1597a1f5f60e",
+        "samples": 39,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "cpu400-native",
+      "explosions": "sh1"
+    },
+    {
+      "passed": true,
+      "rendering": "original",
+      "aspect": "original",
+      "deflicker": "game",
+      "cpu_overclock": "400",
+      "input": "stage5crash",
+      "frames": 4500,
+      "threaded": false,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "7b7850aa27634dd1888f0ce582b253769f0ee4af4356567f8d7a1597a1f5f60e",
+        "samples": 39,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "cpu400-original",
+      "explosions": "sh1"
+    },
+    {
+      "passed": true,
+      "rendering": "mark_vi",
+      "aspect": "widescreen",
+      "deflicker": "on2",
+      "cpu_overclock": "400",
+      "input": "stage5crash",
+      "frames": 4500,
+      "threaded": false,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 3200,
+        "end": 3500,
+        "observed": 301,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "40783e1f4a1699277f198377fe38cf8d9262a8f86d4c0fba18a3934d21182fb0",
+        "samples": 39,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "cpu400-wide-on2",
+      "explosions": "original"
+    },
+    {
+      "passed": true,
+      "rendering": "mark_vi_120",
+      "aspect": "widescreen",
+      "deflicker": "game",
+      "cpu_overclock": "400",
+      "input": "stage5crash",
+      "frames": 9000,
+      "threaded": true,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 475
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "markvi_watch": {
+        "start": 3200,
+        "end": 3500,
+        "observed": 301,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "7b7850aa27634dd1888f0ce582b253769f0ee4af4356567f8d7a1597a1f5f60e",
+        "samples": 39,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "cpu400-wide120",
+      "explosions": "sh1"
+    }
+  ],
+  "boss1": {
+    "settings": {
+      "cpu_percent": 400,
+      "rendering": "mark_vi_120",
+      "aspect": "widescreen",
+      "explosions": "sh1",
+      "deflicker": "game",
+      "threaded": true,
+      "native_frames": 10000
+    },
+    "preconditions": "Only writes9 to player lives BCD FF1170 each native frame after2600; no boss/RNG/object mutation; normal digital directions aim at projected boss-head coordinates; no direct damage writes",
+    "watch_native_frames": [
+      8931,
+      9100
+    ],
+    "before": {
+      "core_sha256": "982303b9e3682858180d449ffd85a7ad3e1d4e599a9ca4e26905b576d830aae9",
+      "first_boss": 8931,
+      "controller_frames": [
+        8931,
+        9015
+      ],
+      "ready_drop_count": 49,
+      "input_sha256": "1bf6d7a2c5d98fe58ba36990025ad06be194300534ed7cfe6623310995da395d",
+      "ram_audit_sha256": "0ad1c808d0fbed60cd8f773a515018aed0bb9b4bb621b4752a24cec12f2dcae2",
+      "audio_sha256": "9d5006629e2a0db60ba23da07dbf666a97cea520dc103ce77ce10908a1d4756c",
+      "audio_stereo_frames": 8011106,
+      "max_mod_objects": 16,
+      "activations_start": 9,
+      "activations_end": 30,
+      "fallbacks_end": 0
+    },
+    "after": {
+      "core_sha256": "9a4a95645fabcb30f0fc82afbc04540e8b36f288f4f7950d98ecd5749581496f",
+      "first_boss": 8931,
+      "controller_frames": [
+        8931,
+        9015
+      ],
+      "ready_drop_count": 0,
+      "input_sha256": "1bf6d7a2c5d98fe58ba36990025ad06be194300534ed7cfe6623310995da395d",
+      "ram_audit_sha256": "0ad1c808d0fbed60cd8f773a515018aed0bb9b4bb621b4752a24cec12f2dcae2",
+      "audio_sha256": "9d5006629e2a0db60ba23da07dbf666a97cea520dc103ce77ce10908a1d4756c",
+      "audio_stereo_frames": 8011106,
+      "max_mod_objects": 16,
+      "activations_start": 9,
+      "activations_end": 30,
+      "fallbacks_end": 0
+    },
+    "objects_trace_identical": true,
+    "events_trace_identical": true,
+    "changed_video_frames": 489
+  },
+  "v019_save_state_compatibility": {
+    "passed": true,
+    "settings": "SH2 stage5, CPU400, Mark VI120, widescreen, SH1 explosions, Deflicker game, threaded",
+    "cases": [
+      {
+        "save_frame": 6499,
+        "phase": "odd",
+        "capacity": 60275896,
+        "restored": true,
+        "deterministic_video_audio_replay": true,
+        "video_frames": 240,
+        "audio_stereo_frames": 96114,
+        "video_sha256": "f32122be20577ea8316505dfd7c19b94c726015d445c4be21d58a950dc3f922a",
+        "audio_sha256": "11059666774def791fccd06e18b8939c9e11671e9ccec0122fcd369de8299b72",
+        "old_audio_identical": true,
+        "frames_changed_by_fix": 94
+      },
+      {
+        "save_frame": 6500,
+        "phase": "even",
+        "capacity": 60275896,
+        "restored": true,
+        "deterministic_video_audio_replay": true,
+        "video_frames": 240,
+        "audio_stereo_frames": 96114,
+        "video_sha256": "7b0f97d02380e7aa847b99be331cbffd3e44f92a1c27d78da6d5fd18e974fbe3",
+        "audio_sha256": "712c5bc86b18f7ef38518dfab38cb9a5457328a9e8177d01e406feaf16951806",
+        "old_audio_identical": true,
+        "frames_changed_by_fix": 94
+      }
+    ]
+  }
+}

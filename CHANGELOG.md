@@ -6,6 +6,42 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.20] - 2026-10-08
+
+### Mark VI sprite stability with CPU overclocking
+
+- Fix another intermittent return to the quota-limited renderer when an
+  overclocked SH2 CPU completes its next sprite generation before a pending
+  overflow upload, while the previous generation's head is still displayed.
+  At 400%, this caused missing horizontal strips in stage 5 columns during the
+  player's death animation and flicker during the first boss's SH1 explosions.
+- Authenticate overflow uploads against either the displayed generation or
+  the latest completed generation of the same producer bank, including its
+  entry count. Keep the displayed complete list until the next full SAT upload.
+  Preserve checks on source, destination, stride, geometry and the untouched
+  SAT prefix; unrelated writes and clears still invalidate the list.
+- Apply the correction to native-refresh and 120 Hz Mark VI, in 4:3 and 16:9.
+  Do not change CPU speed, game logic, artwork or audio. Original (M2) rendering
+  retains its native limits. No saved-state fields are added or removed.
+- Extend the private-ROM regression frontend with CPU speed selection, a
+  repeatable stage 5 collision input sequence and an assertion that Mark VI
+  stays active throughout a specified gameplay window.
+
+### Validation
+
+- Reproduce stage 5 column collisions at 200% and 400% CPU speed, then compare
+  native-refresh/120 Hz, 4:3/16:9 and Deflicker combinations. The 400% widescreen
+  120 Hz collision window drops from 68 invalid refreshes to zero. Full PCM and
+  sampled RAM/CPU state remain identical in all six comparison runs.
+- Defeat the first boss through normal aiming and firing inputs, retaining nine
+  player lives as a diagnostic precondition. Keep boss HP, objects and RNG
+  untouched. With SH1 explosion artwork, invalid refreshes drop from 49 to zero;
+  destruction timing, particle trajectories, sampled RAM and full PCM match.
+- Verify deterministic replay of 0.1.19 save states at both 120 Hz phases in
+  0.1.20. Original rendering and the tested default-clock scene remain unchanged.
+- Pass 113 public tests (12 optional native-oracle tests skipped) and expanded
+  lifecycle probes under AddressSanitizer and UndefinedBehaviorSanitizer.
+
 ## [0.1.19] - 2026-10-08
 
 ### Optional extended 16:9 field of view for SH1 and SH2

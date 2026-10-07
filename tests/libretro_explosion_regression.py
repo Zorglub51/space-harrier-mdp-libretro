@@ -89,7 +89,7 @@ class ExplosionFrontend(StateFrontend):
             return int(any(t <= self.frame < t + 8 for t in (700, 1300, 1900, 2500)))
         if self.input_mode == "stage3fire" and control == 7 and self.frame < 2600:
             return int(any(t <= self.frame < t + 3 for t in (2020, 2180)))
-        if self.input_mode == "stage5fire" and control == 7 and self.frame < 2600:
+        if self.input_mode in ("stage5fire", "stage5crash") and control == 7 and self.frame < 2600:
             return int(any(t <= self.frame < t + 3 for t in (2010, 2130, 2250, 2370)))
         if self.input_mode in ("stage4", "stage4fire") and control == 7 and self.frame < 2600:
             return int(any(t <= self.frame < t + 3 for t in (2020, 2180, 2360)))

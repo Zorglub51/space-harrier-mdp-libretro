@@ -110,6 +110,8 @@ with native Deflicker and the SH1 explosion option. No additional ROM patch is
 required, and your ROM file stays unchanged. Native Deflicker can remain OFF:
 Mark VI removes display quotas independently. Version 0.1.18 fixes the
 intermittent return to limited rendering during overflow sprite uploads.
+Version 0.1.20 also handles a completed subsequent sprite generation with an
+overclocked CPU, fixing missing column strips reproduced at 200% and 400%.
 
 The 120 Hz mode keeps game logic, collisions, input sampling and audio at their
 original speed. It adds intermediate positions, not new sprite drawings or
@@ -125,7 +127,7 @@ previous refresh rate. More rendering work is performed on the host computer;
 no emulated CPU overclock is needed. The frontend must be able to sustain the
 negotiated refresh rate. Use Native Refresh to compare with the enhancement off.
 
-**Save states from earlier core versions are incompatible with 0.1.19.**
+**Save states from versions before 0.1.19 are incompatible with the current format.**
 All three rendering choices share the new format. Keep the same mode for
 identical visual replay. Pending half-frame video and PCM are included, so
 states also restore correctly between two 120 Hz presentations. The maximum
