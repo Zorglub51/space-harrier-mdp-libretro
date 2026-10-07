@@ -92,7 +92,10 @@ Dans **Menu rapide > Options du cœur > Emulation Hacks > SH2 Rendering** :
 
 Le changement s'applique sans redémarrage. SH1 reste inchangé. Les deux modes
 Mark VI peuvent être combinés avec Deflicker et les explosions SH1. Aucun patch
-ROM supplémentaire n'est nécessaire ; le fichier ROM reste inchangé.
+ROM supplémentaire n'est nécessaire ; le fichier ROM reste inchangé. Deflicker
+peut rester sur OFF : Mark VI supprime les quotas d'affichage indépendamment.
+La 0.1.18 corrige les retours intermittents au rendu limité lors du transfert
+du complément de la liste de sprites.
 
 À 120 Hz, la logique du jeu, les collisions, la lecture des commandes et le son
 conservent leur cadence et leur vitesse d'origine. Le cœur interpole les
@@ -107,7 +110,7 @@ Si le frontend refuse le changement de fréquence, un message s'affiche et la
 fréquence précédente est conservée. Aucun overclock du processeur émulé n'est
 nécessaire ; l'ordinateur doit pouvoir assurer le rendu supplémentaire.
 
-**Les états des anciennes versions ne sont pas compatibles avec la 0.1.17.**
+**Les états des anciennes versions ne sont pas compatibles avec la 0.1.18.**
 Les trois réglages utilisent le même nouveau format. Conservez le même mode
 pour une reprise visuellement identique. Les états incluent la demi-image et
 l'audio en attente, et occupent environ 60 Mo avant compression ; la taille
@@ -128,8 +131,7 @@ ajouté. Le choix interne du jeu est conservé ; **Game Setting** lui rend la ma
 
 Le choix du cœur s’applique aussi après un reset ou le chargement d’une sauvegarde
 instantanée. Gardez le même réglage pour reproduire une séquence à l’identique.
-Le format des sauvegardes reste inchangé, y compris le mode explosions SH1 de
-la version 0.1.14.
+Changer Deflicker ne change pas le format des états de cette version du cœur.
 
 ## Explosions de SH1 dans SH2 — option facultative
 

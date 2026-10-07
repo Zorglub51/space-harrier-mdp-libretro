@@ -36,13 +36,27 @@ separately for the two producer banks. A completion observer records the native
 SAT geometry for that bank. The host list is promoted only on the corresponding
 complete SAT DMA upload. Link-byte repairs are ignored in the comparison;
 geometry changes caused by a bank clear/replacement invalidate the snapshot.
-Direct VRAM writes/fills also invalidate a displayed host list. This prevents
-old title sprites from appearing with newly loaded stage artwork.
+The constructor also writes an overflow partition at `FF118A`/`FF140C` with
+counts at `FF140A`/`FF168C`. The interrupt routines at `0ADF10`/`0AE02C` upload
+it into the tail of the 80-entry SAT on a later refresh. Version 0.1.18 records
+this partition's masked geometry/count at constructor completion, then copies
+that signature alongside the displayed snapshot on the full SAT upload.
+
+An overflow upload preserves an already active host list only when its source,
+length, destination, stride, masked geometry and the untouched SAT prefix match
+that displayed signature. The producer may already be rebuilding, so checking
+its current ready flag would incorrectly reject a valid display. The host list
+already includes both partitions before quotas; no second piece list is added.
+Unknown writes/fills, mismatches and external clears still invalidate the list.
+This prevents old title sprites from appearing with newly loaded stage artwork.
+No framebuffer persistence or game-side overclock is used.
 
 The three native RAM snapshots and their lifecycle metadata are saved. The
 variable host list is rebuilt after state load. Version 0.1.17 also saves the
 presentation history and pending half-frame output; earlier state layouts are
-incompatible. All current rendering choices share one state size/layout.
+incompatible. Version 0.1.18 adds the displayed primary/overflow signatures and
+also requires new states. All current rendering choices share one state
+size/layout.
 
 ## Optional 120 Hz presentation
 
@@ -65,7 +79,7 @@ This delays geometry by approximately one object-update interval, commonly
 or generate intermediate sprite artwork. Collision and input timing remain
 native, so interpolated visuals can be offset from current collision positions.
 
-Matching uses guest object address, handler, pose/LOD descriptor, piece and
+Matching uses guest object address, handler (object offset `0x10`), pose/LOD descriptor, piece and
 mirror/shadow identity. Tile-cache relocation uses current artwork. Changes of
 size, flip or palette skip interpolation. Missing/hidden pieces disappear
 immediately; new pieces appear immediately. Coordinate wraps or displacements
@@ -133,3 +147,15 @@ repeated refresh changes, SH1 isolation, unchanged default rendering and a
 frontend rejecting the new refresh rate. Synthetic tests verify four distinct
 geometry steps, long lists, identity changes, cuts, holds and invalidation.
 These targeted sequences do not prove full-game visual correctness.
+
+## Overflow-upload regression (0.1.18)
+
+[SH2_MARK_VI_V018_VALIDATION.json](SH2_MARK_VI_V018_VALIDATION.json) records the
+corrected core and checks. Stage 5 column rows were missing in both native and
+120 Hz Mark VI because the overflow DMA disabled the host renderer. Captures
+of the same deterministic sequence confirm removal of that defect. A separate
+controlled boss burst using SH1 artwork had 39 invalidations in 341 native
+refresh observations before the fix and none afterwards. The same corrected
+burst passed at 120 Hz and with native Deflicker ON1. It uses a synthetic boss
+controller and controlled particle coordinates, not a natural boss-1 defeat;
+other intentional or unidentified blinking is not certified absent.

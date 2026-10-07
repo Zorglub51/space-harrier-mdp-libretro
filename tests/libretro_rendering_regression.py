@@ -90,7 +90,7 @@ def main():
     p.add_argument('--report', type=Path, required=True)
     p.add_argument('--rendering', default='original', choices=['original','mark_vi','mark_vi_120','missing','invalid'])
     p.add_argument('--deflicker', default='game', choices=['game','off','on1','on2'])
-    p.add_argument('--input', default='reference', choices=['reference','stage3fire','stage4fire','scripted','attract'])
+    p.add_argument('--input', default='reference', choices=['reference','stage3fire','stage4fire','stage5fire','scripted','attract'])
     p.add_argument('--frames', type=int, default=7000)
     p.add_argument('--state-frames', type=int, default=120)
     p.add_argument('--baseline', type=Path)

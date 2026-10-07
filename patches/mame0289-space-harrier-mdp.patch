@@ -522,7 +522,7 @@
  	save_pointer(NAME(m_internal_sprite_attribute_table), 0x400 / 2);
  
  	save_item(NAME(m_command_pending));
-@@ -340,8 +392,28 @@
+@@ -340,8 +392,29 @@
  	save_item(NAME(m_scanline_counter));
  	save_item(NAME(m_vblank_flag));
  	save_item(NAME(m_total_scanlines));
@@ -532,6 +532,7 @@
 +	save_item(NAME(m_markvi_ready));
 +	save_item(NAME(m_markvi_source));
 +	save_item(NAME(m_markvi_sat));
++	save_item(NAME(m_markvi_tail));
 +	save_item(NAME(m_markvi_build_bank));
 +    save_item(NAME(m_markvi_history));
 +    save_item(NAME(m_markvi_history_valid));
@@ -553,7 +554,7 @@
  	m_highpri_renderline = std::make_unique<u8[]>(320);
  	m_video_renderline = std::make_unique<u32[]>(320);
  
-@@ -384,6 +456,12 @@
+@@ -384,6 +457,12 @@
  
  void sega315_5313_device::device_reset()
  {
@@ -566,7 +567,7 @@
  	m_command_pending = 0;
  	m_command_part1 = 0;
  	m_command_part2 = 0;
-@@ -400,6 +478,7 @@
+@@ -400,6 +479,7 @@
  	m_scanline_counter = 0;
  	m_vblank_flag = 0;
  	m_total_scanlines = 262;
@@ -574,7 +575,7 @@
  
  	sega315_5313_mode4_device::device_reset();
  }
-@@ -446,9 +525,22 @@
+@@ -446,9 +526,22 @@
  	vdp_address_inc();
  }
  
@@ -598,7 +599,7 @@
  
  	//logerror("Wrote to VSRAM addr %04x data %04x\n", m_vdp_address & 0xfffe, m_vsram[m_vdp_address >> 1]);
  
-@@ -460,7 +552,10 @@
+@@ -460,7 +553,10 @@
  	m_cram[offset] = data;
  
  	//logerror("Wrote to CRAM addr %04x data %04x\n", m_vdp_address & 0xfffe, m_cram[m_vdp_address >> 1]);
@@ -610,7 +611,7 @@
  	{
  		data = ((m_cram[offset] & 0xe) >> 1) | ((m_cram[offset] & 0xe0) >> 2) | ((m_cram[offset] & 0xe00) >> 3);
  		m_palette_lookup[offset] = data;
-@@ -468,9 +563,9 @@
+@@ -468,9 +564,9 @@
  		{
  			if (m_palwrite_base != -1)
  			{
@@ -623,7 +624,7 @@
  			}
  		}
  	}
-@@ -478,14 +573,53 @@
+@@ -478,14 +574,53 @@
  
  void sega315_5313_device::vdp_cram_write(u16 data)
  {
@@ -678,7 +679,7 @@
  
  	/*
  	0000b : VRAM read
-@@ -711,6 +845,20 @@
+@@ -711,6 +846,20 @@
  /* Instant, but we pause the 68k a bit */
  void sega315_5313_device::insta_68k_to_vram_dma(u32 source, int length)
  {
@@ -699,7 +700,7 @@
  	if (length == 0x00) length = 0xffff;
  
  	/* This is a hack until real DMA timings are implemented */
-@@ -742,7 +890,7 @@
+@@ -742,7 +891,7 @@
  	{
  		//if (m_vdp_address >= 0x80) return; // abandon
  
@@ -708,7 +709,7 @@
  		source += 2;
  
  		if (source > 0xffffff) source = 0xfe0000;
-@@ -783,9 +931,103 @@
+@@ -783,9 +932,104 @@
  	m_regs[0x17] = (source >> 17) & 0xff;
  }
  
@@ -730,6 +731,7 @@
 +	u32 source = (m_regs[21] << 1) | (m_regs[22] << 9) | (m_regs[23] << 17);
 +	u32 address = m_vdp_address;
 +	const u32 markvi_source = source, markvi_address = address;
++	const bool markvi_active = m_markvi_ready[2];
 +	for (u32 i = 0; i < count; ++i)
 +	{
 +		const u16 data = mdp_dma_read_word(source);
@@ -748,7 +750,7 @@
 +		source += 2;
 +		address = (address + m_regs[15]) & 0xffff;
 +	}
-+	sh2_markvi_dma(markvi_source, markvi_address, count);
++	sh2_markvi_dma(markvi_source, markvi_address, count, markvi_active);
 +	m_vdp_address = address;
 +	m_regs[19] = 0;
 +	m_regs[20] = 0;
@@ -812,7 +814,7 @@
  #if 0
  	const u32 source = (MEGADRIVE_REG15_DMASOURCE1 | (MEGADRIVE_REG16_DMASOURCE2 << 8) | ((MEGADRIVE_REG17_DMASOURCE3 & 0xff) << 16)) << 1;
  	const u16 length = (MEGADRIVE_REG13_DMALENGTH1 | (MEGADRIVE_REG14_DMALENGTH2 << 8)) << 1;
-@@ -879,8 +1121,13 @@
+@@ -879,8 +1123,13 @@
  			if (regnum & 0x20) osd_printf_debug("reg error\n");
  
  			vdp_set_register(regnum & 0x1f, value);
@@ -828,7 +830,7 @@
  		}
  		else
  		{
-@@ -890,6 +1137,91 @@
+@@ -890,6 +1139,91 @@
  			//logerror("VDP Write Part 1 setting Code %02x Address %04x\n", m_vdp_code, m_vdp_address);
  		}
  	}
@@ -920,7 +922,7 @@
  }
  
  void sega315_5313_device::vdp_w(offs_t offset, u16 data, u16 mem_mask)
-@@ -953,7 +1285,7 @@
+@@ -953,7 +1287,7 @@
  
  u16 sega315_5313_device::vdp_cram_r(void)
  {
@@ -929,14 +931,17 @@
  }
  
  u16 sega315_5313_device::data_port_r()
-@@ -1396,8 +1728,316 @@
+@@ -1396,8 +1730,346 @@
  
  */
  
-+void sega315_5313_device::sh2_markvi_dma(u32 source, u32 address, u32 count)
++void sega315_5313_device::sh2_markvi_dma(u32 source, u32 address, u32 count, bool was_active)
 +{
-+	const bool markvi_sat = m_sh2_text_compat && m_vdp_code == 0x21 && address == (u32(m_regs[5] & 0x7f) << 9);
-+	if (markvi_sat)
++	if (!m_sh2_text_compat || m_vdp_code != 0x21 || m_regs[15] != 2)
++		return;
++	const u32 sat_base = u32(m_regs[5] & 0x7f) << 9;
++	const auto mask = [](unsigned i) -> u16 { return (i & 3) == 1 ? 0xff00 : 0xffff; };
++	if (address == sat_base && (source & 0xffffff) != m_markvi_source[2])
 +	{
 +		m_markvi_ready[2] = false;
 +		if (count == 0x140)
@@ -946,14 +951,34 @@
 +					const u16 *native = reinterpret_cast<const u16 *>(m_space68k->get_read_ptr(source & 0xffffff));
 +					bool same = native != nullptr;
 +					for (unsigned i = 0; same && i < 0x140; ++i)
-+						same = (native[i] & ((i & 3) == 1 ? 0xff00 : 0xffff)) == m_markvi_sat[bank][i];
++						same = (native[i] & mask(i)) == m_markvi_sat[bank][i];
 +					if (!same)
 +						continue; // The game cleared/replaced this producer bank.
 +					std::copy_n(m_markvi_ram[bank], 0x10000, m_markvi_ram[2]);
++					std::copy_n(m_markvi_sat[bank], 0x140, m_markvi_sat[2]);
++					std::copy_n(m_markvi_tail[bank], 0x141, m_markvi_tail[2]);
++					m_markvi_source[2] = bank ? 0xff140c : 0xff118a;
 +					m_markvi_ready[2] = true;
 +					break;
 +				}
 +		sh2_markvi_rebuild();
++	}
++	else if (was_active && count && count <= 0x140 && !(count & 3) &&
++		(source & 0xffffff) == m_markvi_source[2] &&
++		count == u32(m_markvi_tail[2][0x140]) * 4 &&
++		address == sat_base + 0x280 - count * 2)
++	{
++		// SH2 0ADF10/0AE02C uploads the overflow partition on the following
++		// refresh. It belongs to the same completed constructor, whose host
++		// list already includes these pieces before quotas. Validate against
++		// the displayed snapshot: the producer may already be rebuilding.
++		const u16 *native = reinterpret_cast<const u16 *>(m_space68k->get_read_ptr(source & 0xffffff));
++		bool same = native != nullptr;
++		for (unsigned i = 0; same && i < count; ++i)
++			same = (native[i] & mask(i)) == m_markvi_tail[2][i];
++		for (unsigned i = 0; same && i < 0x140 - count; ++i)
++			same = (mdp_vram_word((sat_base >> 1) + i) & mask(i)) == m_markvi_sat[2][i];
++		m_markvi_ready[2] = same;
 +	}
 +}
 +
@@ -986,6 +1011,13 @@
 +		return;
 +	for (unsigned i = 0; i < 0x140; ++i)
 +		m_markvi_sat[bank][i] = native[i] & ((i & 3) == 1 ? 0xff00 : 0xffff);
++	const u32 tail_source = bank ? 0xff140c : 0xff118a;
++	const u16 *tail = reinterpret_cast<const u16 *>(m_space68k->get_read_ptr(tail_source));
++	if (!tail)
++		return;
++	for (unsigned i = 0; i < 0x140; ++i)
++		m_markvi_tail[bank][i] = tail[i] & ((i & 3) == 1 ? 0xff00 : 0xffff);
++	m_markvi_tail[bank][0x140] = m_space68k->read_word(bank ? 0xff168c : 0xff140a);
 +	m_markvi_ready[bank] = true;
 +}
 +
@@ -1246,7 +1278,7 @@
  	const int ytile_shift = (m_imode == 3) ? 4 : 3;
  	const int yline_mask = (m_imode == 3) ? 0xf : 0x7;
  	gfx_element *spr_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
-@@ -1416,7 +2056,7 @@
+@@ -1416,7 +2088,7 @@
  	}
  
  	/* Clear our Render Buffer */
@@ -1255,7 +1287,7 @@
  
  	{
  		int ypos, xpos, addr;
-@@ -1596,6 +2236,9 @@
+@@ -1596,6 +2268,9 @@
  	tile.pri =   (tile_dat & 0x8000) >> 15;
  	u16 code =   (tile_dat & 0x07ff);
  
@@ -1265,7 +1297,7 @@
  	if (m_imode == 3)
  		code &= 0x3ff;
  
-@@ -1662,8 +2305,192 @@
+@@ -1662,8 +2337,192 @@
  }
  
  /* Clean up this function (!) */
@@ -1458,7 +1490,7 @@
  	gfx_element *tile_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
  	u16 base_w = 0;
  
-@@ -1687,7 +2514,7 @@
+@@ -1687,7 +2546,7 @@
  	/* Clear our Render Buffer */
  	for (int x = 0; x < horz; x++)
  	{
@@ -1467,7 +1499,7 @@
  	}
  
  	memset(m_highpri_renderline.get(), 0, horz);
-@@ -1847,7 +2674,7 @@
+@@ -1847,7 +2706,7 @@
  	int vscroll;
  	/* Low Priority B Tiles */
  	{
@@ -1476,7 +1508,7 @@
  		{   /* 20x 16x1 blocks */
  			int vcolumn;
  
-@@ -1910,6 +2737,7 @@
+@@ -1910,6 +2769,7 @@
  		}
  		/* END */
  	}
@@ -1484,7 +1516,7 @@
  	/* Low Priority A Tiles + Window(!) */
  
  	{
-@@ -1934,7 +2762,8 @@
+@@ -1934,7 +2794,8 @@
  
  		/* Non Window Part */
  
@@ -1494,7 +1526,7 @@
  		{   /* 20x 16x1 blocks */
  		//  int xx;
  			int vcolumn;
-@@ -2003,6 +2832,25 @@
+@@ -2003,6 +2864,25 @@
  		}
  	}
  		/* END */
@@ -1520,7 +1552,7 @@
  
  /* MEGADRIVE_REG0C_SHADOW_HIGLIGHT */
  	/* Low Priority Sprites */
-@@ -2139,9 +2987,9 @@
+@@ -2139,9 +3019,9 @@
  			if (!MEGADRIVE_REG0_SPECIAL_PAL) // 3 bit color mode, correct?
  				clut &= 0x49; // (1 << 6) | (1 << 3) | (1 << 0);
  
@@ -1533,7 +1565,7 @@
  		}
  	}
  
-@@ -2155,7 +3003,13 @@
+@@ -2155,7 +3035,13 @@
  		else
  			m_render_line_raw[srcx] = 0x000;
  
@@ -1548,7 +1580,7 @@
  		{
  			if (dat & 0x10000)
  			{
-@@ -2217,7 +3071,7 @@
+@@ -2217,7 +3103,7 @@
  		}
  	}
  
@@ -1557,7 +1589,7 @@
  		m_32x_scanline_helper_func(scanline);
  	if (!m_32x_scanline_func.isnull())
  	{
-@@ -2239,10 +3093,24 @@
+@@ -2239,10 +3125,24 @@
  
  	if (scanline >= 0 && scanline < m_visible_scanlines)
  	{
@@ -1730,7 +1762,7 @@
  	virtual void device_reset() override ATTR_COLD;
  	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
  
-@@ -220,36 +271,79 @@
+@@ -220,36 +271,80 @@
  	void vdp_address_inc();
  	void vdp_set_register(int regnum, u8 value);
  
@@ -1774,8 +1806,9 @@
 +	// fixed RAM snapshots serialize; the variable sprite vector is rebuilt.
 +	u16 m_markvi_ram[3][0x10000]{};
 +	bool m_markvi_ready[3]{};
-+	u32 m_markvi_source[2]{};
-+	u16 m_markvi_sat[2][0x140]{};
++	u32 m_markvi_source[3]{};
++	u16 m_markvi_sat[3][0x140]{};
++	u16 m_markvi_tail[3][0x141]{};
 +	int m_markvi_build_bank = -1;
 +	std::vector<sh2_markvi::sprite> m_markvi_sprites;
 +    u16 m_markvi_history[2][0x10000]{};
@@ -1785,7 +1818,7 @@
 +    std::vector<sh2_markvi::sprite> m_markvi_phases[2];
 +    void sh2_markvi_begin_frame();
 +	void sh2_markvi_rebuild();
-+	void sh2_markvi_dma(u32 source, u32 address, u32 count);
++	void sh2_markvi_dma(u32 source, u32 address, u32 count, bool was_active);
 +	bool mdp_render_markvi_spriteline(int scanline);
 +	bool m_sh2_text_compat = false; // Immutable cartridge profile, reapplied on reset.
 +	// Direct CRAM writes are indexed, and several colours may change on one line.

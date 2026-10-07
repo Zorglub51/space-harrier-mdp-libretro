@@ -6,6 +6,39 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.18] - 2026-10-07
+
+### Mark VI sprite stability fixes
+
+- Fix intermittent returns to the original quota-limited sprite renderer when
+  SH2 uploads its overflow sprite partition on the following refresh. This
+  caused missing horizontal sections in stage 5 columns and increased flicker
+  during boss particle explosions using SH1 artwork.
+- Validate overflow uploads against the displayed, completed constructor
+  snapshot, even when its producer buffer has started another build. Preserve
+  invalidation for unknown writes, clears and geometry changes; do not retain
+  previous-frame pixels or change guest CPU, RAM, animation timing or audio.
+- Apply the fix to both native-refresh and 120 Hz Mark VI. Native Deflicker is
+  not required; Original (M2) rendering and SH1 remain unchanged.
+- Read the actual object handler at offset 0x10 for 120 Hz piece identity.
+  Moving world coordinates no longer incorrectly cancel interpolation.
+- Save the displayed overflow signature. **Save states from earlier core
+  versions are incompatible; start a new game before creating new states.**
+
+### Validation
+
+- Reproduce missing stage 5 column rows at native and 120 Hz refresh, and verify
+  the corrected sequence visually. Add a stage 5 input sequence to the private
+  ROM regression runner.
+- In a controlled, synthetic SH1-art boss particle burst, reduce invalid native
+  renderer fallbacks from 39 to 0 across 341 observed refreshes. Confirm zero
+  fallbacks with native/120 Hz Mark VI and with Deflicker ON1 at native refresh.
+  This is not a claim of exhaustive coverage of every naturally defeated boss.
+- Compare full PCM and sampled RAM/68000 state: unchanged. Verify deterministic
+  save-state replay, both 120 Hz phases, mode changes and threaded rendering;
+  keep SH1 and original SH2 video unchanged. Pass 110 public tests (12 optional
+  native-oracle tests skipped) and four Mark VI sanitizer probes.
+
 ## [0.1.17] - 2026-10-07
 
 ### Optional Mark VI 120 Hz presentation for SH2

@@ -89,9 +89,11 @@ class ExplosionFrontend(StateFrontend):
             return int(any(t <= self.frame < t + 8 for t in (700, 1300, 1900, 2500)))
         if self.input_mode == "stage3fire" and control == 7 and self.frame < 2600:
             return int(any(t <= self.frame < t + 3 for t in (2020, 2180)))
+        if self.input_mode == "stage5fire" and control == 7 and self.frame < 2600:
+            return int(any(t <= self.frame < t + 3 for t in (2010, 2130, 2250, 2370)))
         if self.input_mode in ("stage4", "stage4fire") and control == 7 and self.frame < 2600:
             return int(any(t <= self.frame < t + 3 for t in (2020, 2180, 2360)))
-        if self.input_mode in ("reference", "stage3fire", "stage4fire") and self.frame >= 2600:
+        if self.input_mode in ("reference", "stage3fire", "stage4fire", "stage5fire") and self.frame >= 2600:
             if control == 0:
                 return 1
             return int(control == (4, 7, 5, 6)[((self.frame - 2600) // 90) % 4])
@@ -531,7 +533,7 @@ def main():
     parser.add_argument("--donor", type=Path)
     parser.add_argument("--donor-kind", choices=("valid", "missing", "wrong-sha1"), default="missing")
     parser.add_argument("--donor-location", choices=("cart", "system"), default="system")
-    parser.add_argument("--input", choices=("attract", "scripted", "reference", "stage3fire", "stage4", "stage4fire"), default="attract")
+    parser.add_argument("--input", choices=("attract", "scripted", "reference", "stage3fire", "stage4", "stage4fire", "stage5fire"), default="attract")
     parser.add_argument("--frames", type=int, default=2400)
     parser.add_argument("--state-frames", type=int, default=120)
     parser.add_argument("--runtime-toggle", action="store_true", help="Change original/sh1/original via GET_VARIABLE_UPDATE without frontend unload/load.")

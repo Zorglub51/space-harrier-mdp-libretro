@@ -38,12 +38,14 @@ METHOD
 int main(){
  sega315_5313_device v;
  v.lng(0x13b78e,0xff3542);v.lng(0xff38f2,0xff5000);
- v.lng(0xff501c,0x1000);v.put(0xff502a,4);v.put(0x100a,0x100);
+ v.lng(0xff5010,0x123456);v.lng(0xff501c,0x1000);v.put(0xff502a,4);v.put(0x100a,0x100);
  v.lng(0x100c,0x2000);v.put(0xff3542,32);
  v.build();assert(v.m_markvi_sprites.size()==1);
+ assert(v.m_markvi_sprites[0].routine==0x123456);
  sh_mdp_video::hz120=true;
  v.sh2_markvi_begin_frame();assert(v.m_markvi_phases[0][0].x==128);
  v.sh2_markvi_begin_frame();assert(v.m_markvi_phases[1][0].x==128);
+ v.lng(0xff5000,0xabcde); // Moving world X/Y must not look like a handler change.
  v.put(0xff500c,32);v.build();v.sh2_markvi_begin_frame();
  assert(v.m_markvi_span==2);
  assert(v.m_markvi_phases[0][0].x==136 && v.m_markvi_phases[1][0].x==144);

@@ -64,7 +64,7 @@ template<class Read> bool build(Read read, std::vector<sprite> &out)
                 // Preserve the native offscreen test; it isn't a sprite budget.
                 if (u16(px - 96) <= ((shadow && scale < 0) ? 383 : 351))
                     out.push_back({py, u16((byte(p + 1) | ((alloc >> 7) & 16)) << 8), attr, px,
-                                   u16(scale < 0 ? 0x1000 : scale + 0x100), o, lng(o), desc,
+                                   u16(scale < 0 ? 0x1000 : scale + 0x100), o, lng(o + 0x10), desc,
                                    u32(i | (half << 8) | (unsigned(shadow) << 9))});
                 attr += word(p + 2);
             }
