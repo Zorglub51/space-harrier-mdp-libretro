@@ -29,6 +29,7 @@ using u8=std::uint8_t; using u16=std::uint16_t; using u32=std::uint32_t;
 #define BIT(v,b) (((v)>>(b))&1U)
 class sega315_5313_device {
 public:
+ int mdp_widescreen_padding() const {return 0;}
  u16 m_regs[64]{};
  std::array<u16,65536> vram{};
  std::unique_ptr<u16[]> m_sprite_renderline=std::make_unique<u16[]>(1024);

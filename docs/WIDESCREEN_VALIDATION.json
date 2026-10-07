@@ -1,0 +1,1017 @@
+{
+  "version": "0.1.19",
+  "core_sha256": "982303b9e3682858180d449ffd85a7ad3e1d4e599a9ca4e26905b576d830aae9",
+  "public_tests": {
+    "passed": 113,
+    "optional_native_oracle_skipped": 12
+  },
+  "widescreen_sanitizer_probes": 3,
+  "raster": {
+    "native_width": 320,
+    "wide_width": 426,
+    "border_each_side": 53,
+    "display_aspect": "16:9",
+    "native_total_clock_width": 480
+  },
+  "integration": {
+    "legacy-donor120": {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "stage3fire",
+      "frames": 14000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "e1bc026a0e9c548ce329923437e4d8780e129548fa47cfd8c1ec7bffec4816f7",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "distinct_half_pairs": 3176,
+      "geometry_updates": [
+        {
+          "frame": 5,
+          "width": 320,
+          "height": 224,
+          "aspect": 1.3333333730697632
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 5,
+          "width": 320,
+          "height": 224
+        }
+      ],
+      "video_sha256": "8031df25e5dcb6ece1a3f32e0d1924f81b7ca82cd055ce6cd8d274946c72be6f",
+      "audio_sha256": "9925aa0e63c606420b59c84a4c5f555d0be62600c996ee6c57aa939fec6e4199",
+      "audio_stereo_frames": 5608015
+    },
+    "legacy-markvi120": {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 14000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "6ffcc6933d9cb426906e933800882f27153abcd4fc696151b4479a0eb012bce5",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "distinct_half_pairs": 4043,
+      "geometry_updates": [
+        {
+          "frame": 5,
+          "width": 320,
+          "height": 224,
+          "aspect": 1.3333333730697632
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 5,
+          "width": 320,
+          "height": 224
+        }
+      ],
+      "video_sha256": "596acaadc475b120ca52a81a619d806b0e1936539848664c4f43dd199730b381",
+      "audio_sha256": "b08e80cca08b6de89b58f10513c5fd4ccf666245654eee7b109338d74bcb592e",
+      "audio_stereo_frames": 5608015
+    },
+    "legacy-original": {
+      "passed": true,
+      "game": 2,
+      "rendering": "original",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 7000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 120
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "6ffcc6933d9cb426906e933800882f27153abcd4fc696151b4479a0eb012bce5",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "geometry_updates": [
+        {
+          "frame": 3,
+          "width": 320,
+          "height": 224,
+          "aspect": 1.3333333730697632
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 3,
+          "width": 320,
+          "height": 224
+        }
+      ],
+      "video_sha256": "23d2724db7c524ba0becaec9465feb0123e313cce85f1a9ea7284a68872a0788",
+      "audio_sha256": "b08e80cca08b6de89b58f10513c5fd4ccf666245654eee7b109338d74bcb592e",
+      "audio_stereo_frames": 5608015
+    },
+    "legacy-sh1": {
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "scripted",
+      "frames": 4000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275880,
+        "frames": 120
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "b52182c67f8c697190ad13a3ba7d7bbc99f585238bf8797dfd6cdfb1ec63ad08",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "geometry_updates": [
+        {
+          "frame": 3,
+          "width": 320,
+          "height": 224,
+          "aspect": 1.3333333730697632
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 3,
+          "width": 320,
+          "height": 224
+        }
+      ],
+      "video_sha256": "3776327f818ac3ffcc56cdf8ac4bf2878e7214341426d719a3858874e2ab4f16",
+      "audio_sha256": "9c98d8ea9216c586348ffd5b85688d3ecb200697d6f811f1037395ac1620567b",
+      "audio_stereo_frames": 3204924
+    },
+    "wide-donor-120": {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "deflicker": "on2",
+      "aspect": "widescreen",
+      "input": "stage3fire",
+      "frames": 14000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 6999
+      },
+      "game_audit": {
+        "sha256": "2bbcf48f4b419509d0528d1e58b7de9929b40948d041109575cbe73a5b577bf2",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "distinct_half_pairs": 4100,
+      "geometry_updates": [
+        {
+          "frame": 5,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 5,
+          "width": 426,
+          "height": 224
+        }
+      ],
+      "video_sha256": "83736195bb270c4ff352e7ab9135d2c0c9b80177438c3a2b6730a1535fd437f5",
+      "audio_sha256": "ddadf028fd6ab74dcac340ce514dc207483ee5cbbaa9ad4a74cb90113f2c9e67",
+      "audio_stereo_frames": 5608015
+    },
+    "wide-donor-native": {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi",
+      "deflicker": "on2",
+      "aspect": "widescreen",
+      "input": "stage3fire",
+      "frames": 7000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "2bbcf48f4b419509d0528d1e58b7de9929b40948d041109575cbe73a5b577bf2",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "geometry_updates": [
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224
+        }
+      ],
+      "video_sha256": "1af70d7eabe9d51d1fa8831b38b6c91e2936d92faeecba3f01e7a5bf68e3eee8",
+      "audio_sha256": "ddadf028fd6ab74dcac340ce514dc207483ee5cbbaa9ad4a74cb90113f2c9e67",
+      "audio_stereo_frames": 5608015
+    },
+    "wide-scaled": {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 14000,
+      "threaded": false,
+      "resolution": "640x480",
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 6999
+      },
+      "game_audit": {
+        "sha256": "ecf33e8c9e9dd5bddbb375315e036952cc94d7b32b0dc8ed0cf58f75a3cd5ba9",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "distinct_half_pairs": 4047,
+      "geometry_updates": [
+        {
+          "frame": 5,
+          "width": 640,
+          "height": 480,
+          "aspect": 1.7777777910232544
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 640,
+          "height": 480
+        }
+      ],
+      "video_sha256": "1af79d495ce37c2ea4928b1ad208216cd591623e41208c9c851a94b2b9c19058",
+      "audio_sha256": "4d5103726010d142d2ef032948fc2daf658a6789e1afa24d055c4bbc2b292897",
+      "audio_stereo_frames": 5608015
+    },
+    "wide-sh1-on2": {
+      "passed": true,
+      "game": 1,
+      "rendering": "original",
+      "deflicker": "on2",
+      "aspect": "widescreen",
+      "input": "scripted",
+      "frames": 7000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275880,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "f3399a7c55e56466d00b5aeb90b58a0d647718f962aa9e9dcee41c93cf1aef20",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "geometry_updates": [
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224
+        }
+      ],
+      "video_sha256": "7b0f1df1f1b2f58d0d6ab7940bf967c4bb58b36e8e7fbcfcb579f48ff429342f",
+      "audio_sha256": "226bd7da59b5f28b7ab67003ffb22d3a31fbc41d7e03d7ba481db28a4fc705aa",
+      "audio_stereo_frames": 5608015
+    },
+    "wide-sh1": {
+      "passed": true,
+      "game": 1,
+      "rendering": "original",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "scripted",
+      "frames": 7000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275880,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "ee53a0ab0f94ce22c29fd9f3e835bb2526c02f76e49620f34a0f8de27ec365a5",
+        "samples": 76,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "geometry_updates": [
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        },
+        {
+          "frame": 7122,
+          "width": 320,
+          "height": 224,
+          "aspect": 1.3333333730697632
+        },
+        {
+          "frame": 7482,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        },
+        {
+          "frame": 7842,
+          "width": 320,
+          "height": 224,
+          "aspect": 1.3333333730697632
+        },
+        {
+          "frame": 8202,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224
+        },
+        {
+          "frame": 7122,
+          "width": 320,
+          "height": 224
+        },
+        {
+          "frame": 7482,
+          "width": 426,
+          "height": 224
+        },
+        {
+          "frame": 7842,
+          "width": 320,
+          "height": 224
+        },
+        {
+          "frame": 8202,
+          "width": 426,
+          "height": 224
+        }
+      ],
+      "aspect_toggles": [
+        {
+          "aspect": "original",
+          "size": [
+            320,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275880,
+            "frames": 120
+          }
+        },
+        {
+          "aspect": "widescreen",
+          "size": [
+            426,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275880,
+            "frames": 120
+          }
+        },
+        {
+          "aspect": "original",
+          "size": [
+            320,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275880,
+            "frames": 120
+          }
+        },
+        {
+          "aspect": "widescreen",
+          "size": [
+            426,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275880,
+            "frames": 120
+          }
+        }
+      ],
+      "video_sha256": "7b0f1df1f1b2f58d0d6ab7940bf967c4bb58b36e8e7fbcfcb579f48ff429342f",
+      "audio_sha256": "226bd7da59b5f28b7ab67003ffb22d3a31fbc41d7e03d7ba481db28a4fc705aa",
+      "audio_stereo_frames": 5608015
+    },
+    "wide-sh2-120": {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 14000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 6999
+      },
+      "game_audit": {
+        "sha256": "ecf33e8c9e9dd5bddbb375315e036952cc94d7b32b0dc8ed0cf58f75a3cd5ba9",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "distinct_half_pairs": 4047,
+      "geometry_updates": [
+        {
+          "frame": 5,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 5,
+          "width": 426,
+          "height": 224
+        }
+      ],
+      "video_sha256": "ee23c9304f480de2c45b953c0598829e9c9d87e4374729b073adbbdaf9581b01",
+      "audio_sha256": "4d5103726010d142d2ef032948fc2daf658a6789e1afa24d055c4bbc2b292897",
+      "audio_stereo_frames": 5608015
+    },
+    "wide-sh2-native": {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 7000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "ecf33e8c9e9dd5bddbb375315e036952cc94d7b32b0dc8ed0cf58f75a3cd5ba9",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "geometry_updates": [
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224
+        }
+      ],
+      "video_sha256": "41e96bc465b018a74ab35d71958dd16eab9d92950d866163227ae136d49afacc",
+      "audio_sha256": "4d5103726010d142d2ef032948fc2daf658a6789e1afa24d055c4bbc2b292897",
+      "audio_stereo_frames": 5608015
+    },
+    "wide-sh2-original": {
+      "passed": true,
+      "game": 2,
+      "rendering": "original",
+      "deflicker": "on1",
+      "aspect": "widescreen",
+      "input": "stage4fire",
+      "frames": 7000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "18f6df806035ea2284f26cfd0c1fc09c15a4da422727b7b88fc873feceafa904",
+        "samples": 76,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "geometry_updates": [
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        },
+        {
+          "frame": 7122,
+          "width": 320,
+          "height": 224,
+          "aspect": 1.3333333730697632
+        },
+        {
+          "frame": 7482,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        },
+        {
+          "frame": 7842,
+          "width": 320,
+          "height": 224,
+          "aspect": 1.3333333730697632
+        },
+        {
+          "frame": 8202,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224
+        },
+        {
+          "frame": 7122,
+          "width": 320,
+          "height": 224
+        },
+        {
+          "frame": 7482,
+          "width": 426,
+          "height": 224
+        },
+        {
+          "frame": 7842,
+          "width": 320,
+          "height": 224
+        },
+        {
+          "frame": 8202,
+          "width": 426,
+          "height": 224
+        }
+      ],
+      "aspect_toggles": [
+        {
+          "aspect": "original",
+          "size": [
+            320,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275896,
+            "frames": 120
+          }
+        },
+        {
+          "aspect": "widescreen",
+          "size": [
+            426,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275896,
+            "frames": 120
+          }
+        },
+        {
+          "aspect": "original",
+          "size": [
+            320,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275896,
+            "frames": 120
+          }
+        },
+        {
+          "aspect": "widescreen",
+          "size": [
+            426,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275896,
+            "frames": 120
+          }
+        }
+      ],
+      "video_sha256": "8fc202febee891fc8c265793e8ac18e126faac64a9a99d55a6509b8e04146724",
+      "audio_sha256": "312eb97079800c22993b8813220c92faaf671f2da6b00a2933c502392bd040e6",
+      "audio_stereo_frames": 5608015
+    },
+    "wide-stage5-native": {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "stage5fire",
+      "frames": 7000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "ed5edecc0872953b66e62364f74a448d86767d0b9cc1c1b50895f4414d1ef47a",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "geometry_updates": [
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 3,
+          "width": 426,
+          "height": 224
+        }
+      ],
+      "video_sha256": "781684bc44cdfe9a7aee1e13ebd3fca33b0afcbfa927968e4bfb388a7073b08f",
+      "audio_sha256": "ad4af9ed0127b813bce2c8e2ed54746bf2d9a78708f1466be6dd3e7eab1a6312",
+      "audio_stereo_frames": 5608015
+    },
+    "wide-threaded": {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "deflicker": "on1",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 14000,
+      "threaded": true,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60275896,
+        "frames": 240
+      },
+      "game_audit": {
+        "sha256": "ad73786ba4e02c0cfde0b42005b0f80f90e3d487f98a227fc10d3800dd8b80dc",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "distinct_half_pairs": 4053,
+      "geometry_updates": [
+        {
+          "frame": 5,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        },
+        {
+          "frame": 14485,
+          "width": 320,
+          "height": 224,
+          "aspect": 1.3333333730697632
+        },
+        {
+          "frame": 14965,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        },
+        {
+          "frame": 15445,
+          "width": 320,
+          "height": 224,
+          "aspect": 1.3333333730697632
+        },
+        {
+          "frame": 15925,
+          "width": 426,
+          "height": 224,
+          "aspect": 1.7777777910232544
+        }
+      ],
+      "video_sizes": [
+        {
+          "frame": 1,
+          "width": 256,
+          "height": 224
+        },
+        {
+          "frame": 5,
+          "width": 426,
+          "height": 224
+        },
+        {
+          "frame": 14485,
+          "width": 320,
+          "height": 224
+        },
+        {
+          "frame": 14965,
+          "width": 426,
+          "height": 224
+        },
+        {
+          "frame": 15445,
+          "width": 320,
+          "height": 224
+        },
+        {
+          "frame": 15925,
+          "width": 426,
+          "height": 224
+        }
+      ],
+      "aspect_toggles": [
+        {
+          "aspect": "original",
+          "size": [
+            320,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275896,
+            "frames": 240
+          }
+        },
+        {
+          "aspect": "widescreen",
+          "size": [
+            426,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275896,
+            "frames": 240
+          }
+        },
+        {
+          "aspect": "original",
+          "size": [
+            320,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275896,
+            "frames": 240
+          }
+        },
+        {
+          "aspect": "widescreen",
+          "size": [
+            426,
+            224
+          ],
+          "state": {
+            "passed": true,
+            "capacity": 60275896,
+            "frames": 240
+          }
+        }
+      ],
+      "video_sha256": "c9f0f5382b1be81423cc42b752c9f2fe52be2d0065fcbe7de406d05224c78e2b",
+      "audio_sha256": "25f16b03735604cb8a8ebcc6d71435faa8f028255dea5e9649b9ec215baf8a4c",
+      "audio_stereo_frames": 5608015
+    }
+  },
+  "projectile_execution": {
+    "production_cases": 896,
+    "cross_format_state_replays_inside_stub": 4,
+    "core_sha256": "982303b9e3682858180d449ffd85a7ad3e1d4e599a9ca4e26905b576d830aae9",
+    "registers_checked": [
+      "D0",
+      "D2",
+      "A1",
+      "SP",
+      "X",
+      "NZVC"
+    ]
+  },
+  "scope_notes": [
+    "Private game ROMs, RAM, executable traces and captures are not distributed.",
+    "4:3 comparison windows cover video, complete PCM and sampled work RAM/68000 registers.",
+    "Wider offscreen lifetimes can change pools and phase completion; 16:9 is an optional adaptation.",
+    "Static artwork remains centered; whole-game visual coverage is not claimed."
+  ]
+}

@@ -20,7 +20,7 @@ struct sprite {
 // Translation of SH2 13B000..13D21E, before its 40/80-entry partitioning.
 // Read returns a big-endian guest word. It must read an emitter-entry snapshot,
 // not live objects (the game can update those before the next SAT upload).
-template<class Read> bool build(Read read, std::vector<sprite> &out)
+template<class Read> bool build(Read read, std::vector<sprite> &out, bool widescreen = false)
 {
     using u16 = std::uint16_t;
     using u32 = std::uint32_t;
@@ -61,8 +61,11 @@ template<class Read> bool build(Read read, std::vector<sprite> &out)
                 }
                 const u16 px = scale < 0 ? (x + 128 + dx) & 511 : u16(x + 128 + floor_shift(std::int64_t(dx) * scale, 12));
                 const u16 py = u16(y + 128 + (scale < 0 ? dy : floor_shift(std::int64_t(dy) * scale, 12)));
-                // Preserve the native offscreen test; it isn't a sprite budget.
-                if (u16(px - 96) <= ((shadow && scale < 0) ? 383 : 351))
+                // The optional wider camera adds 53 pixels at either side.
+                // This matches the reversible native-constructor viewport
+                // patch; the default preserves the exact original cull.
+                const unsigned border = widescreen ? 53 : 0;
+                if (u16(px - (96 - border)) <= ((shadow && scale < 0) ? 383 : 351) + border * 2)
                     out.push_back({py, u16((byte(p + 1) | ((alloc >> 7) & 16)) << 8), attr, px,
                                    u16(scale < 0 ? 0x1000 : scale + 0x100), o, lng(o + 0x10), desc,
                                    u32(i | (half << 8) | (unsigned(shadow) << 9))});

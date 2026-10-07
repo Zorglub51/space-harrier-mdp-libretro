@@ -522,7 +522,7 @@
  	save_pointer(NAME(m_internal_sprite_attribute_table), 0x400 / 2);
  
  	save_item(NAME(m_command_pending));
-@@ -340,8 +392,29 @@
+@@ -340,8 +392,30 @@
  	save_item(NAME(m_scanline_counter));
  	save_item(NAME(m_vblank_flag));
  	save_item(NAME(m_total_scanlines));
@@ -541,6 +541,7 @@
 +    save_item(NAME(sh_mdp_video::second_half));
 +    save_item(NAME(sh_mdp_video::pending_draw));
 +    save_item(NAME(sh_mdp_video::pending_width));
++    save_item(NAME(sh_mdp_video::pending_source_width));
 +    save_item(NAME(sh_mdp_video::pending_height));
 +    save_item(NAME(sh_mdp_video::pending_samples));
 +    save_item(NAME(sh_mdp_video::pending_pixels));
@@ -554,7 +555,7 @@
  	m_highpri_renderline = std::make_unique<u8[]>(320);
  	m_video_renderline = std::make_unique<u32[]>(320);
  
-@@ -384,6 +457,12 @@
+@@ -384,6 +458,12 @@
  
  void sega315_5313_device::device_reset()
  {
@@ -567,7 +568,7 @@
  	m_command_pending = 0;
  	m_command_part1 = 0;
  	m_command_part2 = 0;
-@@ -400,6 +479,7 @@
+@@ -400,6 +480,7 @@
  	m_scanline_counter = 0;
  	m_vblank_flag = 0;
  	m_total_scanlines = 262;
@@ -575,7 +576,7 @@
  
  	sega315_5313_mode4_device::device_reset();
  }
-@@ -446,9 +526,22 @@
+@@ -446,9 +527,22 @@
  	vdp_address_inc();
  }
  
@@ -599,7 +600,7 @@
  
  	//logerror("Wrote to VSRAM addr %04x data %04x\n", m_vdp_address & 0xfffe, m_vsram[m_vdp_address >> 1]);
  
-@@ -460,7 +553,10 @@
+@@ -460,7 +554,10 @@
  	m_cram[offset] = data;
  
  	//logerror("Wrote to CRAM addr %04x data %04x\n", m_vdp_address & 0xfffe, m_cram[m_vdp_address >> 1]);
@@ -611,7 +612,7 @@
  	{
  		data = ((m_cram[offset] & 0xe) >> 1) | ((m_cram[offset] & 0xe0) >> 2) | ((m_cram[offset] & 0xe00) >> 3);
  		m_palette_lookup[offset] = data;
-@@ -468,9 +564,9 @@
+@@ -468,9 +565,9 @@
  		{
  			if (m_palwrite_base != -1)
  			{
@@ -624,7 +625,7 @@
  			}
  		}
  	}
-@@ -478,14 +574,53 @@
+@@ -478,14 +575,53 @@
  
  void sega315_5313_device::vdp_cram_write(u16 data)
  {
@@ -679,7 +680,7 @@
  
  	/*
  	0000b : VRAM read
-@@ -711,6 +846,20 @@
+@@ -711,6 +847,20 @@
  /* Instant, but we pause the 68k a bit */
  void sega315_5313_device::insta_68k_to_vram_dma(u32 source, int length)
  {
@@ -700,7 +701,7 @@
  	if (length == 0x00) length = 0xffff;
  
  	/* This is a hack until real DMA timings are implemented */
-@@ -742,7 +891,7 @@
+@@ -742,7 +892,7 @@
  	{
  		//if (m_vdp_address >= 0x80) return; // abandon
  
@@ -709,7 +710,7 @@
  		source += 2;
  
  		if (source > 0xffffff) source = 0xfe0000;
-@@ -783,9 +932,104 @@
+@@ -783,9 +933,104 @@
  	m_regs[0x17] = (source >> 17) & 0xff;
  }
  
@@ -814,7 +815,7 @@
  #if 0
  	const u32 source = (MEGADRIVE_REG15_DMASOURCE1 | (MEGADRIVE_REG16_DMASOURCE2 << 8) | ((MEGADRIVE_REG17_DMASOURCE3 & 0xff) << 16)) << 1;
  	const u16 length = (MEGADRIVE_REG13_DMALENGTH1 | (MEGADRIVE_REG14_DMALENGTH2 << 8)) << 1;
-@@ -879,8 +1123,13 @@
+@@ -879,8 +1124,13 @@
  			if (regnum & 0x20) osd_printf_debug("reg error\n");
  
  			vdp_set_register(regnum & 0x1f, value);
@@ -830,7 +831,7 @@
  		}
  		else
  		{
-@@ -890,6 +1139,91 @@
+@@ -890,6 +1140,91 @@
  			//logerror("VDP Write Part 1 setting Code %02x Address %04x\n", m_vdp_code, m_vdp_address);
  		}
  	}
@@ -922,7 +923,7 @@
  }
  
  void sega315_5313_device::vdp_w(offs_t offset, u16 data, u16 mem_mask)
-@@ -953,7 +1287,7 @@
+@@ -953,7 +1288,7 @@
  
  u16 sega315_5313_device::vdp_cram_r(void)
  {
@@ -931,7 +932,7 @@
  }
  
  u16 sega315_5313_device::data_port_r()
-@@ -1396,8 +1730,346 @@
+@@ -1396,8 +1731,350 @@
  
  */
  
@@ -1032,7 +1033,7 @@
 +		return address >= 0xfe0000 ? m_markvi_ram[2][(address - 0xfe0000) >> 1] :
 +			(address < 0x400000 ? m_space68k->read_word(address) : 0);
 +	};
-+	if (!sh2_markvi::build(read, m_markvi_sprites))
++	if (!sh2_markvi::build(read, m_markvi_sprites, mdp_widescreen_padding() != 0))
 +	{
 +		m_markvi_ready[2] = false;
 +		m_markvi_sprites.clear();
@@ -1047,6 +1048,7 @@
 +{
 +	std::fill_n(m_sprite_renderline.get(), 1024, 0);
 +	const int viewport = (m_regs[12] & 0x81) == 0x81 ? 320 : 256;
++	const int padding = mdp_widescreen_padding();
 +	const int sprite_limit = viewport >> 4;
 +	const u32 sat_base = (m_regs[5] & 0x7f) << 8; // word address
 +	const bool zoom = BIT(m_regs[36], 7);
@@ -1126,7 +1128,7 @@
 +				start = xacc >> 3;
 +			}
 +			const int span = end - start;
-+			if (span <= 0 || (span < 8 && start < 0))
++			if (span <= 0 || (!padding && span < 8 && start < 0))
 +				continue;
 +			const u32 row = BIT(attr, 12) ? 7 - (source_y & 7) : (source_y & 7);
 +			const u32 bank = zoom ? ((size & 0x3000) << 3) : 0;
@@ -1137,7 +1139,8 @@
 +			for (int out = 0; out < span; ++out)
 +			{
 +				const int x = start + out;
-+				if (x < 0 || x >= viewport)
++				if (x < -padding || x >= viewport + padding
++					|| (span < 8 && start < 0 && x >= 0 && x < viewport))
 +					continue;
 +				int sx = span == 8 ? out : shrink_map[span][out];
 +				if (BIT(attr, 11))
@@ -1182,7 +1185,7 @@
 +        return a >= 0xfe0000 ? m_markvi_history[0][(a - 0xfe0000) >> 1] :
 +            (a < 0x400000 ? m_space68k->read_word(a) : 0);
 +    };
-+    if (!sh2_markvi::build(read, previous)) previous.clear();
++    if (!sh2_markvi::build(read, previous, mdp_widescreen_padding() != 0)) previous.clear();
 +    for (unsigned phase = 0; phase < 2; ++phase)
 +        m_markvi_phases[phase] = sh2_markvi::interpolate(previous, m_markvi_sprites,
 +            std::min(m_markvi_age, m_markvi_span) * 2 + phase + 1, m_markvi_span * 2);
@@ -1194,6 +1197,7 @@
 +		return false;
 +	std::fill_n(m_sprite_renderline.get(), 1024, 0);
 +	const int viewport = (m_regs[12] & 0x81) == 0x81 ? 320 : 256;
++	const int padding = mdp_widescreen_padding();
 +	const bool zoom = BIT(m_regs[36], 7);
 +	static constexpr u8 shrink_map[8][8] = {
 +		{ 0, 0, 0, 0, 0, 0, 0, 0 },
@@ -1242,7 +1246,7 @@
 +				start = xacc >> 3;
 +			}
 +			const int span = end - start;
-+			if (span <= 0 || (span < 8 && start < 0))
++			if (span <= 0 || (!padding && span < 8 && start < 0))
 +				continue;
 +			const u32 row = BIT(attr, 12) ? 7 - (source_y & 7) : (source_y & 7);
 +			const u32 bank = zoom ? ((size & 0x3000) << 3) : 0;
@@ -1253,7 +1257,8 @@
 +			for (int out = 0; out < span; ++out)
 +			{
 +				const int x = start + out;
-+				if (x < 0 || x >= viewport)
++				if (x < -padding || x >= viewport + padding
++					|| (span < 8 && start < 0 && x >= 0 && x < viewport))
 +					continue;
 +				int sx = span == 8 ? out : shrink_map[span][out];
 +				if (BIT(attr, 11))
@@ -1278,7 +1283,7 @@
  	const int ytile_shift = (m_imode == 3) ? 4 : 3;
  	const int yline_mask = (m_imode == 3) ? 0xf : 0x7;
  	gfx_element *spr_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
-@@ -1416,7 +2088,7 @@
+@@ -1416,7 +2093,7 @@
  	}
  
  	/* Clear our Render Buffer */
@@ -1287,7 +1292,7 @@
  
  	{
  		int ypos, xpos, addr;
-@@ -1596,6 +2268,9 @@
+@@ -1596,6 +2273,9 @@
  	tile.pri =   (tile_dat & 0x8000) >> 15;
  	u16 code =   (tile_dat & 0x07ff);
  
@@ -1297,7 +1302,7 @@
  	if (m_imode == 3)
  		code &= 0x3ff;
  
-@@ -1662,8 +2337,192 @@
+@@ -1662,8 +2342,321 @@
  }
  
  /* Clean up this function (!) */
@@ -1471,6 +1476,133 @@
 +	}
 +}
 +
++
++// Preserve the original pixel aspect ratio to the nearest even raster width:
++// 320 * (16/9) / (4/3) = 426 2/3. 426 leaves 53 whole pixels on each side.
++int sega315_5313_device::mdp_widescreen_padding() const
++{
++	return m_mdp_scaler && sh_mdp_video::widescreen.load(std::memory_order_relaxed)
++		&& (m_regs[12] & 0x81) == 0x81 ? 53 : 0;
++}
++
++void sega315_5313_device::mdp_render_widescreen_sides(int scanline)
++{
++	const int padding = mdp_widescreen_padding();
++	if (!padding)
++		return;
++
++	const u16 backdrop = (m_regs[7] & 0x7f) | 0x4000;
++	std::fill_n(m_mdp_widescreen_sides, 106, backdrop);
++	if (!MEGADRIVE_REG01_DISP_ENABLE || MEGADRIVE_REG0_DISPLAY_DISABLE)
++		return;
++
++	u16 low[106];
++	u8 high[106]{};
++	std::fill_n(low, 106, u16(m_regs[7] & 0x7f));
++	const int screenheight = MEGADRIVE_REG01_240_LINE ? 240 : 224;
++	const int window_y = std::min(int(MEGADRIVE_REG12_WINDOW_VPOS) * 8, screenheight);
++	const bool window_line = MEGADRIVE_REG12_WINDOW_DOWN ? scanline >= window_y : scanline < window_y;
++	const int window_x = std::min(int(MEGADRIVE_REG11_WINDOW_HPOS) * 16, 320);
++	const bool window_right = MEGADRIVE_REG11_WINDOW_RIGHT;
++	const int non_window_first = window_right ? 0 : window_x;
++	const int non_window_last = window_right ? window_x : 320;
++
++	static constexpr unsigned size_shift[4] = {5, 6, 0, 7};
++	const unsigned hs = m_regs[16] & 3, vs = (m_regs[16] >> 4) & 3;
++	const int hsize = hs == 0 ? 32 : (hs == 3 ? 128 : 64);
++	const int vsize = hs == 2 ? 1 : vs == 0 ? 32 :
++		vs == 1 ? (hs == 3 ? 32 : 64) : vs == 2 ? 64 : (hs == 1 ? 64 : 128);
++	gfx_element *tile_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
++	for (int plane = 1; plane >= 0; --plane)
++	{
++		const u16 base = plane ? MEGADRIVE_REG04_PATTERN_ADDR_B << 13 : MEGADRIVE_REG02_PATTERN_ADDR_A << 13;
++		const u8 control = m_regs[32 + plane];
++		const bool transformed = BIT(control, 7);
++		const u32 entry = ((control & 0x1f) << 11) + (BIT(control, 5) ? scanline * 8 : 0);
++		const s32 dx = s16(mdp_vram_word(entry)), dy = s16(mdp_vram_word(entry + 1));
++		const u32 sx = (u32(mdp_vram_word(entry + 4)) << 16) | mdp_vram_word(entry + 5);
++		const u32 sy = (u32(mdp_vram_word(entry + 6)) << 16) | mdp_vram_word(entry + 7);
++		const int texwidth = 8 << size_shift[hs], texheight = 8 << size_shift[vs];
++		const unsigned scroll_line = m_imode == 3 ? unsigned(scanline) >> 1 : unsigned(scanline);
++		const unsigned scroll_mode = MEGADRIVE_REG0B_HSCROLL_MODE;
++		const unsigned scroll_row = scroll_mode == 0 ? 0 : scroll_mode == 1 ? scroll_line & 7 :
++			scroll_mode == 2 ? scroll_line & ~7U : scroll_line;
++		const int hscroll = MEGADRIV_VDP_VRAM((MEGADRIVE_REG0D_HSCROLL_ADDR << 9) + scroll_row * 2 + plane);
++
++		for (int i = 0; i < 106; ++i)
++		{
++			const int x = i < padding ? i - padding : 320 + i - padding;
++			// The hardware window is the HUD/title surface, not a world plane.
++			// Keep it in the original viewport and extend only a non-window edge.
++			if (!plane && (window_line || non_window_first >= non_window_last
++				|| (x < 0 ? non_window_first != 0 : non_window_last != 320)))
++				continue;
++			u8 colour, palette;
++			bool priority;
++			if (transformed)
++			{
++				// Per-line transforms are anchored at the native clipped span;
++				// affine transforms are anchored at logical screen x=0.
++				const int origin = BIT(control, 5) && !plane ? non_window_first : 0;
++				u32 source_x = sx + u32((x - origin) * dx);
++				u32 source_y = sy + u32((x - origin) * dy);
++				if (!BIT(control, 5))
++				{
++					source_x += u32(scanline * s32(s16(mdp_vram_word(entry + 2))));
++					source_y += u32(scanline * s32(s16(mdp_vram_word(entry + 3))));
++				}
++				int px = s32(source_x) >> 12, py = s32(source_y) >> 12;
++				if (BIT(control, 6))
++				{
++					px &= texwidth - 1; py &= texheight - 1;
++				}
++				else
++				{
++					px = std::clamp(px, 0, texwidth - 1); py = std::clamp(py, 0, texheight - 1);
++				}
++				const u32 address = (base >> 1) | ((py >> 3) << size_shift[hs]) | (px >> 3);
++				const u16 attr = mdp_vram_word(address);
++				const int tx = (px & 7) ^ (BIT(attr, 11) ? 7 : 0);
++				const int ty = (py & 7) ^ (BIT(attr, 12) ? 7 : 0);
++				const u16 pixels = mdp_vram_word(((attr & 0x7ff) << 4) | (ty << 1) | (tx >> 2));
++				colour = (pixels >> (12 - (tx & 3) * 4)) & 15;
++				palette = (attr >> 9) & 0x30;
++				priority = BIT(attr, 15);
++			}
++			else
++			{
++				const int column = x >= 0 ? x / 16 : -((-x + 15) / 16);
++				const int within = x - column * 16;
++				const int vcolumn_index = within < (hscroll & 7) + 8 && (hscroll & 15) ? column - 1 : column;
++				const int vscroll = MEGADRIVE_REG0B_VSCROLL_MODE ? m_vsram[(vcolumn_index * 2 + plane) & 0x3f] : m_vsram[plane];
++				const int px = (x - hscroll) & (hsize * 8 - 1);
++				int vcolumn, tile_base;
++				get_vcolumn_tilebase(vcolumn, tile_base, base, vscroll, scanline, vsize, hsize, px >> 3);
++				nametable_t tile;
++				get_nametable(tile_gfx, tile_base, tile, vcolumn);
++				colour = tile.addr[(px & 7) ^ (tile.xflip ? 7 : 0)];
++				palette = tile.colour << 4;
++				priority = tile.pri;
++			}
++			if (priority)
++			{
++				if (colour || (!transformed && plane)) high[i] = colour | palette | 0x80;
++				else high[i] |= 0x80;
++			}
++			else if (colour) low[i] = colour | palette;
++		}
++	}
++	for (int i = 0; i < 106; ++i)
++	{
++		const int x = i < padding ? i - padding : 320 + i - padding;
++		const u16 plane = (high[i] & 15) ? ((high[i] & 0x3f) | 0x8080) : ((low[i] & 0x7f) | (high[i] & 0x80));
++		const u16 legacy = m_sprite_renderline[x + 128];
++		const u16 sprite = legacy ? ((legacy & 0x3f) | ((legacy & 0x100) >> 2) | ((legacy & 0x80) ? 0x8080 : 0)) : 0;
++		const u8 index = mdp_composite_pixel(plane, sprite, MEGADRIVE_REG0C_SHADOW_HIGLIGHT);
++		m_mdp_widescreen_sides[i] = (index & 0x7f) | ((index & 0x80) ? 0x4000 : 0);
++	}
++}
++
  void sega315_5313_device::render_videoline_to_videobuffer(int scanline)
  {
 +	// Apply every direct CRAM entry scheduled for this line. A second colour
@@ -1487,10 +1619,12 @@
 +		}
 +	}
 +
++	mdp_render_widescreen_sides(scanline);
++
  	gfx_element *tile_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
  	u16 base_w = 0;
  
-@@ -1687,7 +2546,7 @@
+@@ -1687,7 +2680,7 @@
  	/* Clear our Render Buffer */
  	for (int x = 0; x < horz; x++)
  	{
@@ -1499,7 +1633,7 @@
  	}
  
  	memset(m_highpri_renderline.get(), 0, horz);
-@@ -1847,7 +2706,7 @@
+@@ -1847,7 +2840,7 @@
  	int vscroll;
  	/* Low Priority B Tiles */
  	{
@@ -1508,7 +1642,7 @@
  		{   /* 20x 16x1 blocks */
  			int vcolumn;
  
-@@ -1910,6 +2769,7 @@
+@@ -1910,6 +2903,7 @@
  		}
  		/* END */
  	}
@@ -1516,7 +1650,7 @@
  	/* Low Priority A Tiles + Window(!) */
  
  	{
-@@ -1934,7 +2794,8 @@
+@@ -1934,7 +2928,8 @@
  
  		/* Non Window Part */
  
@@ -1526,11 +1660,10 @@
  		{   /* 20x 16x1 blocks */
  		//  int xx;
  			int vcolumn;
-@@ -2003,6 +2864,25 @@
- 		}
+@@ -2004,6 +2999,25 @@
  	}
  		/* END */
-+
+ 
 +	mdp_scaler_line(scanline, 0, base_a, non_window_firstcol, non_window_lastcol);
 +
 +	if (m_mdp_scaler)
@@ -1549,10 +1682,11 @@
 +		return;
 +	}
 +
- 
++
  /* MEGADRIVE_REG0C_SHADOW_HIGLIGHT */
  	/* Low Priority Sprites */
-@@ -2139,9 +3019,9 @@
+ 	for (int x = 0; x < horz; x++)
+@@ -2139,9 +3153,9 @@
  			if (!MEGADRIVE_REG0_SPECIAL_PAL) // 3 bit color mode, correct?
  				clut &= 0x49; // (1 << 6) | (1 << 3) | (1 << 0);
  
@@ -1565,7 +1699,7 @@
  		}
  	}
  
-@@ -2155,7 +3035,13 @@
+@@ -2155,7 +3169,13 @@
  		else
  			m_render_line_raw[srcx] = 0x000;
  
@@ -1580,16 +1714,30 @@
  		{
  			if (dat & 0x10000)
  			{
-@@ -2217,7 +3103,7 @@
+@@ -2217,7 +3237,21 @@
  		}
  	}
  
 -	if (!m_32x_scanline_helper_func.isnull())
++	const int padding = mdp_widescreen_padding();
++	if (padding)
++	{
++		// Native buffers and all central pixel decisions retain their exact
++		// coordinates. Move only the finished RGB row into the wider canvas.
++		std::memmove(lineptr + padding, lineptr, 320 * sizeof(*lineptr));
++		for (int i = 0; i < 106; ++i)
++		{
++			const u16 dat = m_mdp_widescreen_sides[i];
++			const int x = i < padding ? i : i + 320;
++			lineptr[x] = mdp_indexed_pen(m_cram[dat & 0x7f], bool(dat & 0x4000));
++		}
++	}
++
 +		if (!m_32x_scanline_helper_func.isnull())
  		m_32x_scanline_helper_func(scanline);
  	if (!m_32x_scanline_func.isnull())
  	{
-@@ -2239,10 +3125,24 @@
+@@ -2239,10 +3273,24 @@
  
  	if (scanline >= 0 && scanline < m_visible_scanlines)
  	{
@@ -1618,6 +1766,14 @@
  	}
  }
  
+@@ -2366,6 +3414,7 @@
+ 	/* note, add 240 mode + init new timings! */
+ 	scr_mul = m_lcm_scaling ? hres_mul[get_hres()] : 1;
+ 	scr_width = hres[get_hres()] * scr_mul;
++	if (mdp_widescreen_padding()) scr_width += 106;
+ //      osd_printf_debug("my mode %02x", m_regs[0x0c]);
+ 
+ 	visarea.set(0, scr_width - 1, 0, m_visible_scanlines - 1);
 --- a/src/devices/video/315_5313.h
 +++ b/src/devices/video/315_5313.h
 @@ -1,24 +1,25 @@
@@ -1762,7 +1918,7 @@
  	virtual void device_reset() override ATTR_COLD;
  	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
  
-@@ -220,36 +271,80 @@
+@@ -220,36 +271,85 @@
  	void vdp_address_inc();
  	void vdp_set_register(int regnum, u8 value);
  
@@ -1782,6 +1938,11 @@
  	void render_spriteline_to_spritebuffer(int scanline);
  	void render_videoline_to_videobuffer(int scanline);
 +	void mdp_scaler_line(int scanline, int plane, u16 base, int first, int last);
++	int mdp_widescreen_padding() const;
++	void mdp_render_widescreen_sides(int scanline);
++	// Presentation-only pixels, rebuilt every scanline before RGB conversion.
++	// Native 320-pixel buffers and their serialized layout stay unchanged.
++	u16 m_mdp_widescreen_sides[106]{};
 +
 +	// MDP : les pixels des sprites ne sont pas en VRAM mais dans la memoire propre au
 +	// MDP, a 0xD10000 + indice * 32, adressee exactement comme des tuiles VRAM.
@@ -1926,15 +2087,17 @@
  protected:
 --- a/src/mame/sega/mdconsole.cpp
 +++ b/src/mame/sega/mdconsole.cpp
-@@ -3,6 +3,7 @@
+@@ -3,6 +3,9 @@
  
  #include "emu.h"
  #include "mdconsole.h"
 +#include "bus/megadrive/sh_deflicker_options.h"
++#include "bus/megadrive/sh_video_options.h"
++#include "bus/megadrive/sh_widescreen_patch.h"
  
  #include "bus/generic/carts.h"
  #include "bus/sms_ctrl/controllers.h"
-@@ -148,6 +149,44 @@
+@@ -148,6 +151,97 @@
  void md_cons_state::machine_reset()
  {
  	md_base_state::machine_reset();
@@ -1966,6 +2129,59 @@
 +	}
 +	m_sh_deflicker_tap.remove();
 +	const int game = m_cart ? m_cart->sh_mdp_game() : 0;
++	for (auto &tap : m_sh_widescreen_taps)
++		tap.remove();
++	m_sh_widescreen_taps.clear();
++	sh_mdp_video::wide_eligible = false;
++	if (game)
++	{
++		const auto profile = game == 1 ? sh_widescreen::profile::sh1 : sh_widescreen::profile::sh2;
++		auto &space = m_maincpu->space(AS_PROGRAM);
++		const auto read = [&space](u32 address) { return space.read_word(address); };
++		if (sh_widescreen::validate(read, profile) && sh_widescreen::validate_lifetimes(read, profile) &&
++			sh_widescreen::validate_projectiles(read, profile))
++		{
++			sh_mdp_video::wide_eligible = true;
++			const auto &stub = sh_widescreen::projectile_stub_words(profile);
++			for (unsigned i = 0; i < stub.size(); ++i)
++			{
++				const u32 address = sh_widescreen::projectile_stub_address + i * 2;
++				const u16 word = stub[i];
++				m_sh_widescreen_taps.push_back(space.install_read_tap(address, address + 1,
++					"sh_widescreen_projectile_code", [word](offs_t offset, u16 &data, u16 mem_mask)
++					{
++						// A restored PC can still be here after the preference changes.
++						data = (data & ~mem_mask) | (word & mem_mask);
++					}));
++			}
++			for (const auto &site : sh_widescreen::projectile_jump_sites(profile))
++				m_sh_widescreen_taps.push_back(space.install_read_tap(site.address, site.address + 1,
++					"sh_widescreen_projectile_entry", [site](offs_t offset, u16 &data, u16 mem_mask)
++					{
++						if (sh_mdp_video::widescreen && (data & mem_mask) == (site.original & mem_mask))
++							data = (data & ~mem_mask) | (site.wide & mem_mask);
++					}));
++			for (const auto &site : sh_widescreen::lifetime_sites(profile))
++				m_sh_widescreen_taps.push_back(space.install_read_tap(site.address, site.address + 1,
++					"sh_widescreen_lifetime", [site](offs_t offset, u16 &data, u16 mem_mask)
++					{
++						if (sh_mdp_video::widescreen && (data & mem_mask) == (site.original & mem_mask))
++							data = (data & ~mem_mask) | (site.wide & mem_mask);
++					}));
++			for (const auto &site : sh_widescreen::sites(profile))
++				m_sh_widescreen_taps.push_back(space.install_read_tap(site.address, site.address + 1,
++					"sh_widescreen_clip", [site, game](offs_t offset, u16 &data, u16 mem_mask)
++					{
++						// Mark VI expands its host constructor; its quota-limited
++						// guest list need not do extra work for lateral pieces.
++						if (sh_mdp_video::widescreen && (game == 1 || !sh_mdp_video::markvi) &&
++							(data & mem_mask) == (site.original & mem_mask))
++							data = (data & ~mem_mask) | (site.wide & mem_mask);
++					}));
++		}
++		else
++			logerror("SH widescreen clip validation failed; extended view disabled\n");
++	}
 +	if (game)
 +	{
 +		const u32 address = game == 1 ? sh_mdp_deflicker::sh1_address : sh_mdp_deflicker::sh2_address;
@@ -1981,7 +2197,19 @@
  	if (m_32x)
 --- a/src/osd/libretro/libretro-internal/libretro.cpp
 +++ b/src/osd/libretro/libretro-internal/libretro.cpp
-@@ -18,6 +18,9 @@
+@@ -6,30 +6,33 @@
+ #include <stdarg.h>
+ 
+ #include "osdepend.h"
+ 
+ #include "emu.h"
+ #include "emuopts.h"
+ #include "render.h"
+ #include "ui/uimain.h"
+ #include "uiinput.h"
+ #include "drivenum.h"
+ #include "../frontend/mame/mame.h"
+ 
  #include "libretro.h"
  #include "libretro_shared.h"
  #include "libretro_core_options.h"
@@ -1991,7 +2219,31 @@
  
  /* forward decls / externs / prototypes */
  
-@@ -172,7 +175,21 @@
+ extern void retro_finish();
+ extern void retro_main_loop();
+ 
+ int POSTNOTIFY     = 5; /* See retro_loop() */
+ int RLOOP          = 1;
+ int ENDEXEC        = 0;
+ int retro_pause    = 0;
+ int SHIFTON        = -1;
+ char RPATH[512];
+ bool first_run     = true;
+ bool audio_ready   = false;
+ bool retro_load_ok = false;
+@@ -160,31 +163,45 @@
+    output_audio_buffer.capacity = 0;
+ }
+ 
+ static void upload_output_audio_buffer()
+ {
+    if (!audio_ready)
+    {
+       unsigned samples = (sample_rate / retro_fps) * sizeof(*output_audio_buffer.data);
+ 
+       if (output_audio_buffer.capacity - output_audio_buffer.size < samples)
+          ensure_output_audio_buffer_capacity((output_audio_buffer.capacity + samples) * 1.5);
+ 
        memset(output_audio_buffer.data + output_audio_buffer.size, 0, samples * sizeof(*output_audio_buffer.data));
        output_audio_buffer.size += samples;
     }
@@ -2014,10 +2266,38 @@
     output_audio_buffer.size = 0;
  
     audio_ready = false;
-@@ -379,6 +396,21 @@
+ }
+ 
+ void retro_audio_queue(const int16_t *data, int32_t samples)
+ {
+    if ((samples < 1) || retro_pause)
+       return;
+ 
+    if (output_audio_buffer.capacity - output_audio_buffer.size < samples)
+       ensure_output_audio_buffer_capacity((output_audio_buffer.capacity + samples) * 1.5);
+ 
+    memcpy(output_audio_buffer.data + output_audio_buffer.size, data, samples * sizeof(*output_audio_buffer.data));
+    output_audio_buffer.size += samples;
+@@ -367,30 +384,49 @@
+ 
+             // Skip at startup if using default speed, because
+             // games like 'dragoona' use a CPU timing boothack
+             if (startup && clock == 100)
+                continue;
+ 
+             cpu_device* cpu = downcast<cpu_device *>(&device);
+             cpu->set_clock_scale(clock * 0.01f);
+          }
+       }
+    }
+ }
  
  static void check_variables(void)
  {
++   struct retro_variable aspect = {CORE_NAME "_mdp_aspect", NULL};
++   const bool has_aspect = environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &aspect);
++   sh_mdp_video::request_wide.store(has_aspect && aspect.value && !strcmp(aspect.value, "widescreen"), std::memory_order_relaxed);
++
 +   struct retro_variable sh2_video = {CORE_NAME "_sh2_rendering", NULL};
 +   const bool has_sh2_video = environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &sh2_video);
 +   const bool smooth = has_sh2_video && sh2_video.value && !strcmp(sh2_video.value, "mark_vi_120");
@@ -2036,7 +2316,31 @@
     struct retro_variable var = {0};
  
     var.key   = CORE_NAME "_joystick_deadzone";
-@@ -714,9 +746,9 @@
+    var.value = NULL;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+       strcpy(joystick_deadzone, var.value);
+    }
+ 
+    var.key   = CORE_NAME "_joystick_saturation";
+    var.value = NULL;
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+       strcpy(joystick_saturation, var.value);
+    }
+@@ -702,65 +738,94 @@
+    if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
+    {
+       sprintf(mediaType,"-%s",var.value);
+    }
+ }
+ 
+ unsigned retro_api_version(void)
+ {
+    return RETRO_API_VERSION;
+ }
+ 
+ void retro_get_system_info(struct retro_system_info *info)
  {
     memset(info, 0, sizeof(*info));
  
@@ -2048,7 +2352,66 @@
     info->need_fullpath    = true;
     info->block_extract    = true;
  }
-@@ -748,7 +780,7 @@
+ 
++// Track the geometry actually presented, rather than a requested aspect. A
++// restored 120 Hz half-frame can have a different width from the current mode.
++static unsigned mdp_presented_width = 0, mdp_presented_height = 0;
++static float mdp_presented_aspect = 0.0f;
++
++static void remember_mdp_geometry(unsigned width, unsigned height, float aspect)
++{
++   mdp_presented_width = width;
++   mdp_presented_height = height;
++   mdp_presented_aspect = aspect;
++}
++
++static void prepare_mdp_geometry(unsigned width, unsigned height, unsigned source_width)
++{
++   if (!sh_mdp_video::wide_eligible.load(std::memory_order_relaxed) ||
++       (source_width != sh_mdp_video::native_width && source_width != sh_mdp_video::wide_width))
++      return;
++   const float aspect = sh_mdp_video::aspect_for_source(source_width, retro_aspect);
++   if (width == mdp_presented_width && height == mdp_presented_height && aspect == mdp_presented_aspect)
++      return;
++   struct retro_game_geometry geometry = {width, height, unsigned(max_width), unsigned(max_height), aspect};
++   environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &geometry);
++   remember_mdp_geometry(width, height, aspect);
++   if (video_changed == VIDEO_CHANGED_GEOMETRY)
++      video_changed = VIDEO_CHANGED_NONE;
++}
++
+ void update_geometry(void)
+ {
+-   struct retro_system_av_info av_info;
+-   av_info.geometry.base_width   = fb_width;
+-   av_info.geometry.base_height  = fb_height;
+-   av_info.geometry.aspect_ratio = retro_aspect;
+-   environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &av_info);
++   struct retro_game_geometry geometry = {
++      unsigned(fb_width), unsigned(fb_height), unsigned(max_width), unsigned(max_height),
++      sh_mdp_video::aspect_for_source(sh_mdp_video::source_width.load(std::memory_order_relaxed), retro_aspect)
++   };
++   environ_cb(RETRO_ENVIRONMENT_SET_GEOMETRY, &geometry);
++   remember_mdp_geometry(fb_width, fb_height, geometry.aspect_ratio);
+    video_changed = VIDEO_CHANGED_NONE;
+ }
+ 
+ void update_av_info(void)
+ {
+    struct retro_system_av_info av_info;
+    retro_get_system_av_info(&av_info);
+    environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &av_info);
++   remember_mdp_geometry(fb_width, fb_height, av_info.geometry.aspect_ratio);
+    video_changed = VIDEO_CHANGED_NONE;
+ }
+ 
+ void retro_get_system_av_info(struct retro_system_av_info *info)
+ {
+    info->geometry.base_width   = fb_width;
+    info->geometry.base_height  = fb_height;
+-   info->geometry.aspect_ratio = retro_aspect;
++   info->geometry.aspect_ratio = sh_mdp_video::aspect_for_source(sh_mdp_video::source_width.load(std::memory_order_relaxed), retro_aspect);
+ 
     info->geometry.max_width    = max_width;
     info->geometry.max_height   = max_height;
  
@@ -2057,7 +2420,31 @@
     info->timing.sample_rate    = sample_rate;
  }
  
-@@ -874,15 +906,78 @@
+ static void fallback_log(enum retro_log_level level, const char *fmt, ...)
+ {
+    (void)level;
+    va_list va;
+    va_start(va, fmt);
+    vfprintf(stderr, fmt, va);
+    va_end(va);
+ }
+ 
+ void retro_init(void)
+ {
+    const char *system_dir  = NULL;
+@@ -862,179 +927,397 @@
+ 
+    memset(videoBuffer, 0, sizeof(videoBuffer));
+    init_output_audio_buffer(2048);
+ 
+    retro_pause = 0;
+ 
+    log_cb(RETRO_LOG_INFO, "------------------------\n");
+    log_cb(RETRO_LOG_INFO, "MAME %s\n", build_version);
+    log_cb(RETRO_LOG_INFO, "------------------------\n");
+ }
+ 
+ void retro_deinit(void)
  {
     free_output_audio_buffer();
     if (retro_load_ok)
@@ -2065,6 +2452,8 @@
        retro_finish();
 +      retro_load_ok = false;
 +   }
++   sh_mdp_video::wide_eligible = false;
++   sh_mdp_video::widescreen = false;
  }
  
  void retro_reset(void)
@@ -2136,7 +2525,7 @@
  void retro_run(void)
  {
     bool updated = false;
-@@ -890,15 +985,39 @@
+ 
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
     {
        check_variables();
@@ -2153,6 +2542,7 @@
 +   if (sh_mdp_video::second_half) {
 +      if (sh_mdp_video::pending_width <= 4096 && sh_mdp_video::pending_height <= 3072 &&
 +          sh_mdp_video::pending_samples <= std::size(sh_mdp_video::pending_audio)) {
++         prepare_mdp_geometry(sh_mdp_video::pending_width, sh_mdp_video::pending_height, sh_mdp_video::pending_source_width);
 +         video_cb(sh_mdp_video::pending_draw ? sh_mdp_video::pending_pixels : NULL,
 +            sh_mdp_video::pending_width, sh_mdp_video::pending_height, sh_mdp_video::pending_width * 4);
 +         audio_batch_cb(sh_mdp_video::pending_audio, sh_mdp_video::pending_samples / 2);
@@ -2161,6 +2551,9 @@
 +      sh_mdp_video::pending_samples = 0;
 +      return;
 +   }
++   sh_mdp_video::widescreen.store(retro_load_ok &&
++      sh_mdp_video::wide_eligible.load(std::memory_order_relaxed) &&
++      sh_mdp_video::request_wide.load(std::memory_order_relaxed), std::memory_order_relaxed);
 +   update_markvi_refresh();
 +   sh_mdp_video::half_valid = false;
 +   if (retro_load_ok && !retro_pause)
@@ -2181,15 +2574,27 @@
        retro_autoloadfastforwarding();
  
     /* LED interface */
-@@ -916,7 +1035,16 @@
+    if (led_state_cb)
+       retro_led_interface();
+ 
+    if (first_run)
+    {
+       /* Skip drawing the first frame due to a gray border */
+       first_run       = false;
+       draw_this_frame = false;
+    }
+ 
+ //FIXME: re-add way to handle OGL
  #if defined(HAVE_OPENGL) || defined(HAVE_OPENGLES)
     do_glflush();
  #else
 -   if (draw_this_frame)
++   prepare_mdp_geometry(fb_width, fb_height, sh_mdp_video::source_width.load(std::memory_order_relaxed));
 +   if (sh_mdp_video::hz120) {
 +      sh_mdp_video::pending_draw = draw_this_frame;
 +      sh_mdp_video::pending_width = fb_width;
 +      sh_mdp_video::pending_height = fb_height;
++      sh_mdp_video::pending_source_width = sh_mdp_video::source_width.load(std::memory_order_relaxed);
 +      if (draw_this_frame)
 +         std::copy_n(videoBuffer, size_t(fb_width) * fb_height, sh_mdp_video::pending_pixels);
 +      const void *pixels = sh_mdp_video::half_valid ? sh_mdp_video::half_output.data() : videoBuffer;
@@ -2199,10 +2604,21 @@
        video_cb(videoBuffer, fb_width, fb_height, fb_width << LOG_PIXEL_BYTES);
     else
        video_cb(NULL, fb_width, fb_height, fb_width << LOG_PIXEL_BYTES);
-@@ -932,6 +1060,27 @@
+ #endif
+    upload_output_audio_buffer();
+ 
+    if (video_changed == VIDEO_CHANGED_AV_INFO)
+       update_av_info();
+    else if (video_changed == VIDEO_CHANGED_GEOMETRY)
+       update_geometry();
+ }
+ 
  bool retro_load_game(const struct retro_game_info *info)
  {
     retro_load_ok = false;
++   sh_mdp_video::wide_eligible = false;
++   sh_mdp_video::widescreen = false;
++   remember_mdp_geometry(0, 0, 0.0f);
 +   sh_mdp_video::clear_pending();
 +   sh_mdp_video::hz120 = false;
 +   rate_request_seen = false;
@@ -2227,7 +2643,30 @@
  
     check_variables();
  
-@@ -962,7 +1111,20 @@
+ //FIXME: re-add way to handle OGL
+ #if defined(HAVE_OPENGL) || defined(HAVE_OPENGLES)
+ #if defined(HAVE_OPENGLES)
+    hw_render.context_type = RETRO_HW_CONTEXT_OPENGLES2;
+ #else
+    hw_render.context_type = RETRO_HW_CONTEXT_OPENGL;
+ #endif
+    hw_render.context_reset = context_reset;
+    hw_render.context_destroy = context_destroy;
+    /*
+    hw_render.depth = true;
+    hw_render.stencil = true;
+    hw_render.bottom_left_origin = true;
+    */
+    if (!environ_cb(RETRO_ENVIRONMENT_SET_HW_RENDER, &hw_render))
+       return false;
+ #endif
+ 
+    g_rom_dir[0] = '\0';
+    RPATH[0]     = '\0';
+ 
+    if (info)
+    {
+       extract_directory(g_rom_dir, info->path, sizeof(g_rom_dir));
        strcpy(RPATH, info->path);
     }
  
@@ -2249,7 +2688,16 @@
  
     /* Force success with empty content */
     if (!RPATH[0])
-@@ -979,28 +1141,51 @@
+       res = 0;
+ 
+    if (res != 0)
+    {
+       /* Must wait a bit for failure to finish properly */
+       log_cb(RETRO_LOG_DEBUG, "%s osd_sleep\n", __func__);
+       osd_sleep(osd_ticks_per_second());
+       log_cb(RETRO_LOG_DEBUG, "%s osd_sleep done\n", __func__);
+       return false;
+    }
  
     retro_load_ok = true;
     update_runtime_variables(true);
@@ -2258,6 +2706,9 @@
 +   sh_mdp_video::hz120 = sh_mdp_explosions::eligible && sh_mdp_video::request_120.load(std::memory_order_relaxed);
 +   rate_request_seen = true;
 +   rate_request_value = sh_mdp_video::hz120;
++   sh_mdp_video::widescreen.store(sh_mdp_video::wide_eligible.load(std::memory_order_relaxed) &&
++      sh_mdp_video::request_wide.load(std::memory_order_relaxed), std::memory_order_relaxed);
++   remember_mdp_geometry(fb_width, fb_height, sh_mdp_video::aspect_for_source(sh_mdp_video::source_width.load(std::memory_order_relaxed), retro_aspect));
  
     return true;
  }
@@ -2283,6 +2734,8 @@
 +      retro_finish();
 +      retro_load_ok = false;
 +   }
++   sh_mdp_video::wide_eligible = false;
++   sh_mdp_video::widescreen = false;
 +   retro_pause = -1;
 +   audio_ready = false;
 +   output_audio_buffer.size = 0;
@@ -2307,7 +2760,7 @@
  
     return 0;
  }
-@@ -1008,9 +1193,27 @@
+ bool retro_serialize(void *data, size_t size)
  {
     save_error error = STATERR_NOT_FOUND;
     if (     mame_machine_manager::instance() != NULL
@@ -2337,7 +2790,7 @@
  
     if (error != STATERR_NONE)
        log_cb(RETRO_LOG_ERROR, "State save error %d.\n", error);
-@@ -1018,11 +1221,42 @@
+    return (error == STATERR_NONE);
  }
  bool retro_unserialize(const void *data, size_t size)
  {
@@ -2381,6 +2834,18 @@
  
     if (error != STATERR_NONE)
        log_cb(RETRO_LOG_ERROR, "State load error %d.\n", error);
+    return (error == STATERR_NONE);
+ }
+ 
+ unsigned retro_get_region (void) { return RETRO_REGION_NTSC; }
+ 
+ void *find_mame_bank_base(offs_t start, address_space &space)
+ {
+    for (auto &bank : mame_machine_manager::instance()->machine()->memory().banks())
+       // if ( bank.second->addrstart() == start)
+          return bank.second->base();
+    return NULL;
+ }
 --- a/src/emu/audio_effects/filter.cpp
 +++ b/src/emu/audio_effects/filter.cpp
 @@ -26,6 +26,19 @@ audio_effect_filter::audio_effect_filter(speaker_device *speaker, u32 sample_rat
@@ -2405,10 +2870,24 @@
  void audio_effect_filter::reset_lowpass_active()
 --- a/src/osd/libretro/libretro-internal/libretro_core_options.h
 +++ b/src/osd/libretro/libretro-internal/libretro_core_options.h
-@@ -83,6 +83,68 @@
+@@ -83,6 +83,82 @@
  };
  
  struct retro_core_option_v2_definition option_defs_us[] = {
++   {
++      CORE_NAME "_mdp_aspect",
++      "SH1 / SH2 Screen Format",
++      NULL,
++      "Original keeps the native 4:3 field of view. Widescreen renders additional scenery on both sides without stretching the original image. Works with all SH2 rendering, deflicker and explosion options. Objects leave the game at the wider edges, which can change phase timing. Applies without restarting; keep the same setting for matching save-state playback.",
++      NULL,
++      "video",
++      {
++         { "original", "Original (4:3)" },
++         { "widescreen", "Widescreen (16:9, Experimental)" },
++         { NULL, NULL },
++      },
++      "original"
++   },
 +   {
 +      CORE_NAME "_sh2_rendering",
 +      "SH2 Rendering",
@@ -2524,10 +3003,11 @@
  	return result;
 --- a/src/mame/sega/mdconsole.h
 +++ b/src/mame/sega/mdconsole.h
-@@ -62,6 +62,9 @@
+@@ -62,6 +62,10 @@
  	void _32x_interrupt_callback(int scanline, int irq6);
  	void _32x_scanline_helper_callback(int scanline);
  
++	std::vector<memory_passthrough_handler> m_sh_widescreen_taps;
 +	memory_passthrough_handler m_sh_deflicker_tap;
 +	memory_passthrough_handler m_sh_markvi_tap;
 +	memory_passthrough_handler m_sh_markvi_end_tap;
@@ -2570,3 +3050,45 @@
  	window().m_primlist->release_lock();
  
  	return 0;
+--- a/src/osd/libretro/window.cpp
++++ b/src/osd/libretro/window.cpp
+@@ -38,6 +38,7 @@
+ #include "modules/monitor/monitor_common.h"
+ 
+ #include "libretro-internal/libretro_shared.h"
++#include "bus/megadrive/sh_video_options.h"
+ 
+ extern bool libretro_supports_ff_override;
+ extern void retro_fastforwarding(bool enabled);
+@@ -287,6 +288,13 @@
+ 		video_changed = VIDEO_CHANGED_GEOMETRY;
+ 	}
+ 
++	if (sh_mdp_video::wide_eligible.load(std::memory_order_relaxed) && screen)
++	{
++		const unsigned source_width = screen->visible_area().width();
++		sh_mdp_video::source_width.store(source_width, std::memory_order_relaxed);
++		retro_aspect = sh_mdp_video::aspect_for_source(source_width, retro_aspect);
++	}
++
+ 	// reset screen configuration
+ 	screen_configured = 0;
+ 
+@@ -371,6 +379,17 @@
+ 		eff_aspect = target()->current_view().effective_aspect();
+ 		if (target()->orientation() & ORIENTATION_SWAP_XY)
+ 			eff_aspect = 1.0f / eff_aspect;
++
++		// Preserve the physical display aspect of the actual source field even
++		// when alternate rendering scales it to, for example, 640 by 480.
++		unsigned source_width = 0;
++		if (sh_mdp_video::wide_eligible.load(std::memory_order_relaxed))
++		{
++			const screen_device *screen = screen_device_enumerator(machine().root_device()).byindex(index());
++			if (screen) source_width = screen->visible_area().width();
++		}
++		sh_mdp_video::source_width.store(source_width, std::memory_order_relaxed);
++		eff_aspect = sh_mdp_video::aspect_for_source(source_width, eff_aspect);
+ 
+ 		target()->compute_minimum_size(temp_width, temp_height);
+ 		target()->set_keepaspect(false);

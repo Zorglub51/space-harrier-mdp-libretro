@@ -74,6 +74,25 @@ needed.
 
 See [Troubleshooting](docs/TROUBLESHOOTING.md) if the core or game does not load.
 
+## Screen format: 4:3 or extended 16:9
+
+In **Quick Menu > Core Options > Video > SH1 / SH2 Screen Format**, choose
+**Widescreen (16:9, Experimental)**. Keep the frontend aspect on **Core Provided**
+so it uses the core's 16:9 geometry. **Original (4:3)** is the default.
+
+This adds scenery and visible sprites on both sides, with 53 extra source pixels
+per side. It works in SH1 and SH2, independently of Deflicker, SH2 Rendering and
+the SH1 explosion option. SH2's 120 Hz mode and alternate output resolutions are
+supported. Changes apply during gameplay without restarting. Text, menus and the
+hardware window stay in the central area; fixed artwork is not redrawn wider.
+
+Player movement bounds, aiming and collision formulas stay native. Objects are
+removed at wider offscreen boundaries, so their longer presence can affect
+object availability or phase completion timing. Original rendering retains its
+sprite quotas; use Mark VI in SH2 when you want the extended list without those
+display limits. The 4:3 setting remains the faithful M2 reference. No ROM file is
+modified on disk. Use the same format for matching save-state playback.
+
 ## Mark VI rendering for SH2
 
 In **Quick Menu > Core Options > Emulation Hacks > SH2 Rendering**, choose:
@@ -106,7 +125,7 @@ previous refresh rate. More rendering work is performed on the host computer;
 no emulated CPU overclock is needed. The frontend must be able to sustain the
 negotiated refresh rate. Use Native Refresh to compare with the enhancement off.
 
-**Save states from earlier core versions are incompatible with 0.1.18.**
+**Save states from earlier core versions are incompatible with 0.1.19.**
 All three rendering choices share the new format. Keep the same mode for
 identical visual replay. Pending half-frame video and PCM are included, so
 states also restore correctly between two 120 Hz presentations. The maximum

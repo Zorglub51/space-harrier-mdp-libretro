@@ -22,6 +22,7 @@ using u8=std::uint8_t;using u16=std::uint16_t;using u32=std::uint32_t;
 #define BIT(v,b) (((v)>>(b))&1U)
 class sega315_5313_device {
 public:
+ int mdp_widescreen_padding() const {return 0;}
  bool m_sh2_text_compat=true,m_markvi_ready[3]={false,false,true};
  u16 m_regs[64]{};
  std::array<u16,65536> vram{};

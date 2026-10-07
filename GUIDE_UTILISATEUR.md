@@ -78,6 +78,28 @@ manuellement.
 C’est tout : le cœur reconnaît la ROM originale et applique les corrections en
 mémoire. Il ne modifie jamais votre fichier `.smp`.
 
+## Format d’écran : 4/3 ou 16/9 étendu
+
+Dans **Menu rapide > Options du cœur > Video > SH1 / SH2 Screen Format**,
+choisissez **Widescreen (16:9, Experimental)**. Dans le frontend, conservez le
+rapport d’image **Core Provided** pour utiliser celui annoncé par le cœur.
+**Original (4:3)** reste le réglage par défaut.
+
+Le champ s’élargit de 53 pixels de chaque côté, avec du décor et des sprites
+supplémentaires. Cela fonctionne pour SH1 et SH2, indépendamment de Deflicker,
+du rendu SH2 et des explosions SH1, y compris avec Mark VI à 120 Hz et les
+résolutions de sortie alternatives. Le changement s’applique sans redémarrage.
+Les textes, menus et la fenêtre matérielle restent dans la zone centrale ; les
+dessins fixes ne sont pas recréés en version large.
+
+Les limites de déplacement du joueur, la visée et les formules de collision
+restent celles du jeu. Les objets sont supprimés plus loin hors écran : leur
+présence prolongée peut modifier la disponibilité d’autres objets ou la fin de
+certaines phases. Le rendu Original garde ses quotas et peut donc scintiller ;
+Mark VI supprime ces limites dans SH2. Le 4/3 reste la référence fidèle à M2.
+Aucun fichier ROM n’est modifié sur disque. Gardez le même format pour rejouer
+une sauvegarde à l’identique.
+
 ## Mode Mark VI pour SH2
 
 Dans **Menu rapide > Options du cœur > Emulation Hacks > SH2 Rendering** :
@@ -110,7 +132,7 @@ Si le frontend refuse le changement de fréquence, un message s'affiche et la
 fréquence précédente est conservée. Aucun overclock du processeur émulé n'est
 nécessaire ; l'ordinateur doit pouvoir assurer le rendu supplémentaire.
 
-**Les états des anciennes versions ne sont pas compatibles avec la 0.1.18.**
+**Les états des anciennes versions ne sont pas compatibles avec la 0.1.19.**
 Les trois réglages utilisent le même nouveau format. Conservez le même mode
 pour une reprise visuellement identique. Les états incluent la demi-image et
 l'audio en attente, et occupent environ 60 Mo avant compression ; la taille

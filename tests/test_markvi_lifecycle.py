@@ -28,6 +28,7 @@ struct space {
 };
 class sega315_5313_device {
 public:
+ int mdp_widescreen_padding() const {return 0;}
  bool m_sh2_text_compat=true, m_markvi_smooth_valid=false;
  u16 m_regs[64]{},m_vdp_code=0x21;
  u16 m_markvi_ram[3][0x10000]{};

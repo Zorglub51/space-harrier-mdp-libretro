@@ -34,12 +34,17 @@ class RenderingFrontend(ExplosionFrontend):
         self.resolution = None
         self.double_rate = False
         self.reject_120 = False
+        self.aspect = b"original"
         self.rendering = rendering.encode()
         self.deflicker = deflicker.encode()
         self.capture_dir = capture_dir
         super().__init__(*args, **kwargs)
 
     def environment(self, command, data):
+        if command == 37:
+            info = C.cast(data, C.POINTER(Geometry)).contents
+            self.report.setdefault('geometry_updates', []).append({'frame':self.frame,'width':info.width,'height':info.height,'aspect':info.aspect})
+            return True
         if command == 32:
             if self.loading:
                 self.report['av_update_during_load'] = True
@@ -53,6 +58,9 @@ class RenderingFrontend(ExplosionFrontend):
             v = C.cast(data, C.POINTER(Variable)).contents
             if self.resolution and v.key in (b'mame_alternate_renderer', b'mame_altres'):
                 v.value = b'enabled' if v.key == b'mame_alternate_renderer' else self.resolution
+                return True
+            if v.key == b'mame_mdp_aspect':
+                v.value = self.aspect
                 return True
             if v.key == b'mame_sh2_rendering':
                 self.report['rendering_queried'] = True
@@ -76,6 +84,9 @@ class RenderingFrontend(ExplosionFrontend):
 
     def video(self, data, width, height, pitch):
         super().video(data, width, height, pitch)
+        sizes = self.report.setdefault('video_sizes', [])
+        if not sizes or sizes[-1]['width'] != width or sizes[-1]['height'] != height:
+            sizes.append({'frame':self.frame,'width':width,'height':height})
         if self.capture_dir and self.last_frame and self.capture_start <= self.frame <= self.capture_end and self.frame % self.capture_step == 0:
             from PIL import Image
             packed, w, h = self.last_frame
@@ -89,6 +100,8 @@ def main():
     p.add_argument('--rom', type=Path, required=True)
     p.add_argument('--report', type=Path, required=True)
     p.add_argument('--rendering', default='original', choices=['original','mark_vi','mark_vi_120','missing','invalid'])
+    p.add_argument('--aspect', default='original', choices=['original','widescreen'])
+    p.add_argument('--aspect-toggle', action='store_true')
     p.add_argument('--deflicker', default='game', choices=['game','off','on1','on2'])
     p.add_argument('--input', default='reference', choices=['reference','stage3fire','stage4fire','stage5fire','scripted','attract'])
     p.add_argument('--frames', type=int, default=7000)
@@ -109,7 +122,7 @@ def main():
     if a.frames < 240 or a.state_frames < 1:
         p.error('at least 240 frames and a positive replay window are required')
     game = IDENTITIES[hashlib.sha1(a.rom.read_bytes()).hexdigest()][0]
-    report = dict(passed=False, game=game, rendering=a.rendering, deflicker=a.deflicker,
+    report = dict(passed=False, game=game, rendering=a.rendering, deflicker=a.deflicker, aspect=a.aspect,
                   input=a.input, frames=a.frames, threaded=a.threaded,
                   core_sha256=hashlib.sha256(a.core.read_bytes()).hexdigest(), messages=[])
     if a.capture_dir:
@@ -146,6 +159,7 @@ STOP=emu.add_machine_stop_notifier(function() out:close() end)
             content.write_text(f'megadrij -skip_gameinfo -autoboot_delay 0 -autoboot_script {script} -cart {rom}\n')
             f = RenderingFrontend(a.core.resolve(), content, 'sh1' if a.donor else 'original', a.input, report,
                                   rendering=a.rendering, deflicker=a.deflicker, capture_dir=a.capture_dir)
+            f.aspect = a.aspect.encode()
             f.resolution = a.resolution.encode() if a.resolution else None
             report['resolution'] = a.resolution
             f.reject_120 = a.reject_120
@@ -185,6 +199,8 @@ STOP=emu.add_machine_stop_notifier(function() out:close() end)
                     f.rendering=a.rendering.encode();f.option_update_pending=True
                 stream=f.run_window(1,a.frames)
                 report['stream']=stream.summary()
+                if not a.resolution:
+                    assert f.last_frame[1] == (426 if a.aspect == 'widescreen' else 320), f.last_frame[1:]
                 if a.rendering == 'mark_vi_120' and game == 2 and not a.reject_120:
                     hashes = {x['frame']: x['sha256'] for x in report['stream']['video_frame_hashes']}
                     pairs = [(i, i+1) for i in hashes if i%2 and i+1 in hashes]
@@ -199,6 +215,14 @@ STOP=emu.add_machine_stop_notifier(function() out:close() end)
                     f.run_window(f.frame+1, 1)
                     report['half_state']=replay()
                     f.run_window(f.frame+1, 1)  # Complete the pair before cadence-switch comparisons.
+                if a.aspect_toggle:
+                    report['aspect_toggles']=[]
+                    for aspect in ('original','widescreen','original','widescreen'):
+                        f.aspect=aspect.encode();f.option_update_pending=True
+                        f.run_window(f.frame+1,240)
+                        size=f.last_frame[1:]
+                        if not a.resolution:assert size[0]==(426 if aspect=='widescreen' else 320),size
+                        report['aspect_toggles'].append({'aspect':aspect,'size':size,'state':replay()})
                 if a.toggle:
                     report['toggles']=[]
                     # Restore one game state before each mode. Repeating a mode

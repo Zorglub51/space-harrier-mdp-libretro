@@ -84,6 +84,13 @@ published as an artifact. `SH_MDP_STATE_FRAMES` can extend the replay window.
 
 ## Scope and status
 
+**SH1 / SH2 Screen Format** offers the default **Original (4:3)** and optional
+**Widescreen (16:9, Experimental)**. It extends the rendered field to 426 pixels,
+including scenery and sprite visibility, and works with both games and all
+applicable rendering/Deflicker/explosion options. Offscreen object removal is
+extended too, so some object/phase timing can differ. See the
+[widescreen implementation and validation](docs/WIDESCREEN.md).
+
 **SH2 Rendering** offers **Original (M2)** (default), **Mark VI (Native
 Refresh)** and **Mark VI (120 Hz, Experimental)**. Both Mark VI modes reconstruct
 sprite pieces before SH2's native list quotas. The 120 Hz option interpolates

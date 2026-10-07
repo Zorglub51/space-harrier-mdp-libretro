@@ -6,6 +6,46 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.19] - 2026-10-08
+
+### Optional extended 16:9 field of view for SH1 and SH2
+
+- Add **Video > SH1 / SH2 Screen Format > Widescreen (16:9, Experimental)**,
+  independently of SH2 Rendering, native Deflicker and SH1 explosion artwork.
+  **Original (4:3)** remains the default and the M2 fidelity reference.
+- Render 426 source pixels instead of 320, adding 53 pixels on each side.
+  Continue the ground projection, scrolling scenery and visible sprite pieces
+  into the wider field; retain the central image and hardware window layout.
+  Advertise a 16:9 display aspect rather than stretching the original 320 pixels.
+- Extend verified sprite visibility and offscreen removal bounds for both
+  authenticated games. Handle negative screen-space projectile X coordinates
+  with a guarded comparison trampoline. Apply all substitutions through memory
+  read observers; ROM files remain unchanged. Keep movement, aiming, collision
+  formulas, sprite artwork and animation clocks native.
+- Wider object lifetimes can change pool occupancy and the timing of phases
+  that wait for objects to disappear. Original sprite quotas remain active in
+  Original (M2) rendering, so additional visible pieces can increase its flicker.
+  Mark VI uses its extended host list independently of Deflicker.
+- Switch formats during gameplay without restarting. Preserve correct aspect
+  at alternate output resolutions and finish any pending 120 Hz half before
+  changing formats. Save its source width as well as its output dimensions.
+  **Save states from earlier core versions are incompatible.**
+
+### Validation
+
+- Keep 4:3 SH1, original SH2, Mark VI 120 Hz and SH1-art SH2 video, full PCM and
+  sampled RAM/68000 state identical to 0.1.18 in the tested sequences.
+- Exercise both games, SH2 stages 1/3/4/5, Original/Mark VI/120 Hz rendering,
+  native Deflicker selections, SH1 explosions, threaded execution, 640x480
+  output, runtime aspect changes and save-state replay at both 120 Hz phases.
+- Compare wide native-refresh and 120 Hz runs: identical PCM and sampled game
+  state, with distinct interpolated frames. Inspect ground continuity, side
+  sprites and centered text in private captures.
+- Add public viewport, raster and frontend regression probes, including
+  AddressSanitizer/UndefinedBehaviorSanitizer checks. Verify the projectile
+  trampoline on the actual emulated 68000 for both games, including negative
+  coordinates, preserved registers/flags and availability after returning to 4:3.
+
 ## [0.1.18] - 2026-10-07
 
 ### Mark VI sprite stability fixes
