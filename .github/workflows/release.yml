@@ -64,7 +64,13 @@ jobs:
         run: |
           ./scripts/fetch-mame.sh
           git -C build/mame apply ../../patches/mame0289-libretro-windows.patch
-      - name: Package sources
+      - name: Recover v0.1.15 auxiliary source headers
+        # v0.1.15 validated all adapter headers but its preparation script copied
+        # only the runtime subset. Repair that historical source job without
+        # moving its tag or changing its runtime source.
+        if: env.RELEASE_TAG == 'v0.1.15'
+        run: cp src/markv/*.h build/mame/src/devices/bus/megadrive/
+      - name: Package complete sources
         run: ./scripts/package-source.sh build/mame
       - uses: actions/upload-artifact@v7
         with:

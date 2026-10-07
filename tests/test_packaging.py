@@ -86,6 +86,32 @@ class ArchiveTests(unittest.TestCase):
 
 
 class SourceSelectionTests(unittest.TestCase):
+    @unittest.skipIf(os.name == "nt", "preparation script is executed by Bash CI")
+    def test_prepare_copies_every_header_required_by_source_package(self):
+        # Isolate adapter staging from the large upstream Git checkout. The
+        # real preparation script and ROM-header generator run unchanged.
+        root = SCRIPTS.parent
+        with tempfile.TemporaryDirectory() as temp:
+            temp = Path(temp)
+            tree, bins = temp / "mame", temp / "bin"
+            (tree / ".git").mkdir(parents=True)
+            target = tree / "src/devices/bus/megadrive"
+            target.mkdir(parents=True)
+            bins.mkdir()
+            git = bins / "git"
+            git.write_text("#!/bin/sh\ncase \"$*\" in\n"
+                           "  *'rev-parse HEAD'*) echo " + (root / "MAME_COMMIT").read_text().strip() + ";;\n"
+                           "esac\nexit 0\n")
+            git.chmod(0o755)
+            env = dict(os.environ, PATH=str(bins) + os.pathsep + os.environ["PATH"])
+            subprocess.run(["bash", str(SCRIPTS / "prepare-mame.sh"), str(tree)],
+                           env=env, check=True, capture_output=True)
+            headers = list((root / "src/markv").glob("*.h"))
+            self.assertTrue(headers)
+            for header in headers:
+                with self.subTest(header.name):
+                    self.assertEqual((target / header.name).read_bytes(), header.read_bytes())
+
     def test_tracked_upstream_sources_survive_broad_ignore_rules(self):
         with tempfile.TemporaryDirectory() as temp:
             temp = Path(temp)
