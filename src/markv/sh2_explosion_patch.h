@@ -19,12 +19,18 @@ inline void put_long(std::uint8_t *p, std::uint32_t v) { put_word(p, v >> 16); p
 // visual adapters call the original SH2 motion, lifetime and cleanup handlers.
 constexpr std::uint32_t constructor = 0x380100, update = 0x380300;
 constexpr std::uint32_t particle_update = 0x380400, tracked_update = 0x380500;
+constexpr std::uint32_t ordinary_pending = 0x380600;
 constexpr std::uint32_t trampoline = 0x380700, tick = 0x380800;
 constexpr std::uint32_t initialize = 0x380a00, particle_pending = 0x380c00;
 constexpr std::uint32_t tracked_pending = 0x380d00, select_lod = 0x380e00;
 constexpr std::uint32_t handler = 0x381000;
-// Only the visual methods installed by the native boss particle allocator and
-// tracked death initializers change. Boss controllers and counters stay native.
+constexpr std::uint32_t capture_cache = 0x381200, reset_cursor = 0x381280;
+// Cover every direct initializer of the three native explosion handlers.
+// The shared constructor at 139B84 is wrapped separately, without actor filters.
+// Controllers, score, damage, movement and cleanup remain native.
+constexpr std::uint32_t ordinary_sites[] = {
+    0x114d94, 0x15840e, 0x158738, 0x158a62, 0x15e4c4, 0x15e6e2, 0x16ec0c
+};
 constexpr std::uint32_t particle_sites[] = {0x18fc88, 0x18fe36};
 constexpr std::uint32_t tracked_sites[] = {
     0x0cba62, 0x0cbc24, 0x137c88, 0x158d9a, 0x164910,
@@ -35,72 +41,16 @@ constexpr std::uint32_t clock_sites[] = {
     0x09d8b0, 0x09ec9e, 0x09ee8c, 0x09f2d2, 0x09f2ec, 0x165d86,
     0x175f86, 0x177264, 0x178f3c, 0x18f060, 0x18f654
 };
-// Direct actor-factory spawn sites whose final collision reaction is zero.
-// Scenery uses a different factory; custom boss reactions are not in this list.
-struct enemy_spawn { std::uint32_t site, method, descriptor, reaction_clear; };
-constexpr enemy_spawn enemy_spawns[] = {
-    {0x0a2ea8, 0x0f8ac4, 0x000c56, 0x0a2ec8},
-    {0x0a2f0e, 0x0f63ce, 0x000c56, 0x0a2f2e},
-    {0x0a2f74, 0x0eb42a, 0x000c56, 0x0a2f94},
-    {0x0a2fde, 0x0e8e26, 0x000c56, 0x0a2ffe},
-    {0x0a3048, 0x155b68, 0x000df8, 0x0a3068},
-    {0x0a30ae, 0x1467a4, 0x000c56, 0x0a30ce},
-    {0x0a3114, 0x0af9cc, 0x0013fc, 0x0a3134},
-    {0x0a316a, 0x0e7138, 0x000c56, 0x0a318a},
-    {0x0a31d4, 0x0b6ff4, 0x000e3a, 0x0a31f4},
-    {0x0a32a8, 0x0dae0e, 0x0013fc, 0x0a32c8},
-    {0x0a3312, 0x0dbc3e, 0x0013fc, 0x0a3332},
-    {0x0a3368, 0x0f1748, 0x000c56, 0x0a3388},
-    {0x0a33ce, 0x116256, 0x000f2c, 0x0a33ee},
-    {0x0a34bc, 0x0d85c4, 0x0013fc, 0x0a34dc},
-    {0x0a3526, 0x14def4, 0x000c56, 0x0a3546},
-    {0x0a358c, 0x0b2cbe, 0x000e3a, 0x0a35ac},
-    {0x0a35f2, 0x0fdb56, 0x000df8, 0x0a3612},
-    {0x0a3658, 0x0d9fde, 0x0013fc, 0x0a3678},
-    {0x0a36c2, 0x0f3d8e, 0x000c56, 0x0a36e2},
-    {0x0a37ae, 0x0eda2e, 0x000c56, 0x0a37ce},
-    {0x0a3814, 0x0dcb7e, 0x0013fc, 0x0a3834},
-    {0x0a386a, 0x14bf66, 0x000c56, 0x0a388a},
-    {0x0a38d0, 0x0b4c64, 0x000e3a, 0x0a38f0},
-    {0x0a3936, 0x1002a8, 0x000df8, 0x0a3956},
-    {0x0a399c, 0x0d4d44, 0x0013fc, 0x0a39bc},
-    {0x0a3a06, 0x1029fa, 0x000c56, 0x0a3a26},
-    {0x0a3a70, 0x114fd4, 0x000f2c, 0x0a3a90},
-    {0x0a3b44, 0x0d6baa, 0x0013fc, 0x0a3b64},
-    {0x0a3bae, 0x0b0d18, 0x000e3a, 0x0a3bce},
-    {0x0a3c14, 0x149fd8, 0x000c56, 0x0a3c34},
-    {0x0a3c7a, 0x0fb2d4, 0x000df8, 0x0a3c9a},
-    {0x0a3ce0, 0x0e52d0, 0x0013fc, 0x0a3d00},
-    {0x0a3dd4, 0x13183a, 0x000ebe, 0x0a3df4},
-    {0x0a3e56, 0x14fe84, 0x000df8, 0x0a3e76},
-    {0x0a3ebc, 0x185284, 0x000cc4, 0x0a3edc},
-    {0x0a452c, 0x0be740, 0x000ebe, 0x0a454c},
-    {0x0a4592, 0x0bbd62, 0x000ebe, 0x0a45b2},
-    {0x0a469a, 0x0e346c, 0x0013fc, 0x0a46ba},
-    {0x0a4770, 0x1174d8, 0x000df8, 0x0a4790},
-    {0x0a47d6, 0x0ddecc, 0x0013fc, 0x0a47f6},
-    {0x0a482c, 0x0dfa6a, 0x0013fc, 0x0a484c},
-    {0x0a4882, 0x0e1608, 0x0013fc, 0x0a48a2},
-    {0x0a48d8, 0x135be6, 0x000ebe, 0x0a48f8},
-    {0x0a4992, 0x133f2c, 0x000ebe, 0x0a49b2},
-    {0x0a4b48, 0x14393a, 0x000db6, 0x0a4b68},
-    {0x0a4bae, 0x13ddfc, 0x000cc4, 0x0a4bce},
-    {0x0a4c8e, 0x0b9384, 0x000ebe, 0x0a4cae},
-    {0x0a4cf4, 0x11d1bc, 0x000db6, 0x0a4d14},
-    {0x0a4d5a, 0x0c06da, 0x000ebe, 0x0a4d7a},
-    {0x0a4e36, 0x12f148, 0x000ebe, 0x0a4e56},
-    {0x0a5ade, 0x185284, 0x000cc4, 0x0a5afe},
-};
-constexpr std::uint32_t enemy_method_table = 0x380900;
-constexpr std::size_t enemy_spawn_count = sizeof(enemy_spawns) / sizeof(enemy_spawns[0]);
-
 constexpr std::uint32_t descriptors = 0x382000, parts_begin = 0x382400;
 constexpr std::uint32_t pixels_begin = 0x384000, palette = 0x39c000;
 constexpr std::uint32_t cache_base = 0xfe0000, phase = 0xfe0002, quotient = 0xfe0004;
 constexpr std::uint32_t palette_state = 0xfe0008, activations = 0xfe000c;
 constexpr std::uint32_t fallbacks = 0xfe0010, palette_colour = 0xfe0014;
 constexpr std::uint32_t slots = 0xfe0100;
-constexpr std::uint16_t first_tile = 0x6f4; // 8576 bytes, bank 1 DE80..FFFF.
+// Replace the 212 native explosion tiles in the permanent common allocation
+// with all 268 donor tiles. The following assets move by exactly 56 tiles.
+constexpr std::uint16_t extra_tiles = 56, native_wave_base = 978;
+constexpr std::uint16_t modified_wave_base = native_wave_base + extra_tiles;
 
 struct code {
     std::uint8_t *rom;
@@ -132,20 +82,28 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
         if (std::memcmp(rom + site, expected_tick, 6))
             return false;
 
+    for (auto site : ordinary_sites)
+        if (word(rom + site) != 0x217c || longword(rom + site + 2) != 0x137f0a || word(rom + site + 6) != 0x10 ||
+            longword(rom + site + 0x1a) != 0x117c0001 || word(rom + site + 0x1e) != 0x22)
+            return false;
     for (auto site : particle_sites)
-        if (word(rom + site) != 0x217c || longword(rom + site + 2) != 0x137afc || word(rom + site + 6) != 0x10)
+        if (word(rom + site) != 0x217c || longword(rom + site + 2) != 0x137afc || word(rom + site + 6) != 0x10 ||
+            longword(rom + site + 0x1a) != 0x117c0001 || word(rom + site + 0x1e) != 0x22)
             return false;
     for (auto site : tracked_sites)
-        if (word(rom + site) != 0x217c || longword(rom + site + 2) != 0x137cf0 || word(rom + site + 6) != 0x10)
+        if (word(rom + site) != 0x217c || longword(rom + site + 2) != 0x137cf0 || word(rom + site + 6) != 0x10 ||
+            longword(rom + site + 0x1a) != 0x117c0001 || word(rom + site + 0x1e) != 0x22)
             return false;
 
-    for (const auto &spawn : enemy_spawns) {
-        if (word(rom + spawn.site) != 0x4879 || longword(rom + spawn.site + 2) != spawn.method ||
-            word(rom + spawn.site + 6) != 0x4879 || longword(rom + spawn.site + 8) != spawn.descriptor ||
-            word(rom + spawn.site + 12) != 0x4eb9 || longword(rom + spawn.site + 14) != 0x13d6b4 ||
-            word(rom + spawn.reaction_clear) != 0x4228 || word(rom + spawn.reaction_clear + 2) != 0x23)
-            return false;
-    }
+    // Authenticated common-loader and absolute script-cursor reset operands.
+    if (word(rom + 0xaf6f8) != 0x1639 || longword(rom + 0xaf6fa) != 0x74f ||
+        word(rom + 0xaf724) != 0x3039 || longword(rom + 0xaf726) != 0xff3842 ||
+        word(rom + 0xaf730) != 0x45f9 || longword(rom + 0xaf732) != 0x744 ||
+        longword(rom + 0xaf796) != 0x76001639 || longword(rom + 0xaf79a) != 0x791 ||
+        longword(rom + 0x9ff1e) != 0x33fc03d2 || longword(rom + 0x9ff22) != 0xff3842 ||
+        longword(rom + 0x175e92) != 0x33fc03d2 || longword(rom + 0x175e96) != 0xff3842 ||
+        word(rom + 0x191bfa) != 0x33c1 || longword(rom + 0x191bfc) != 0xff3842)
+        return false;
 
     // Validate and record every tile-table operand before changing anything.
     // All 190 original references are LEA absolute or MOVE.L immediate.
@@ -215,42 +173,36 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
     }
     std::copy_n(donor + 0x393aea, 32, rom + palette);
 
+    // Initializers can be rendered before their first update. Their native
+    // descriptors must already select valid donor geometry and shared slots.
+    // Retain each native family's LOD count for its unchanged projection code.
+    constexpr unsigned initial_lods[] = {0, 1, 3, 1, 3};
+    for (unsigned i = 0; i < 5; ++i) {
+        auto *dest = rom + 0x744 + i * 22;
+        std::copy_n(rom + descriptors + initial_lods[i] * 22, 22, dest);
+        dest[11] = i < 3 ? 3 : 2;
+    }
+
     // Original entry, callable without recursing through the installed hook.
     std::copy_n(expected_constructor, 8, rom + trampoline);
     code c{rom, trampoline + 8}; c.absolute(0x4ef9, 0x139b8c);
 
-    for (std::size_t i = 0; i < enemy_spawn_count; ++i)
-        put_long(rom + enemy_method_table + i * 4, enemy_spawns[i].method);
-
-    // Both generic collision loops can destroy enemies or scenery. Require a
-    // recognized actor method and current reaction zero before either route.
-    // Custom callbacks, player collisions and unknown methods remain original.
+    // Every call already requests a native explosion: do not classify its
+    // previous actor, reaction byte or collision caller. This includes scenery,
+    // player collisions and dynamically created objects.
     c.at = constructor;
-    c.w(0x0c97); c.l(0x171f36); auto eligible_a = c.branch(0x6700);
-    c.w(0x0c97); c.l(0x172132); auto eligible_b = c.branch(0x6700);
-    c.w(0x0c97); c.l(0x1719dc); auto eligible_c = c.branch(0x6700);
-    c.w(0x0c97); c.l(0x171e7a); auto ordinary = c.branch(0x6600);
-    c.target(eligible_a); c.target(eligible_b); c.target(eligible_c);
-    c.w(0x206f); c.w(4); c.w(0x4a28); c.w(0x23); auto nonzero_reaction = c.branch(0x6600);
-    c.w(0x2028); c.w(0x10); c.absolute(0x43f9, enemy_method_table);
-    c.w(0x323c); c.w(std::uint16_t(enemy_spawn_count - 1));
-    const auto method_scan = c.at;
-    c.w(0xb099); auto recognized_method = c.branch(0x6700);
-    c.w(0x51c9); c.w(std::uint16_t(method_scan - c.at));
-    auto unknown_method = c.branch(0x6000);
-    c.target(recognized_method);
-    c.w(0x0c79); c.w(first_tile); c.l(0xff3842); auto no_room = c.branch(0x6200);
+    c.absolute(0x4a79, cache_base); auto no_room = c.branch(0x6700);
     c.w(0x2f2f); c.w(4); c.absolute(0x4eb9, trampoline); c.w(0x588f);
-    c.w(0x2f3c); c.l(update); c.w(0x2f2f); c.w(8);
-    c.absolute(0x4eb9, initialize); c.w(0x508f); c.w(0x4e75);
+    c.w(0x4878); c.w(1); // Cold preload is needed before the first ordinary update.
+    c.w(0x2f3c); c.l(update); c.w(0x2f2f); c.w(12);
+    c.absolute(0x4eb9, initialize); c.w(0x4fef); c.w(12); c.w(0x4e75);
     c.target(no_room); c.absolute(0x52b9, fallbacks);
-    c.target(ordinary); c.target(nonzero_reaction); c.target(unknown_method);
     c.absolute(0x4ef9, trampoline);
     if (c.at >= update) return false;
 
     // Execute the host handler first, including unlink/free and boss accounting.
     // Every native cleanup exit sets state 20 to FF. Never rewrite that object.
-    // On a cache conflict retain the native descriptor and restore its handler;
+    // Before the common cache is initialized retain the native descriptor;
     // do not restart its lifetime, delay, velocity or boss completion counter.
     const auto emit_wrapper = [&](std::uint32_t dest, std::uint32_t native,
                                   std::uint32_t steady, bool pending) {
@@ -258,10 +210,11 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
         c.w(0x246f); c.w(0x10); c.w(0x242a); c.w(0x1c);
         c.w(0x2f0a); c.absolute(0x4eb9, native); c.w(0x588f);
         c.w(0x0c2a); c.w(0xff); c.w(0x20); auto dead = c.branch(0x6700);
-        c.w(0x0c79); c.w(first_tile); c.l(0xff3842); auto no_cache = c.branch(0x6200);
+        c.absolute(0x4a79, cache_base); auto no_cache = c.branch(0x6700);
         if (pending) {
+            c.w(0x42a7); // No preload: this wrapper animates in the same update.
             c.w(0x2f3c); c.l(steady); c.w(0x2f0a);
-            c.absolute(0x4eb9, initialize); c.w(0x508f);
+            c.absolute(0x4eb9, initialize); c.w(0x4fef); c.w(12);
         } else {
             c.w(0x2542); c.w(0x1c); // Keep the shared donor descriptor between uploads.
         }
@@ -276,10 +229,11 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
     if (!emit_wrapper(update, 0x137f0a, update, false) ||
         !emit_wrapper(particle_update, 0x137afc, particle_update, false) ||
         !emit_wrapper(tracked_update, 0x137cf0, tracked_update, false) ||
+        !emit_wrapper(ordinary_pending, 0x137f0a, update, true) ||
         !emit_wrapper(particle_pending, 0x137afc, particle_update, true) ||
         !emit_wrapper(tracked_pending, 0x137cf0, tracked_update, true)) return false;
 
-    // Visual initialization takes (object, steady_method). Preload only when no
+    // Visual initialization takes (object, steady_method, preload). Preload only when no
     // other live mod effect is using the shared cache. The first update still
     // initializes its clock quotient, exactly as a new SH1 shared animation.
     c.at = initialize; c.w(0x48e7); c.w(0x3c3c);
@@ -300,7 +254,6 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
     c.target(cache_scan_low); c.target(cache_scan_high); c.target(cache_live);
     c.w(0x256f); c.w(0x28); c.w(0x10);
     c.w(0x157c); c.w(3); c.w(0x22);
-    c.w(0x33fc); c.w(first_tile); c.l(cache_base);
     c.absolute(0x4279, phase); c.absolute(0x52b9, activations);
     c.absolute(0x41f9, palette); c.absolute(0x43f9, 0xc004e0);
     c.w(0x700f); const auto palette_loop = c.at;
@@ -308,9 +261,9 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
     c.absolute(0x3039, palette_colour); c.absolute(0x33c0, 0xc004f0);
     c.w(0x257c); c.l(descriptors); c.w(0x1c);
     c.w(0x4a85); auto keep_live_pixels = c.branch(0x6600);
-    // Pending boss wrappers animate immediately in this same update. Only the
+    // Pending wrappers animate immediately in this same update. Only the
     // ordinary constructor needs a cold preload before its later first update.
-    c.w(0x0caf); c.l(update); c.w(0x28); auto pending_upload = c.branch(0x6600);
+    c.w(0x4aaf); c.w(0x2c); auto pending_upload = c.branch(0x6700);
     c.w(0x2f0a); c.absolute(0x4eb9, handler); c.w(0x588f);
     c.target(keep_live_pixels); c.target(pending_upload); c.absolute(0x4279, phase);
     c.w(0x2f0a); c.absolute(0x4eb9, select_lod); c.w(0x588f);
@@ -344,7 +297,7 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
     c.target(same_quotient); c.target(final_pose);
     c.w(0x2f0a); c.absolute(0x4eb9, select_lod); c.w(0x588f);
     c.w(0x4cdf); c.w(0x3c3c); c.w(0x4e75);
-    if (c.at >= descriptors) return false;
+    if (c.at >= capture_cache) return false;
 
     // The native descriptor-driven scale rule also handles a fallback to the
     // original three-source art. Only LOD/zoom change, never X/Y/Z or projection.
@@ -382,14 +335,43 @@ inline bool apply_sh2_enemy_explosions(std::uint8_t *rom, std::size_t capacity,
     c.absolute(0x33c0, palette_colour); c.absolute(0x33c0, 0xc004f0);
     c.target(tick_done); c.w(0x4cdf); c.w(3); c.w(0x44df); c.w(0x4e75);
 
-    for (auto site : particle_sites) put_long(rom + site + 2, particle_pending);
-    for (auto site : tracked_sites) put_long(rom + site + 2, tracked_pending);
+    // Capture the permanent cache at the point where the common loader would
+    // have allocated native explosions. Keep its cursor in d0 for the loader.
+    c.at = capture_cache; c.absolute(0x3039, 0xff3842);
+    c.absolute(0x33c0, cache_base); c.absolute(0x4279, phase);
+    c.w(0x48e7); c.w(0x80c0); // Preserve d0/a0-a1 while installing the palette.
+    c.absolute(0x41f9, palette); c.absolute(0x43f9, 0xc004e0); c.w(0x700f);
+    const auto common_palette_loop = c.at;
+    c.w(0x32d8); c.w(0x51c8); c.w(std::uint16_t(common_palette_loop - c.at));
+    c.absolute(0x3039, palette_colour); c.absolute(0x33c0, 0xc004f0);
+    c.w(0x4cdf); c.w(0x0301); c.w(0x4e75);
+    if (c.at >= reset_cursor) return false;
+    // Immediate script addresses refer to the original permanent allocation.
+    // Saved cursors already contain relocated values and need no adjustment.
+    // Preserve the original MOVE's flags, including X, and all registers.
+    c.at = reset_cursor; c.absolute(0x33c1, 0xff3842); c.w(0x40e7);
+    c.w(0x0c41); c.w(972); auto before_common_end = c.branch(0x6500);
+    c.w(0x0679); c.w(extra_tiles); c.l(0xff3842);
+    c.target(before_common_end); c.w(0x44df); c.w(0x4e75);
+
+    put_long(rom + 0xaf6fa, descriptors + 11);
+    put_word(rom + 0xaf724, 0x4eb9); put_long(rom + 0xaf726, capture_cache);
+    put_long(rom + 0xaf732, descriptors);
+    // The four donor sizes replace both original explosion families.
+    put_word(rom + 0xaf796, 0x6000); put_word(rom + 0xaf798, 0x94);
+    put_word(rom + 0x9ff20, modified_wave_base);
+    put_word(rom + 0x175e94, modified_wave_base);
+    put_word(rom + 0x191bfa, 0x4eb9); put_long(rom + 0x191bfc, reset_cursor);
+
+    for (auto site : ordinary_sites) { put_long(rom + site + 2, ordinary_pending); put_word(rom + site + 0x1c, 3); }
+    for (auto site : particle_sites) { put_long(rom + site + 2, particle_pending); put_word(rom + site + 0x1c, 3); }
+    for (auto site : tracked_sites) { put_long(rom + site + 2, tracked_pending); put_word(rom + site + 0x1c, 3); }
     put_word(rom + 0x139b84, 0x4ef9); put_long(rom + 0x139b86, constructor);
     put_word(rom + 0x139b8a, 0x4e71);
     for (auto site : clock_sites) {
         put_word(rom + site, 0x4eb9);
         put_long(rom + site + 2, tick);
     }
-    return pixels < palette && c.at < handler;
+    return pixels < palette && c.at < descriptors;
 }
 } // namespace markv

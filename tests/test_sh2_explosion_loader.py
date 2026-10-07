@@ -87,8 +87,10 @@ int main(int argc, char **argv) {
     if (!state_matches(old_state, sizeof(old_state), false) || state_matches(old_state, sizeof(old_state), true)) return 3;
     if (!state_matches(mod_state, sizeof(mod_state), true) || state_matches(mod_state, sizeof(mod_state), false)) return 4;
     if (state_matches(mod_state, 8, true) || state_matches(mod_state, 8, false)) return 5;
-    mod_state[8] = 1; // The previous published modification is incompatible.
-    if (state_matches(mod_state, sizeof(mod_state), true) || state_matches(mod_state, sizeof(mod_state), false)) return 6;
+    for (unsigned version : {1u, 2u}) { // Previously published modifications are incompatible.
+        mod_state[8] = version;
+        if (state_matches(mod_state, sizeof(mod_state), true) || state_matches(mod_state, sizeof(mod_state), false)) return 6;
+    }
     if (state_matches(nullptr, 0, false) || state_matches(nullptr, 0, true)) return 7;
 }
 '''

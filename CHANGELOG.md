@@ -6,6 +6,44 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.14] - 2026-10-07
+
+### SH1 explosions for all exploding SH2 objects
+
+- Remove actor-family, collision-caller and reaction filters from the shared
+  explosion constructor. The option now covers exploding scenery and
+  player-collision effects as well as enemies and bosses.
+- Cover seven additional direct ordinary-explosion initializers used by custom
+  death callbacks. All 25 assignments of SH2's three native explosion methods
+  are accounted for. Native movement, damage, score, lifetime and boss cleanup
+  remain in control; non-explosion death actions are unchanged.
+- Fix the stage-three returns to original artwork. Dense graphics could overlap
+  the old high-end cache and trigger its fallback. Replace the permanent native
+  explosion allocation with the four SH1 sizes and relocate later allocations
+  by 56 tiles instead. No video-memory expansion or replacement artwork is used.
+- Give pending effects valid donor descriptors and palette selection before
+  their first update, avoiding a frame of stale graphics after initialization.
+- Use modified-state format 3 and its own native-state folder. Modified states
+  from 0.1.12/0.1.13 are rejected; original-mode state compatibility and automatic
+  restart on option changes are preserved.
+
+### Validation and limits
+
+- Run 18,000 frontend steps from each of the twelve selected stages, with
+  scripted movement/firing and diagnostic lives held at nine. Observe 129
+  replacements, zero fallbacks and a maximum graphics cursor of 2,018/2,048.
+  Only the common loader and animation uploader write to the reserved cache.
+  Stage 12 exercises graphics and boss approach without a destruction; these
+  are sampled runs, not twelve completed stages or every boss defeated.
+- The stage-three reproduction now has twelve replacements and no fallback.
+  Recheck all eleven poses and all 44 donor payloads in 29 complete uploads.
+  A controlled boss death retains 21 native particle lifetimes and one counter
+  decrement. Its additional execution cost remains 22 video frames.
+- Verify unchanged default-off SH2 and SH1 video/PCM, threaded option switching,
+  autosave isolation, fixed-capacity buffers, legacy original states and active
+  stage-three/stage-four save/load replay. The configured suite passes 96 tests
+  with 12 optional native-reference skips; ROM adapter sanitizer checks pass.
+
 ## [0.1.13] - 2026-10-06
 
 ### SH2 explosion option and positioning

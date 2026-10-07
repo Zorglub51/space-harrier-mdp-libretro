@@ -29,7 +29,7 @@ inline constexpr char donor_sha1[] = "e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72";
 // carry a versioned prefix so pointers into injected ROM cannot be restored
 // into a machine running the original game (or vice versa).
 inline constexpr std::uint8_t state_tag[16] = {
-    'S', 'H', '2', 'E', 'X', 'P', 'L', '0', 2, 0, 0, 0, 0, 0, 0, 0
+    'S', 'H', '2', 'E', 'X', 'P', 'L', '0', 3, 0, 0, 0, 0, 0, 0, 0
 };
 
 inline bool state_matches(const void *data, std::size_t size, bool mod_active)
@@ -47,7 +47,7 @@ inline const char *message(result value)
     switch (value)
     {
     case result::applied:
-        return "SH2: SH1 enemy and boss explosions enabled.";
+        return "SH2: SH1 explosions enabled for all exploding objects.";
     case result::missing_donor:
         return "SH2: original explosions retained. Put jp_jp_space_harrier.smp beside SH2 or in the system folder, then restart content.";
     case result::invalid_donor:

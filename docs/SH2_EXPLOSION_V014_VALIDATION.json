@@ -1,0 +1,1373 @@
+{
+  "schema_version": 1,
+  "release": "0.1.14",
+  "date": "2026-10-07",
+  "platform": "macos-arm64",
+  "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+  "generated_private_sh2_image_sha256": "5323d2d67dea795dbae7ba55b64858d87504918d933643b88e32ecbf33d6b37f",
+  "scope": "Local diagnostics with authenticated private ROMs. No copyrighted image payloads or memory dumps are included. This does not certify all-stage playthroughs or all bosses.",
+  "coverage": {
+    "native_method_assignments": 25,
+    "generic_constructor": 1,
+    "direct_ordinary_initializers": 7,
+    "direct_particle_initializers": 2,
+    "direct_tracked_initializers": 15,
+    "actor_filters_removed": true,
+    "native_handlers_unchanged": true
+  },
+  "allocation": {
+    "native_common_explosion_tiles": 212,
+    "donor_common_explosion_tiles": 268,
+    "relocation_tiles": 56,
+    "observed_cache_first_tile": 740,
+    "cache_end_tile_exclusive": 1008,
+    "native_wave_base": 978,
+    "modified_wave_base": 1034,
+    "bank_capacity_tiles": 2048,
+    "observed_max_cursor": 2018,
+    "observed_cache_writer_pcs": [
+      "0x0AF75E",
+      "0x381076"
+    ]
+  },
+  "stage3_reproduction": {
+    "frontend_steps": 10000,
+    "state_replay_steps": 120,
+    "v0_1_13": {
+      "activations": 1,
+      "fallbacks": 6,
+      "max_cursor": 1962
+    },
+    "v0_1_14": {
+      "activations": 12,
+      "fallbacks": 0,
+      "max_cursor": 2018
+    },
+    "qualification": "Same scripted inputs; added guest execution changes later trajectories, so the two runs need not encounter identical destruction events."
+  },
+  "stage_sampling": {
+    "frontend_steps_per_stage": 18000,
+    "state_replay_steps": 120,
+    "diagnostic_lives": 9,
+    "total_activations": 129,
+    "results": [
+      {
+        "stage": 1,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 7,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 115776,
+          "reserved_region_sample_groups": 8,
+          "activations": 7,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 2,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 6,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 167232,
+          "reserved_region_sample_groups": 13,
+          "activations": 13,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 3,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 12,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 184384,
+          "reserved_region_sample_groups": 12,
+          "activations": 12,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 4,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 10,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 184384,
+          "reserved_region_sample_groups": 14,
+          "activations": 10,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 5,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 2,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 77184,
+          "reserved_region_sample_groups": 5,
+          "activations": 6,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 6,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 7,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 81472,
+          "reserved_region_sample_groups": 9,
+          "activations": 7,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 7,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 4,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 55744,
+          "reserved_region_sample_groups": 4,
+          "activations": 4,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 8,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 16,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 283008,
+          "reserved_region_sample_groups": 25,
+          "activations": 31,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 9,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 10,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 120064,
+          "reserved_region_sample_groups": 18,
+          "activations": 22,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 10,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 13,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 261568,
+          "reserved_region_sample_groups": 17,
+          "activations": 13,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 11,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 4,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 55744,
+          "reserved_region_sample_groups": 3,
+          "activations": 4,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      },
+      {
+        "stage": 12,
+        "passed": true,
+        "returncode": 0,
+        "counts": {
+          "lua_frame_last": 18238,
+          "constructors": 0,
+          "tile_cursor_max": 2018,
+          "reserved_region_writes": 4288,
+          "reserved_region_sample_groups": 1,
+          "activations": 0,
+          "fallbacks": 0
+        },
+        "error": null,
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd"
+      }
+    ],
+    "qualification": "Stages selected independently. Stage 12 contains no destruction in this sample. These are not twelve completed stages."
+  },
+  "integration": {
+    "default-off": {
+      "schema_version": 1,
+      "passed": true,
+      "loaded": true,
+      "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+      "style": "default",
+      "donor_kind": "missing",
+      "donor_location": "system",
+      "input": "reference",
+      "frames": 3400,
+      "messages": [],
+      "option_queried": true,
+      "auto_save": false,
+      "thread_mode": "disabled",
+      "reset_before_toggle": false,
+      "scope": "One frontend content load, optional internal restarts via GET_VARIABLE_UPDATE, option/donor result, stream hashes and same-mode save/load. No pose or native-timing equivalence is inferred.",
+      "rom_sha1": "80f576af01d6413c0b92073e2f947b0431f12a74",
+      "expected_active": false,
+      "option_query_count": 1,
+      "thread_mode_option_queried": true,
+      "auto_save_option_queried": true,
+      "stream": {
+        "video_sha256": "2323d8f512590417ed62796297a2810302edfecaf0015269b8d7d79e7768d340",
+        "audio_sha256": "496bd3c1fb2307d938816ce27c77af1025daf3dc4b7d58584e08dad49c913417",
+        "video_frames": 3399,
+        "audio_stereo_frames": 2724300
+      },
+      "serialize_size": 9219460,
+      "mod_state_prefix": false,
+      "unserialize_return": true,
+      "state": {
+        "frames": 120,
+        "first": {
+          "video_sha256": "073b0118a78bf996bacd052513774408f0a831e1a7b75ff77504a332ec33db57",
+          "audio_sha256": "d71b369b9364e2a9fed28a63f54c05740173b3e2d3e1b71fe90614dbc86951f5",
+          "video_frames": 120,
+          "audio_stereo_frames": 96128
+        },
+        "replay": {
+          "video_sha256": "073b0118a78bf996bacd052513774408f0a831e1a7b75ff77504a332ec33db57",
+          "audio_sha256": "d71b369b9364e2a9fed28a63f54c05740173b3e2d3e1b71fe90614dbc86951f5",
+          "video_frames": 120,
+          "audio_stereo_frames": 96128
+        },
+        "video_difference": null,
+        "audio_difference": null,
+        "passed": true
+      },
+      "baseline_equal": {
+        "video_sha256": true,
+        "audio_sha256": true,
+        "audio_stereo_frames": true
+      }
+    },
+    "enabled-state-stage3": {
+      "schema_version": 1,
+      "passed": true,
+      "loaded": true,
+      "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+      "style": "sh1",
+      "donor_kind": "valid",
+      "donor_location": "system",
+      "input": "stage3fire",
+      "frames": 6500,
+      "messages": [
+        "SH2: SH1 explosions enabled for all exploding objects."
+      ],
+      "option_queried": true,
+      "auto_save": false,
+      "thread_mode": "disabled",
+      "reset_before_toggle": false,
+      "scope": "One frontend content load, optional internal restarts via GET_VARIABLE_UPDATE, option/donor result, stream hashes and same-mode save/load. No pose or native-timing equivalence is inferred.",
+      "rom_sha1": "80f576af01d6413c0b92073e2f947b0431f12a74",
+      "donor_size": 4063232,
+      "donor_sha1": "e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72",
+      "expected_active": true,
+      "option_query_count": 1,
+      "thread_mode_option_queried": true,
+      "auto_save_option_queried": true,
+      "stream": {
+        "video_sha256": "73e45599343844ffdaba8ff4f7d155ca9b71247a0a593afe55d0e7ac2b771ef6",
+        "audio_sha256": "468e6be38ea05ea576ef7dd0d91a48934d9ac48d68ea1ab9a6cf12e200a3cdbe",
+        "video_frames": 6499,
+        "audio_stereo_frames": 5207504
+      },
+      "serialize_size": 9219460,
+      "mod_state_prefix": true,
+      "unserialize_return": true,
+      "state": {
+        "frames": 120,
+        "first": {
+          "video_sha256": "0787257145ebe119740984a097939a08caba2b0eae0e340201c0caaf84cc7aa7",
+          "audio_sha256": "05bc880d0444af2d526df9597ac2795987fe2c77a5c593e67c8b15bc1bc9f077",
+          "video_frames": 120,
+          "audio_stereo_frames": 96114
+        },
+        "replay": {
+          "video_sha256": "0787257145ebe119740984a097939a08caba2b0eae0e340201c0caaf84cc7aa7",
+          "audio_sha256": "05bc880d0444af2d526df9597ac2795987fe2c77a5c593e67c8b15bc1bc9f077",
+          "video_frames": 120,
+          "audio_stereo_frames": 96114
+        },
+        "video_difference": null,
+        "audio_difference": null,
+        "passed": true
+      }
+    },
+    "enabled-state-stage4": {
+      "schema_version": 1,
+      "passed": true,
+      "loaded": true,
+      "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+      "style": "sh1",
+      "donor_kind": "valid",
+      "donor_location": "system",
+      "input": "stage4fire",
+      "frames": 3750,
+      "messages": [
+        "SH2: SH1 explosions enabled for all exploding objects."
+      ],
+      "option_queried": true,
+      "auto_save": false,
+      "thread_mode": "disabled",
+      "reset_before_toggle": false,
+      "scope": "One frontend content load, optional internal restarts via GET_VARIABLE_UPDATE, option/donor result, stream hashes and same-mode save/load. No pose or native-timing equivalence is inferred.",
+      "rom_sha1": "80f576af01d6413c0b92073e2f947b0431f12a74",
+      "donor_size": 4063232,
+      "donor_sha1": "e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72",
+      "expected_active": true,
+      "option_query_count": 1,
+      "thread_mode_option_queried": true,
+      "auto_save_option_queried": true,
+      "stream": {
+        "video_sha256": "3d9ba24249860b21b4f06ac1f3316302bace2d4a6011370ebae95e6cb9656c4e",
+        "audio_sha256": "438933e8d13c6aeb3ef9821b3f7ec9563596b0bd9272dfe837b2a99d74c44d7d",
+        "video_frames": 3749,
+        "audio_stereo_frames": 3004662
+      },
+      "serialize_size": 9219460,
+      "mod_state_prefix": true,
+      "unserialize_return": true,
+      "state": {
+        "frames": 120,
+        "first": {
+          "video_sha256": "ac31dfc3c3d493e07903519906d13b750fcf2450ed7bd99faa0a443aea23eb42",
+          "audio_sha256": "a80c5a0f5c24d3e7397e3bef158e13b57b517ec6630c94dedf651843520332a1",
+          "video_frames": 120,
+          "audio_stereo_frames": 96127
+        },
+        "replay": {
+          "video_sha256": "ac31dfc3c3d493e07903519906d13b750fcf2450ed7bd99faa0a443aea23eb42",
+          "audio_sha256": "a80c5a0f5c24d3e7397e3bef158e13b57b517ec6630c94dedf651843520332a1",
+          "video_frames": 120,
+          "audio_stereo_frames": 96127
+        },
+        "video_difference": null,
+        "audio_difference": null,
+        "passed": true
+      }
+    },
+    "missing-toggle": {
+      "schema_version": 1,
+      "passed": true,
+      "loaded": true,
+      "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+      "style": "default",
+      "donor_kind": "missing",
+      "donor_location": "system",
+      "input": "attract",
+      "frames": 1200,
+      "messages": [
+        "SH2: original explosions retained. Put jp_jp_space_harrier.smp beside SH2 or in the system folder, then restart content.",
+        "SH2: original explosions restored. Game restarted."
+      ],
+      "option_queried": true,
+      "auto_save": false,
+      "thread_mode": "enabled",
+      "reset_before_toggle": false,
+      "scope": "One frontend content load, optional internal restarts via GET_VARIABLE_UPDATE, option/donor result, stream hashes and same-mode save/load. No pose or native-timing equivalence is inferred.",
+      "rom_sha1": "80f576af01d6413c0b92073e2f947b0431f12a74",
+      "expected_active": false,
+      "option_query_count": 8,
+      "thread_mode_option_queried": true,
+      "auto_save_option_queried": true,
+      "serialize_size_at_load": 9219460,
+      "runtime_toggle": {
+        "modes": [
+          "original",
+          "sh1",
+          "original"
+        ],
+        "frontend_load_calls": 1,
+        "frontend_unload_calls_during_test": 0,
+        "state_buffer_allocated_at_load": true,
+        "phases": [
+          {
+            "style": "original",
+            "expected_active": false,
+            "mod_state_tag": false,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "dbab4da49f5c38d574b3080422f934ae768d419c92d399133a51210247842ecb",
+              "audio_sha256": "38ff610c923a412ef065df4d4affd69ca918177b56f4ab0acead2072f412f37b",
+              "video_frames": 1199,
+              "audio_stereo_frames": 962032
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [],
+            "option_queries": 0,
+            "native_state_files": {},
+            "unchanged_update": {
+              "frames": 120,
+              "requested_style": "original",
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": [],
+              "normal": {
+                "video_sha256": "b47abd99170169fd051abc8f10bc87d464515a8074c18cdadb7b66ead784bcb3",
+                "audio_sha256": "6eeb95f04705ce399f34f9fc0ce1d2ce8f8cd374eecb95d737d987ec4d643089",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "notified": {
+                "video_sha256": "b47abd99170169fd051abc8f10bc87d464515a8074c18cdadb7b66ead784bcb3",
+                "audio_sha256": "6eeb95f04705ce399f34f9fc0ce1d2ce8f8cd374eecb95d737d987ec4d643089",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "passed": true
+            }
+          },
+          {
+            "style": "sh1",
+            "expected_active": false,
+            "mod_state_tag": false,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "dbab4da49f5c38d574b3080422f934ae768d419c92d399133a51210247842ecb",
+              "audio_sha256": "38ff610c923a412ef065df4d4affd69ca918177b56f4ab0acead2072f412f37b",
+              "video_frames": 1199,
+              "audio_stereo_frames": 962032
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [
+              "SH2: original explosions retained. Put jp_jp_space_harrier.smp beside SH2 or in the system folder, then restart content."
+            ],
+            "option_queries": 2,
+            "native_state_files": {},
+            "fresh_start_prefix_frames": 600,
+            "fresh_start_prefix_matches": true,
+            "same_mode_fresh_stream": {
+              "video_difference": null,
+              "audio_difference": null
+            },
+            "unchanged_update": {
+              "frames": 120,
+              "requested_style": "sh1",
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": [],
+              "normal": {
+                "video_sha256": "b47abd99170169fd051abc8f10bc87d464515a8074c18cdadb7b66ead784bcb3",
+                "audio_sha256": "6eeb95f04705ce399f34f9fc0ce1d2ce8f8cd374eecb95d737d987ec4d643089",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "notified": {
+                "video_sha256": "b47abd99170169fd051abc8f10bc87d464515a8074c18cdadb7b66ead784bcb3",
+                "audio_sha256": "6eeb95f04705ce399f34f9fc0ce1d2ce8f8cd374eecb95d737d987ec4d643089",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "passed": true
+            }
+          },
+          {
+            "style": "original",
+            "expected_active": false,
+            "mod_state_tag": false,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "dbab4da49f5c38d574b3080422f934ae768d419c92d399133a51210247842ecb",
+              "audio_sha256": "38ff610c923a412ef065df4d4affd69ca918177b56f4ab0acead2072f412f37b",
+              "video_frames": 1199,
+              "audio_stereo_frames": 962032
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [
+              "SH2: original explosions restored. Game restarted."
+            ],
+            "option_queries": 2,
+            "native_state_files": {},
+            "original_state_envelope": {
+              "trailing_zero_bytes": 16,
+              "padding_is_zero": true,
+              "postload_changed_bytes": 9,
+              "postload_first_changed_offsets": [
+                9218409,
+                9218442,
+                9218443,
+                9218444,
+                9218445,
+                9218446,
+                9218447,
+                9218448
+              ],
+              "legacy_original_accepted": true,
+              "legacy_postload_matches_padded": true,
+              "future_frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "padded_future": {
+                "video_sha256": "b47abd99170169fd051abc8f10bc87d464515a8074c18cdadb7b66ead784bcb3",
+                "audio_sha256": "6eeb95f04705ce399f34f9fc0ce1d2ce8f8cd374eecb95d737d987ec4d643089",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "legacy_future": {
+                "video_sha256": "b47abd99170169fd051abc8f10bc87d464515a8074c18cdadb7b66ead784bcb3",
+                "audio_sha256": "6eeb95f04705ce399f34f9fc0ce1d2ce8f8cd374eecb95d737d987ec4d643089",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "passed": true
+            },
+            "fresh_start_prefix_frames": 600,
+            "fresh_start_prefix_matches": true,
+            "same_mode_fresh_stream": {
+              "video_difference": null,
+              "audio_difference": null
+            },
+            "unchanged_update": {
+              "frames": 120,
+              "requested_style": "original",
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": [],
+              "normal": {
+                "video_sha256": "0aa65ad41d07ef2b04dabcee95e34a675ad64d0b139dae98ec184b4c109de36e",
+                "audio_sha256": "46a39ce563f58b7d9e72a46112321330e16106e1c411b310abf22707cb4470e6",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "notified": {
+                "video_sha256": "0aa65ad41d07ef2b04dabcee95e34a675ad64d0b139dae98ec184b4c109de36e",
+                "audio_sha256": "46a39ce563f58b7d9e72a46112321330e16106e1c411b310abf22707cb4470e6",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "passed": true
+            }
+          }
+        ],
+        "cached_state_capacity": 9219460,
+        "guard_checks_passed": 52,
+        "state_size_constant": true
+      },
+      "option_update_notifications": 5
+    },
+    "sh1-ignore-toggle": {
+      "schema_version": 1,
+      "passed": true,
+      "loaded": true,
+      "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+      "style": "default",
+      "donor_kind": "missing",
+      "donor_location": "system",
+      "input": "scripted",
+      "frames": 2400,
+      "messages": [],
+      "option_queried": true,
+      "auto_save": false,
+      "thread_mode": "disabled",
+      "reset_before_toggle": false,
+      "scope": "One frontend content load, optional internal restarts via GET_VARIABLE_UPDATE, option/donor result, stream hashes and same-mode save/load. No pose or native-timing equivalence is inferred.",
+      "rom_sha1": "e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72",
+      "expected_active": false,
+      "option_query_count": 3,
+      "thread_mode_option_queried": true,
+      "auto_save_option_queried": true,
+      "serialize_size_at_load": 9219444,
+      "runtime_toggle": {
+        "modes": [
+          "original",
+          "sh1",
+          "original"
+        ],
+        "frontend_load_calls": 1,
+        "frontend_unload_calls_during_test": 0,
+        "state_buffer_allocated_at_load": true,
+        "phases": [
+          {
+            "frames": 120,
+            "requested_style": "sh1",
+            "video_difference": null,
+            "audio_difference": null,
+            "new_messages": [],
+            "normal": {
+              "video_sha256": "11d79cf435fee7430bdf3732955b5ccc925ca59da551cadfba06a53daf806e2b",
+              "audio_sha256": "e6571d17ba814ccf4bf2d9c1bf6a6e56a47c1c124d7b154074aba7d0d8e5b147",
+              "video_frames": 120,
+              "audio_stereo_frames": 96128
+            },
+            "notified": {
+              "video_sha256": "11d79cf435fee7430bdf3732955b5ccc925ca59da551cadfba06a53daf806e2b",
+              "audio_sha256": "e6571d17ba814ccf4bf2d9c1bf6a6e56a47c1c124d7b154074aba7d0d8e5b147",
+              "video_frames": 120,
+              "audio_stereo_frames": 96128
+            },
+            "passed": true
+          },
+          {
+            "frames": 120,
+            "requested_style": "original",
+            "video_difference": null,
+            "audio_difference": null,
+            "new_messages": [],
+            "normal": {
+              "video_sha256": "5cf61b447232a6212c9be98cfa38f5b5f52e96230b3c6194e141d6438bae23a3",
+              "audio_sha256": "f7d70077abf7d6ab32b3f6e0179f5dc056d9d787f16ff0cf3a5a3a4e7b9e4636",
+              "video_frames": 120,
+              "audio_stereo_frames": 96127
+            },
+            "notified": {
+              "video_sha256": "5cf61b447232a6212c9be98cfa38f5b5f52e96230b3c6194e141d6438bae23a3",
+              "audio_sha256": "f7d70077abf7d6ab32b3f6e0179f5dc056d9d787f16ff0cf3a5a3a4e7b9e4636",
+              "video_frames": 120,
+              "audio_stereo_frames": 96127
+            },
+            "passed": true
+          }
+        ],
+        "scope": "SH1 ignores this SH2-only option and must continue without restarting.",
+        "initial_stream": {
+          "video_sha256": "8b350b405082d1d1c1d3391101c00d0bc63f0bfd007e6dd7c0181d0567e2515e",
+          "audio_sha256": "f4dad3b0ee2e081a360ab2a300ac10a5ee21b65637d002b644d37113f6802f81",
+          "video_frames": 2399,
+          "audio_stereo_frames": 1923265
+        },
+        "cached_state_capacity": 9219444,
+        "guard_checks_passed": 12
+      },
+      "option_update_notifications": 2
+    },
+    "sh1-unchanged": {
+      "schema_version": 1,
+      "passed": true,
+      "loaded": true,
+      "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+      "style": "sh1",
+      "donor_kind": "missing",
+      "donor_location": "system",
+      "input": "scripted",
+      "frames": 2400,
+      "messages": [],
+      "option_queried": true,
+      "auto_save": false,
+      "thread_mode": "disabled",
+      "reset_before_toggle": false,
+      "scope": "One frontend content load, optional internal restarts via GET_VARIABLE_UPDATE, option/donor result, stream hashes and same-mode save/load. No pose or native-timing equivalence is inferred.",
+      "rom_sha1": "e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72",
+      "expected_active": false,
+      "option_query_count": 1,
+      "thread_mode_option_queried": true,
+      "auto_save_option_queried": true,
+      "stream": {
+        "video_sha256": "8b350b405082d1d1c1d3391101c00d0bc63f0bfd007e6dd7c0181d0567e2515e",
+        "audio_sha256": "f4dad3b0ee2e081a360ab2a300ac10a5ee21b65637d002b644d37113f6802f81",
+        "video_frames": 2399,
+        "audio_stereo_frames": 1923265
+      },
+      "serialize_size": 9219444,
+      "mod_state_prefix": false,
+      "unserialize_return": true,
+      "state": {
+        "frames": 120,
+        "first": {
+          "video_sha256": "11d79cf435fee7430bdf3732955b5ccc925ca59da551cadfba06a53daf806e2b",
+          "audio_sha256": "e6571d17ba814ccf4bf2d9c1bf6a6e56a47c1c124d7b154074aba7d0d8e5b147",
+          "video_frames": 120,
+          "audio_stereo_frames": 96128
+        },
+        "replay": {
+          "video_sha256": "11d79cf435fee7430bdf3732955b5ccc925ca59da551cadfba06a53daf806e2b",
+          "audio_sha256": "e6571d17ba814ccf4bf2d9c1bf6a6e56a47c1c124d7b154074aba7d0d8e5b147",
+          "video_frames": 120,
+          "audio_stereo_frames": 96128
+        },
+        "video_difference": null,
+        "audio_difference": null,
+        "passed": true
+      },
+      "baseline_equal": {
+        "video_sha256": true,
+        "audio_sha256": true,
+        "audio_stereo_frames": true
+      }
+    },
+    "threaded-auto-toggle": {
+      "schema_version": 1,
+      "passed": true,
+      "loaded": true,
+      "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+      "style": "default",
+      "donor_kind": "valid",
+      "donor_location": "system",
+      "input": "reference",
+      "frames": 3400,
+      "messages": [
+        "SH2: SH1 explosions enabled for all exploding objects.",
+        "SH2: original explosions restored. Game restarted.",
+        "SH2: SH1 explosions enabled for all exploding objects."
+      ],
+      "option_queried": true,
+      "auto_save": true,
+      "thread_mode": "enabled",
+      "reset_before_toggle": true,
+      "scope": "One frontend content load, optional internal restarts via GET_VARIABLE_UPDATE, option/donor result, stream hashes and same-mode save/load. No pose or native-timing equivalence is inferred.",
+      "rom_sha1": "80f576af01d6413c0b92073e2f947b0431f12a74",
+      "donor_size": 4063232,
+      "donor_sha1": "e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72",
+      "expected_active": false,
+      "clean_startup_reference": {
+        "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+        "thread_mode": "enabled",
+        "auto_save": false,
+        "stream": {
+          "video_sha256": "2323d8f512590417ed62796297a2810302edfecaf0015269b8d7d79e7768d340",
+          "audio_sha256": "496bd3c1fb2307d938816ce27c77af1025daf3dc4b7d58584e08dad49c913417",
+          "video_frames": 3399,
+          "audio_stereo_frames": 2724300
+        }
+      },
+      "option_query_count": 11,
+      "thread_mode_option_queried": true,
+      "auto_save_option_queried": true,
+      "serialize_size_at_load": 9219460,
+      "runtime_toggle": {
+        "modes": [
+          "original",
+          "sh1",
+          "original",
+          "sh1"
+        ],
+        "frontend_load_calls": 1,
+        "frontend_unload_calls_during_test": 0,
+        "state_buffer_allocated_at_load": true,
+        "phases": [
+          {
+            "style": "original",
+            "expected_active": false,
+            "mod_state_tag": false,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "7406f98d3701f9d9aa4f8ad10569ba5f809cbae242495b425c3f183d7b663f8b",
+              "audio_sha256": "496bd3c1fb2307d938816ce27c77af1025daf3dc4b7d58584e08dad49c913417",
+              "video_frames": 3399,
+              "audio_stereo_frames": 2724300
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [],
+            "option_queries": 0,
+            "native_state_files": {},
+            "initial_autoload_ui_excluded_from_fresh_reference": true,
+            "unchanged_update": {
+              "frames": 120,
+              "requested_style": "original",
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": [],
+              "normal": {
+                "video_sha256": "073b0118a78bf996bacd052513774408f0a831e1a7b75ff77504a332ec33db57",
+                "audio_sha256": "d71b369b9364e2a9fed28a63f54c05740173b3e2d3e1b71fe90614dbc86951f5",
+                "video_frames": 120,
+                "audio_stereo_frames": 96128
+              },
+              "notified": {
+                "video_sha256": "073b0118a78bf996bacd052513774408f0a831e1a7b75ff77504a332ec33db57",
+                "audio_sha256": "d71b369b9364e2a9fed28a63f54c05740173b3e2d3e1b71fe90614dbc86951f5",
+                "video_frames": 120,
+                "audio_stereo_frames": 96128
+              },
+              "passed": true
+            }
+          },
+          {
+            "style": "sh1",
+            "expected_active": true,
+            "mod_state_tag": true,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "5873bebfd8730e7476a483a89ad19ceb5b345d94788ebdcbe05e7071c85dce0b",
+              "audio_sha256": "de443b0e7fe89fca1bcfe6f82f4870238d05828cb684606ebe413b100f2a7f60",
+              "video_frames": 3399,
+              "audio_stereo_frames": 2724300
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [
+              "SH2: SH1 explosions enabled for all exploding objects."
+            ],
+            "option_queries": 2,
+            "native_state_files": {
+              "mame/states/megadrij/auto.sta": {
+                "bytes": 222526,
+                "sha256": "3a3a6e181912545d5a0ddc48325afb89e68692dc154e186f4c8d73111d357dbf"
+              }
+            },
+            "fresh_start_prefix_frames": 600,
+            "fresh_start_prefix_matches": true,
+            "foreign_state_rejected": true,
+            "state_unchanged_after_rejection": true,
+            "unchanged_update": {
+              "frames": 120,
+              "requested_style": "sh1",
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": [],
+              "normal": {
+                "video_sha256": "96ae50fec0f1f40fda8926e7901e5861249bccc22b66c8cb5007e0d9b6990e1d",
+                "audio_sha256": "dd0a1f098837a7abf8f2e4b2504a4ce551539e7cebf43ea828e5f1c4973b41cf",
+                "video_frames": 120,
+                "audio_stereo_frames": 96128
+              },
+              "notified": {
+                "video_sha256": "96ae50fec0f1f40fda8926e7901e5861249bccc22b66c8cb5007e0d9b6990e1d",
+                "audio_sha256": "dd0a1f098837a7abf8f2e4b2504a4ce551539e7cebf43ea828e5f1c4973b41cf",
+                "video_frames": 120,
+                "audio_stereo_frames": 96128
+              },
+              "passed": true
+            }
+          },
+          {
+            "style": "original",
+            "expected_active": false,
+            "mod_state_tag": false,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "2323d8f512590417ed62796297a2810302edfecaf0015269b8d7d79e7768d340",
+              "audio_sha256": "496bd3c1fb2307d938816ce27c77af1025daf3dc4b7d58584e08dad49c913417",
+              "video_frames": 3399,
+              "audio_stereo_frames": 2724300
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [
+              "SH2: original explosions restored. Game restarted."
+            ],
+            "option_queries": 2,
+            "native_state_files": {
+              "mame/states/megadrij/auto.sta": {
+                "bytes": 222526,
+                "sha256": "3a3a6e181912545d5a0ddc48325afb89e68692dc154e186f4c8d73111d357dbf"
+              },
+              "mame/states/megadrij/sh2-sh1-explosions-v3/auto.sta": {
+                "bytes": 224804,
+                "sha256": "90aec934225ef6191a56e7d706edca2f1c2c4e39f70bea0ad47c38cac14f8a46"
+              }
+            },
+            "original_state_envelope": {
+              "trailing_zero_bytes": 16,
+              "padding_is_zero": true,
+              "postload_changed_bytes": 10,
+              "postload_first_changed_offsets": [
+                9218409,
+                9218442,
+                9218443,
+                9218444,
+                9218445,
+                9218446,
+                9218447,
+                9218448
+              ],
+              "legacy_original_accepted": true,
+              "legacy_postload_matches_padded": true,
+              "future_frames": 120,
+              "video_difference": null,
+              "audio_difference": null,
+              "padded_future": {
+                "video_sha256": "073b0118a78bf996bacd052513774408f0a831e1a7b75ff77504a332ec33db57",
+                "audio_sha256": "d71b369b9364e2a9fed28a63f54c05740173b3e2d3e1b71fe90614dbc86951f5",
+                "video_frames": 120,
+                "audio_stereo_frames": 96128
+              },
+              "legacy_future": {
+                "video_sha256": "073b0118a78bf996bacd052513774408f0a831e1a7b75ff77504a332ec33db57",
+                "audio_sha256": "d71b369b9364e2a9fed28a63f54c05740173b3e2d3e1b71fe90614dbc86951f5",
+                "video_frames": 120,
+                "audio_stereo_frames": 96128
+              },
+              "passed": true
+            },
+            "fresh_start_prefix_frames": 600,
+            "fresh_start_prefix_matches": true,
+            "clean_original_stream_matches": {
+              "video_sha256": true,
+              "audio_sha256": true,
+              "audio_stereo_frames": true
+            },
+            "foreign_state_rejected": true,
+            "state_unchanged_after_rejection": true,
+            "unchanged_update": {
+              "frames": 120,
+              "requested_style": "original",
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": [],
+              "normal": {
+                "video_sha256": "6e0cdc1705fdad382ab3661035037cf201ca3626ebb19a781aadee119a8f0795",
+                "audio_sha256": "caadc337b0d6848b3e9abfdccdba9c8562cd1ae31e2b68f22dac138e6bcba093",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "notified": {
+                "video_sha256": "6e0cdc1705fdad382ab3661035037cf201ca3626ebb19a781aadee119a8f0795",
+                "audio_sha256": "caadc337b0d6848b3e9abfdccdba9c8562cd1ae31e2b68f22dac138e6bcba093",
+                "video_frames": 120,
+                "audio_stereo_frames": 96127
+              },
+              "passed": true
+            }
+          },
+          {
+            "style": "sh1",
+            "expected_active": true,
+            "mod_state_tag": true,
+            "serialize_size": 9219460,
+            "stream": {
+              "video_sha256": "5873bebfd8730e7476a483a89ad19ceb5b345d94788ebdcbe05e7071c85dce0b",
+              "audio_sha256": "de443b0e7fe89fca1bcfe6f82f4870238d05828cb684606ebe413b100f2a7f60",
+              "video_frames": 3399,
+              "audio_stereo_frames": 2724300
+            },
+            "initial_state_buffer_reused": true,
+            "messages": [
+              "SH2: SH1 explosions enabled for all exploding objects."
+            ],
+            "option_queries": 2,
+            "native_state_files": {
+              "mame/states/megadrij/auto.sta": {
+                "bytes": 217360,
+                "sha256": "f2de833e46f91fdf23c395063276881f6823f6f12e2cdaca108edd66655973e2"
+              },
+              "mame/states/megadrij/sh2-sh1-explosions-v3/auto.sta": {
+                "bytes": 224804,
+                "sha256": "90aec934225ef6191a56e7d706edca2f1c2c4e39f70bea0ad47c38cac14f8a46"
+              }
+            },
+            "fresh_start_prefix_frames": 600,
+            "fresh_start_prefix_matches": true,
+            "same_mode_fresh_stream": {
+              "video_difference": null,
+              "audio_difference": null
+            },
+            "foreign_state_rejected": true,
+            "state_unchanged_after_rejection": true,
+            "unchanged_update": {
+              "frames": 120,
+              "requested_style": "sh1",
+              "video_difference": null,
+              "audio_difference": null,
+              "new_messages": [],
+              "normal": {
+                "video_sha256": "96ae50fec0f1f40fda8926e7901e5861249bccc22b66c8cb5007e0d9b6990e1d",
+                "audio_sha256": "dd0a1f098837a7abf8f2e4b2504a4ce551539e7cebf43ea828e5f1c4973b41cf",
+                "video_frames": 120,
+                "audio_stereo_frames": 96128
+              },
+              "notified": {
+                "video_sha256": "96ae50fec0f1f40fda8926e7901e5861249bccc22b66c8cb5007e0d9b6990e1d",
+                "audio_sha256": "dd0a1f098837a7abf8f2e4b2504a4ce551539e7cebf43ea828e5f1c4973b41cf",
+                "video_frames": 120,
+                "audio_stereo_frames": 96128
+              },
+              "passed": true
+            }
+          }
+        ],
+        "cached_state_capacity": 9219460,
+        "autosave_checks": {
+          "original_file_exists_before_return": true,
+          "separate_mod_file_exists_before_return": true,
+          "original_file_unchanged_while_mod_runs": true,
+          "mod_file_unchanged_while_original_runs": true,
+          "exactly_two_state_paths": true
+        },
+        "guard_checks_passed": 77,
+        "state_size_constant": true
+      },
+      "option_update_notifications": 7
+    }
+  },
+  "donor_uploads": {
+    "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+    "all_44_source_payloads_match": true,
+    "cache_bytes": 8576,
+    "verified_uploads": 29,
+    "events": [
+      {
+        "event": 2,
+        "frame": 3057,
+        "clock": 873,
+        "newphase": 1,
+        "quotient": 218,
+        "activations": 1,
+        "cachewrites": 8576
+      },
+      {
+        "event": 4,
+        "frame": 3058,
+        "clock": 874,
+        "newphase": 1,
+        "quotient": 218,
+        "activations": 1,
+        "cachewrites": 12864
+      },
+      {
+        "event": 5,
+        "frame": 3062,
+        "clock": 876,
+        "newphase": 2,
+        "quotient": 219,
+        "activations": 1,
+        "cachewrites": 17152
+      },
+      {
+        "event": 6,
+        "frame": 3071,
+        "clock": 880,
+        "newphase": 3,
+        "quotient": 220,
+        "activations": 1,
+        "cachewrites": 21440
+      },
+      {
+        "event": 7,
+        "frame": 3078,
+        "clock": 884,
+        "newphase": 4,
+        "quotient": 221,
+        "activations": 1,
+        "cachewrites": 25728
+      },
+      {
+        "event": 8,
+        "frame": 3087,
+        "clock": 888,
+        "newphase": 5,
+        "quotient": 222,
+        "activations": 1,
+        "cachewrites": 30016
+      },
+      {
+        "event": 11,
+        "frame": 3092,
+        "clock": 891,
+        "newphase": 1,
+        "quotient": 222,
+        "activations": 2,
+        "cachewrites": 34304
+      },
+      {
+        "event": 12,
+        "frame": 3094,
+        "clock": 892,
+        "newphase": 2,
+        "quotient": 223,
+        "activations": 2,
+        "cachewrites": 38592
+      },
+      {
+        "event": 13,
+        "frame": 3102,
+        "clock": 896,
+        "newphase": 3,
+        "quotient": 224,
+        "activations": 2,
+        "cachewrites": 42880
+      },
+      {
+        "event": 14,
+        "frame": 3110,
+        "clock": 900,
+        "newphase": 4,
+        "quotient": 225,
+        "activations": 2,
+        "cachewrites": 47168
+      },
+      {
+        "event": 15,
+        "frame": 3118,
+        "clock": 904,
+        "newphase": 5,
+        "quotient": 226,
+        "activations": 2,
+        "cachewrites": 51456
+      },
+      {
+        "event": 16,
+        "frame": 3126,
+        "clock": 908,
+        "newphase": 6,
+        "quotient": 227,
+        "activations": 2,
+        "cachewrites": 55744
+      },
+      {
+        "event": 17,
+        "frame": 3134,
+        "clock": 912,
+        "newphase": 7,
+        "quotient": 228,
+        "activations": 2,
+        "cachewrites": 60032
+      },
+      {
+        "event": 18,
+        "frame": 3142,
+        "clock": 916,
+        "newphase": 8,
+        "quotient": 229,
+        "activations": 2,
+        "cachewrites": 64320
+      },
+      {
+        "event": 19,
+        "frame": 3150,
+        "clock": 920,
+        "newphase": 9,
+        "quotient": 230,
+        "activations": 2,
+        "cachewrites": 68608
+      },
+      {
+        "event": 20,
+        "frame": 3158,
+        "clock": 924,
+        "newphase": 10,
+        "quotient": 231,
+        "activations": 2,
+        "cachewrites": 72896
+      },
+      {
+        "event": 21,
+        "frame": 3166,
+        "clock": 928,
+        "newphase": 11,
+        "quotient": 232,
+        "activations": 2,
+        "cachewrites": 77184
+      },
+      {
+        "event": 23,
+        "frame": 3266,
+        "clock": 978,
+        "newphase": 1,
+        "quotient": 244,
+        "activations": 3,
+        "cachewrites": 81472
+      },
+      {
+        "event": 25,
+        "frame": 3268,
+        "clock": 979,
+        "newphase": 1,
+        "quotient": 244,
+        "activations": 3,
+        "cachewrites": 85760
+      },
+      {
+        "event": 26,
+        "frame": 3270,
+        "clock": 980,
+        "newphase": 2,
+        "quotient": 245,
+        "activations": 3,
+        "cachewrites": 90048
+      },
+      {
+        "event": 27,
+        "frame": 3278,
+        "clock": 984,
+        "newphase": 3,
+        "quotient": 246,
+        "activations": 3,
+        "cachewrites": 94336
+      },
+      {
+        "event": 28,
+        "frame": 3286,
+        "clock": 988,
+        "newphase": 4,
+        "quotient": 247,
+        "activations": 3,
+        "cachewrites": 98624
+      },
+      {
+        "event": 29,
+        "frame": 3294,
+        "clock": 992,
+        "newphase": 5,
+        "quotient": 248,
+        "activations": 3,
+        "cachewrites": 102912
+      },
+      {
+        "event": 30,
+        "frame": 3302,
+        "clock": 996,
+        "newphase": 6,
+        "quotient": 249,
+        "activations": 3,
+        "cachewrites": 107200
+      },
+      {
+        "event": 31,
+        "frame": 3310,
+        "clock": 1000,
+        "newphase": 7,
+        "quotient": 250,
+        "activations": 3,
+        "cachewrites": 111488
+      },
+      {
+        "event": 32,
+        "frame": 3318,
+        "clock": 1004,
+        "newphase": 8,
+        "quotient": 251,
+        "activations": 3,
+        "cachewrites": 115776
+      },
+      {
+        "event": 33,
+        "frame": 3326,
+        "clock": 1008,
+        "newphase": 9,
+        "quotient": 252,
+        "activations": 3,
+        "cachewrites": 120064
+      },
+      {
+        "event": 34,
+        "frame": 3334,
+        "clock": 1012,
+        "newphase": 10,
+        "quotient": 253,
+        "activations": 3,
+        "cachewrites": 124352
+      },
+      {
+        "event": 35,
+        "frame": 3342,
+        "clock": 1016,
+        "newphase": 11,
+        "quotient": 254,
+        "activations": 3,
+        "cachewrites": 128640
+      }
+    ]
+  },
+  "controlled_boss": {
+    "scope": "Synthetic native boss controller, fixed position and boss RNG; not a naturally defeated boss.",
+    "core_sha256": "0f48d7229856379a733c9c6e5445c059585fed56dbb3c01a051fe1cb5f9cbbbd",
+    "runs": {
+      "original": {
+        "births": 21,
+        "incarnations": 21,
+        "each_particle_native_age": 30,
+        "controller_final_age": 41,
+        "counter_zero_frame": 3149,
+        "counter_stable_until": 3398,
+        "activations": 0,
+        "fallbacks": 0,
+        "last_particle_frame": 3208,
+        "xyz": [
+          [
+            85,
+            -427,
+            4096
+          ]
+        ]
+      },
+      "enabled": {
+        "births": 21,
+        "incarnations": 21,
+        "each_particle_native_age": 30,
+        "controller_final_age": 41,
+        "counter_zero_frame": 3171,
+        "counter_stable_until": 3398,
+        "activations": 22,
+        "fallbacks": 0,
+        "last_particle_frame": 3237,
+        "xyz": [
+          [
+            85,
+            -427,
+            4096
+          ]
+        ]
+      }
+    },
+    "counter_completion_delay_frames": 22
+  },
+  "tests": {
+    "suite_run": 108,
+    "suite_passed": 96,
+    "optional_native_reference_skipped": 12,
+    "adapter_asan_ubsan_passed": 8
+  },
+  "state_compatibility": {
+    "modified_format": 3,
+    "rejected_modified_release_formats": [
+      1,
+      2
+    ],
+    "original_mode_legacy_states_supported": true
+  },
+  "limits": [
+    "Not every enemy or boss has been defeated in a natural playthrough.",
+    "Additional emulated CPU execution delays the controlled boss counter completion by 22 video frames.",
+    "Shared animation restarts and native particle removal can truncate the eleven-pose sequence.",
+    "This optional ROM modification is disabled by default; unchanged-mode stream comparisons cover only the recorded inputs."
+  ]
+}

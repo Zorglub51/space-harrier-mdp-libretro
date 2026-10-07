@@ -28,7 +28,7 @@ from libretro_state_regression import (
 OPTION = "mame_sh2_enemy_explosions"
 DONOR_NAME = "jp_jp_space_harrier.smp"
 DONOR_SHA1 = "e87e9338d7842db68a7a1e77bd5fc5b2bc8b2b72"
-MOD_PREFIX = b"SH2EXPL0\x02\x00\x00\x00\x00\x00\x00\x00"
+MOD_PREFIX = b"SH2EXPL0\x03\x00\x00\x00\x00\x00\x00\x00"
 
 
 class Message(C.Structure):
@@ -87,9 +87,11 @@ class ExplosionFrontend(StateFrontend):
             return Frontend.input_state(self, port, device, index, control)
         if control == 3:
             return int(any(t <= self.frame < t + 8 for t in (700, 1300, 1900, 2500)))
+        if self.input_mode == "stage3fire" and control == 7 and self.frame < 2600:
+            return int(any(t <= self.frame < t + 3 for t in (2020, 2180)))
         if self.input_mode in ("stage4", "stage4fire") and control == 7 and self.frame < 2600:
             return int(any(t <= self.frame < t + 3 for t in (2020, 2180, 2360)))
-        if self.input_mode in ("reference", "stage4fire") and self.frame >= 2600:
+        if self.input_mode in ("reference", "stage3fire", "stage4fire") and self.frame >= 2600:
             if control == 0:
                 return 1
             return int(control == (4, 7, 5, 6)[((self.frame - 2600) // 90) % 4])
@@ -355,7 +357,7 @@ def runtime_toggle(frontend, args, report, save_directory, startup_reference=Non
         mod_paths = set(second_switch) - original_paths
         result["autosave_checks"] = {
             "original_file_exists_before_return": len(original_paths) == 1,
-            "separate_mod_file_exists_before_return": len(mod_paths) == 1 and all("/sh2-sh1-explosions-v2/" in path for path in mod_paths),
+            "separate_mod_file_exists_before_return": len(mod_paths) == 1 and all("/sh2-sh1-explosions-v3/" in path for path in mod_paths),
             "original_file_unchanged_while_mod_runs": all(first_switch[path] == second_switch.get(path) for path in original_paths),
             "mod_file_unchanged_while_original_runs": all(second_switch[path] == third_switch.get(path) for path in mod_paths),
             "exactly_two_state_paths": len(third_switch) == 2,
@@ -529,7 +531,7 @@ def main():
     parser.add_argument("--donor", type=Path)
     parser.add_argument("--donor-kind", choices=("valid", "missing", "wrong-sha1"), default="missing")
     parser.add_argument("--donor-location", choices=("cart", "system"), default="system")
-    parser.add_argument("--input", choices=("attract", "scripted", "reference", "stage4", "stage4fire"), default="attract")
+    parser.add_argument("--input", choices=("attract", "scripted", "reference", "stage3fire", "stage4", "stage4fire"), default="attract")
     parser.add_argument("--frames", type=int, default=2400)
     parser.add_argument("--state-frames", type=int, default=120)
     parser.add_argument("--runtime-toggle", action="store_true", help="Change original/sh1/original via GET_VARIABLE_UPDATE without frontend unload/load.")

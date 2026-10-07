@@ -24,6 +24,7 @@ ROM_INFO = {
 }
 CLOCK_SITES = (0x09d8b0, 0x09ec9e, 0x09ee8c, 0x09f2d2, 0x09f2ec,
                0x165d86, 0x175f86, 0x177264, 0x178f3c, 0x18f060, 0x18f654)
+ORDINARY_SITES = (0x114d94, 0x15840e, 0x158738, 0x158a62, 0x15e4c4, 0x15e6e2, 0x16ec0c)
 PARTICLE_SITES = (0x18fc88, 0x18fe36)
 TRACKED_SITES = (0x0cba62, 0x0cbc24, 0x137c88, 0x158d9a, 0x164910,
                  0x16d53c, 0x16d8bc, 0x16deca, 0x17328c, 0x173b26,
@@ -53,16 +54,6 @@ bytes read(const char *name) {
     return bytes(std::istreambuf_iterator<char>(file), {});
 }
 int main(int argc, char **argv) {
-    if (argc == 2 && std::string(argv[1]) == "classifier") {
-        bool comma = false; std::cout << '[';
-        for (const auto &entry : markv::sh2_explosion_detail::enemy_spawns) {
-            if (comma) std::cout << ',';
-            comma = true;
-            std::cout << '[' << entry.site << ',' << entry.method << ','
-                      << entry.descriptor << ',' << entry.reaction_clear << ']';
-        }
-        std::cout << "]\n"; return 0;
-    }
     if (argc == 2 && std::string(argv[1]) == "guards") {
         bytes rom(0x400000, 0), donor(0x3e0000, 0);
         auto apply = [&](std::uint8_t *r, std::size_t n,
@@ -192,13 +183,21 @@ class PrivateExplosionPayloadTests(CompiledProbe):
             self.assertTrue(all(a[1] == b[0] for a, b in zip(ranges, ranges[1:])))
         self.assertEqual(self.output[0x39c000:0x39c020], donor[0x393aea:0x393b0a])
 
-    def test_original_sh2_explosion_art_and_descriptors_are_unchanged(self):
-        for first, end in ((0x744, 0x7b2), (0x78d88, 0x79f08), (0x86ec8, 0x877c8)):
+    def test_native_initial_descriptors_already_select_the_shared_donor_art(self):
+        for first, end in ((0x78d88, 0x79f08), (0x86ec8, 0x877c8)):
             self.assertEqual(self.output[first:end], self.base[first:end])
-        for record in range(0x744, 0x7b2, 22):
-            parts = longword(self.base, record + 12)
-            size = self.base[record + 10] * 12
-            self.assertEqual(self.output[parts:parts + size], self.base[parts:parts + size])
+        for index, lod in enumerate((0, 1, 3, 1, 3)):
+            record = 0x744 + index * 22
+            expected = bytearray(self.output[0x382000 + lod * 22:0x382000 + (lod + 1) * 22])
+            expected[11] = 3 if index < 3 else 2
+            self.assertEqual(self.output[record:record + 22], expected)
+            # A warm shared cache may hold any pose at initialization time.
+            # Its original source geometry is identical across all eleven.
+            first_parts = longword(self.output, 0x382000 + lod * 22 + 12)
+            count = self.output[0x382000 + lod * 22 + 10] * 12
+            for pose in range(1, 11):
+                parts = longword(self.output, 0x382000 + pose * 88 + lod * 22 + 12)
+                self.assertEqual(self.output[parts:parts + count], self.output[first_parts:first_parts + count])
 
     def test_native_motion_and_cleanup_run_before_visual_wrappers(self):
         # All three original handlers, including their free-list writes and
@@ -207,7 +206,7 @@ class PrivateExplosionPayloadTests(CompiledProbe):
                            (0x137f0a, 0x13811e)):
             self.assertEqual(self.output[start:end], self.base[start:end])
         for wrapper, native in ((0x380300, 0x137f0a), (0x380400, 0x137afc),
-                                (0x380500, 0x137cf0), (0x380c00, 0x137afc),
+                                (0x380500, 0x137cf0), (0x380600, 0x137f0a), (0x380c00, 0x137afc),
                                 (0x380d00, 0x137cf0)):
             with self.subTest(wrapper=f"{wrapper:06x}"):
                 # Save preserved registers and the old descriptor, then invoke
@@ -221,8 +220,9 @@ class PrivateExplosionPayloadTests(CompiledProbe):
                 target = wrapper + len(prefix) + displacement
                 self.assertEqual(self.output[target:target + 6], bytes.fromhex("4cdf040c4e75"))
 
-    def test_hostile_actor_and_boss_particle_sites_only_change_the_method(self):
-        for sites, native, wrapper in ((PARTICLE_SITES, 0x137afc, 0x380c00),
+    def test_explosion_initializers_select_wrapper_and_donor_palette(self):
+        for sites, native, wrapper in ((ORDINARY_SITES, 0x137f0a, 0x380600),
+                                       (PARTICLE_SITES, 0x137afc, 0x380c00),
                                        (TRACKED_SITES, 0x137cf0, 0x380d00)):
             for site in sites:
                 with self.subTest(site=f"{site:06x}"):
@@ -230,30 +230,29 @@ class PrivateExplosionPayloadTests(CompiledProbe):
                     self.assertEqual(self.base[site:site + 8], expected)
                     expected = bytes.fromhex("217c") + struct.pack(">I", wrapper) + bytes.fromhex("0010")
                     self.assertEqual(self.output[site:site + 8], expected)
+                    self.assertEqual(self.base[site + 0x1a:site + 0x20], bytes.fromhex("117c00010022"))
+                    self.assertEqual(self.output[site + 0x1a:site + 0x20], bytes.fromhex("117c00030022"))
 
-    def test_classifier_matches_actor_factory_signatures_and_excludes_scenery(self):
-        entries = self.run_probe("classifier")
-        self.assertEqual(len(entries), 51)
-        methods = {entry[1] for entry in entries}
-        self.assertEqual(len(methods), 50)
-        self.assertTrue({0x0dcb7e, 0x0d85c4, 0x0d6baa, 0x0e52d0, 0x14393a} <= methods)
-        self.assertTrue({0x0f14a2, 0x0f15e8, 0x174f7e, 0x190900}.isdisjoint(methods))
-        for index, (site, method, descriptor, reaction_clear) in enumerate(entries):
-            with self.subTest(site=f"{site:06x}"):
-                self.assertEqual(word(self.base, site), 0x4879)
-                self.assertEqual(longword(self.base, site + 2), method)
-                self.assertEqual(word(self.base, site + 6), 0x4879)
-                self.assertEqual(longword(self.base, site + 8), descriptor)
-                self.assertEqual(word(self.base, site + 12), 0x4eb9)
-                self.assertEqual(longword(self.base, site + 14), 0x13d6b4)
-                self.assertEqual(self.base[reaction_clear:reaction_clear + 4],
-                                 bytes.fromhex("42280023"))
-                self.assertEqual(longword(self.output, 0x380900 + index * 4), method)
+    def test_all_references_to_native_explosion_methods_are_covered(self):
+        # Discover references independently in the authenticated original. This
+        # catches a missing custom initializer, including reaction callbacks.
+        for native, sites in ((0x137f0a, ORDINARY_SITES + (0x139b94,)),
+                              (0x137afc, PARTICLE_SITES), (0x137cf0, TRACKED_SITES)):
+            references = {offset - 2 for offset in range(2, len(self.base) - 3, 2)
+                          if longword(self.base, offset) == native}
+            self.assertEqual(references, set(sites), hex(native))
+            for site in references:
+                self.assertEqual(word(self.base, site), 0x217c)
+                self.assertEqual(word(self.base, site + 6), 0x10)
 
     def test_original_rom_changes_are_confined_to_validated_guest_operands(self):
         allowed = bytearray(len(self.base))
-        hook_ranges = ([(0x139b84, 0x139b8c)] + [(site, site + 6) for site in CLOCK_SITES] +
-                       [(site + 2, site + 6) for site in PARTICLE_SITES + TRACKED_SITES])
+        hook_ranges = ([(0x139b84, 0x139b8c), (0x744, 0x7b2)] + [(site, site + 6) for site in CLOCK_SITES] +
+                       [(site + 2, site + 6) for site in ORDINARY_SITES + PARTICLE_SITES + TRACKED_SITES] +
+                       [(site + 0x1c, site + 0x1e) for site in ORDINARY_SITES + PARTICLE_SITES + TRACKED_SITES] +
+                       [(0xaf6fa, 0xaf6fe), (0xaf724, 0xaf72a), (0xaf732, 0xaf736),
+                        (0xaf796, 0xaf79a), (0x9ff20, 0x9ff22), (0x175e94, 0x175e96),
+                        (0x191bfa, 0x191c00)])
         for first, end in hook_ranges:
             allowed[first:end] = b"\1" * (end - first)
         references = 0
@@ -281,12 +280,12 @@ class PrivateExplosionPayloadTests(CompiledProbe):
         # prerequisites of the production builder up to the damaged field.
         cases = (("constructor", "sh2", 0x139b84, b"\0\0"),
                  ("tick", "sh2", 0x09d8b0, b"\0\0"),
-                 ("actor_factory_pea", "sh2", 0x0a4b48, b"\0\0"),
-                 ("actor_factory_target", "sh2", 0x0a4b56, b"\0\0\0\0"),
-                 ("actor_reaction", "sh2", 0x0a4b68, b"\0\0"),
-                 ("last_actor_factory", "sh2", 0x0a5ade, b"\0\0"),
+                 ("ordinary_custom_method", "sh2", 0x15e4c6, b"\0\0\0\0"),
+                 ("ordinary_last_method", "sh2", 0x16ec0e, b"\0\0\0\0"),
                  ("boss_particle_method", "sh2", 0x18fc8a, b"\0\0\0\0"),
                  ("tracked_death_method", "sh2", 0x1956a4, b"\0\0\0\0"),
+                 ("common_loader", "sh2", 0xaf732, b"\0\0\0\0"),
+                 ("script_cursor", "sh2", 0x191bfa, b"\0\0"),
                  ("donor_entry", "sh1", 0x1d7404, b"\0\0"),
                  ("pixel_pointer_wrap", "sh1", 0xd84, b"\xff\xff\xff\xf0"),
                  ("piece_pointer_wrap", "sh1", 0xd90, b"\xff\xff\xff\xf0"))

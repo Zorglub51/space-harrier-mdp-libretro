@@ -1822,7 +1822,7 @@
 +      CORE_NAME "_sh2_enemy_explosions",
 +      "SH2 Explosions",
 +      NULL,
-+      "Use SH1's explosion artwork and animation timing for SH2 enemies and bosses. Requires the original jp_jp_space_harrier.smp beside the SH2 ROM or in the system folder. Applies a patch in memory; the ROM file stays unchanged. Changing this option restarts SH2 from the beginning. Save states must use the same setting and patch version.",
++      "Use SH1's explosion artwork and animation timing for all exploding objects in SH2, including enemies, bosses, scenery and player-collision effects. Requires the original jp_jp_space_harrier.smp beside the SH2 ROM or in the system folder. Applies a patch in memory; the ROM file stays unchanged. Changing this option restarts SH2 from the beginning. Save states must use the same setting and patch version.",
 +      NULL,
 +      "hacks",
 +      {
@@ -1879,7 +1879,7 @@
 +		// Disk/autosave states bypass the Libretro envelope. Select the folder
 +		// per operation without changing options retained across content loads.
 +		if (sh_mdp_explosions::active)
-+			statename += PATH_SEPARATOR "sh2-sh1-explosions-v2";
++			statename += PATH_SEPARATOR "sh2-sh1-explosions-v3";
  		result = string_format("%s%s%s.sta", statename, PATH_SEPARATOR, filename);
  	}
  	return result;

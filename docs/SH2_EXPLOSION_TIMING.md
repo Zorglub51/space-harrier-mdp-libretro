@@ -315,3 +315,22 @@ cleanup events still matched. These tests enter the steady wrappers directly;
 they do not replace the separate first-use boss-initialization and progression
 checks. Their private harness and complete result are in
 `/tmp/sh-explosion-followup-20261006/isolate/NATIVE_WRAPPER_COMPARISON.json`.
+
+
+## Version 0.1.14: all native explosion paths and a resident cache
+
+The generic constructor no longer tests actor identity, collision caller or
+reaction byte. Seven direct ordinary initializers join the already wrapped
+particle and tracked-death paths. These are all 25 aligned assignments of the
+three native methods in the supported ROM. Their motion and cleanup code stays
+unchanged. Native initial descriptors and palette selection already reference
+SH1 graphics before a pending wrapper gets its first update.
+
+The shared graphics now replace the permanent native explosion allocation;
+the temporary high-end reservation is no longer used. The 44 source payloads,
+piece geometry, four-update quotient rule and palette cycle are unchanged.
+The v0.1.14 forced-position diagnostic matched all eleven poses and 29 complete
+8,576-byte uploads at the new cache address. A controlled boss sequence again
+preserved all 21 particle lifetimes and the single completion decrement, with
+a measured 22-video-frame execution delay. Full results and core identity are
+in [SH2_EXPLOSION_V014_VALIDATION.json](SH2_EXPLOSION_V014_VALIDATION.json).

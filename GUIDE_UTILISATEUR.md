@@ -84,8 +84,10 @@ Placez votre ROM originale `jp_jp_space_harrier.smp` à côté de celle de SH2,
 ou dans le répertoire **System/BIOS** de RetroArch. Dans **Menu rapide >
 Options du cœur > Emulation Hacks**, choisissez **SH1 Artwork and Timing**
 pour **SH2 Explosions**. Le changement relance automatiquement SH2 depuis
-le début lorsque vous reprenez le jeu. Le remplacement concerne les ennemis
-ordinaires et les particules d’explosion des boss.
+le début lorsque vous reprenez le jeu. Le remplacement concerne tous les objets qui explosent : ennemis, boss,
+décors et effets produits par les collisions du joueur. Il ne dépend plus
+d’une liste de familles d’ennemis. La réservation des graphismes corrige aussi
+les retours aux explosions d’origine dans le niveau 3.
 
 Le réglage par défaut est **Original SH2**. Sélectionnez-le pour relancer
 le jeu avec ses effets d’origine. Le cœur extrait les dessins et la palette
@@ -94,8 +96,8 @@ ou ne correspond pas à la version attendue, l’animation originale est conserv
 et un message vous en informe. Cette option n’affecte pas le jeu SH1.
 
 Les sauvegardes instantanées sont propres au mode choisi : le cœur refuse
-celles de l’autre mode. Les états du mode modifié créés avec la version 0.1.12
-ne sont pas compatibles avec la 0.1.13. Les sauvegardes automatiques MAME utilisent
+celles de l’autre mode. Les états du mode modifié créés avec les versions 0.1.12
+et 0.1.13 ne sont pas compatibles avec la 0.1.14. Les sauvegardes automatiques MAME utilisent
 un dossier séparé pour le mode modifié. Changer l’option commence une nouvelle
 partie sans recharger une sauvegarde automatique.
 

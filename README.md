@@ -85,7 +85,8 @@ published as an artifact. `SH_MDP_STATE_FRAMES` can extend the replay window.
 ## Scope and status
 
 An optional **SH2 Explosions** core setting imports SH1's original eleven-pose
-sequence and its cadence for SH2 enemies and boss explosion particles, using
+sequence and its cadence for all exploding SH2 objects, including scenery and
+player-collision effects, using
 your own SH1 ROM. SH2 keeps its movement and object lifetimes. The option is
 disabled by default, patches the supported SH2 ROM in memory, and automatically
 restarts the game when changed.
