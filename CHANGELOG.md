@@ -6,6 +6,46 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.16] - 2026-10-07
+
+### Experimental Mark VI rendering for SH2
+
+- Add **SH2 Rendering > Mark VI (Experimental)** under **Emulation Hacks**.
+  **Original (M2)** remains the default; SH1 keeps its native renderer.
+- Reconstruct every eligible object's sprite pieces before SH2's 40/80-entry
+  list partitions. Use a dynamically sized host list and an explicit transform
+  per piece, with no 7-bit link/zoom indices or per-line sprite/column quotas.
+- Retain the game's coordinates, fixed-point rounding, tile allocation, palette,
+  flips, mirrored assemblies, shadows and intentional visibility flags. This
+  also supports the optional SH1 explosion artwork and its relocated cache.
+- Observe construction and actual sprite uploads without an additional ROM
+  patch, guest RAM writes, CPU overclock or extra game updates. Preserve the
+  original animation cadence; 60/120 FPS interpolation is not included.
+- Track the two producer buffers separately and invalidate stale lists when the
+  game clears or replaces a buffer, including title and stage transitions.
+- Apply the option without restarting. New states store the pending/displayed
+  snapshots and support replay and switching between both rendering modes.
+  **States from earlier core versions are incompatible with the new layout.**
+
+### Validation and release packaging
+
+- Match 15,742 emitted sprite records against the compatibility-restored guest
+  constructor across stages 1/4 and controlled tests of all eight assembly
+  variants. Test 600 host entries and more than 128 independent transforms.
+- Compare 7,000-step runs at stages 1, 3 and 4: 1,668, 1,058 and 1,472 video
+  frames change. Full PCM streams and sampled work RAM/68000 registers match
+  the original-rendering runs. Frame counts measure differences, not flicker
+  percentages or complete-game coverage.
+- Verify ON1/ON2, SH1 explosions, deterministic state replay and threaded
+  Original → Mark VI → Original → Mark VI switching. Default SH2 output and
+  SH1 with the option selected match their measured previous-core baselines.
+- Pass 108 configured tests, with 12 optional native-reference skips. The
+  dynamic renderer and buffer-lifetime probes also pass address and
+  undefined-behavior sanitizers.
+- Stage every adapter header required by corresponding-source verification.
+  Fix the missing auxiliary headers that blocked the 0.1.15 source archive,
+  and recover that publication without moving its tag or changing runtime code.
+
 ## [0.1.15] - 2026-10-07
 
 ### Native Deflicker core options

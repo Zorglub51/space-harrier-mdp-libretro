@@ -74,6 +74,27 @@ needed.
 
 See [Troubleshooting](docs/TROUBLESHOOTING.md) if the core or game does not load.
 
+## Mark VI rendering for SH2
+
+In **Quick Menu > Core Options > Emulation Hacks > SH2 Rendering**, choose
+**Mark VI (Experimental)**. It reconstructs the sprite pieces before the game's
+40/80-entry quotas, then draws an extensible list without per-line limits or
+128-entry/zoom-index wrapping. **Original (M2)** remains the faithful default.
+
+Changes apply without restarting. SH1 is unaffected. Mark VI can be combined
+with native Deflicker and the SH1 explosion option. No additional ROM patch is
+required, and your ROM file stays unchanged.
+
+The original game speed and animation cadence are retained. This mode removes
+capacity-related omissions in the sprite constructor/renderer; it preserves
+intentional flashing and visibility decisions. It does not add objects to the
+game, create animation poses or provide 60/120 FPS interpolation. Rendering
+more sprites can increase work on the host computer.
+
+**Save states made with earlier core versions cannot be loaded in 0.1.16.**
+Within this version, states work in either rendering mode. Keep the same mode
+when checking identical visual replay.
+
 ## Native Deflicker options
 
 Under **Quick Menu > Core Options > Emulation Hacks**, choose **SH1 Deflicker

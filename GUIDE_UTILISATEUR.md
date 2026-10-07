@@ -78,6 +78,29 @@ manuellement.
 C’est tout : le cœur reconnaît la ROM originale et applique les corrections en
 mémoire. Il ne modifie jamais votre fichier `.smp`.
 
+## Mode Mark VI pour SH2
+
+Dans **Menu rapide > Options du cœur > Emulation Hacks > SH2 Rendering**,
+choisissez **Mark VI (Experimental)**. Le cœur reconstruit les morceaux de
+sprites avant les quotas de 40/80 entrées du jeu, puis affiche une liste
+extensible, sans quotas par ligne ni indices de liste/zoom limités à 128.
+**Original (M2)** reste le réglage fidèle par défaut.
+
+Le changement s'applique sans redémarrage. SH1 n'est pas affecté. Mark VI peut
+être combiné avec Deflicker et les explosions SH1. Aucun patch ROM supplémentaire
+n'est nécessaire et votre fichier ROM reste inchangé.
+
+La vitesse du jeu et la cadence des animations restent celles d'origine.
+Mark VI supprime les omissions dues à la capacité des listes et du rendu ;
+il conserve les clignotements et les décisions de visibilité intentionnels.
+Il n'ajoute pas d'objets au jeu ni d'images d'animation et ne propose pas encore
+d'interpolation à 60/120 images/s. Afficher davantage de sprites peut demander
+plus de calcul à l'ordinateur.
+
+**Les états sauvegardés avec les anciennes versions ne sont pas compatibles
+avec la 0.1.16.** Dans cette version, ils fonctionnent dans les deux modes ;
+conservez le même choix pour obtenir un rendu identique après reprise.
+
 ## Options Deflicker natives
 
 Dans **Menu rapide > Options du cœur > Emulation Hacks**, choisissez **SH1

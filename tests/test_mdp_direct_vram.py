@@ -42,6 +42,8 @@ struct gfx_element {
 };
 class sega315_5313_device {
 public:
+    u16 m_regs[64]{};
+    bool m_markvi_ready[3]{};
     std::array<u16, 32768> m_vram{};
     std::array<gfx_element, 6> graphics{};
     gfx_element *gfx(unsigned index) { return &graphics[index]; }
@@ -49,6 +51,11 @@ public:
 };
 int main() {
     sega315_5313_device vdp;
+    vdp.m_regs[5] = 0x70;
+    vdp.m_markvi_ready[2] = true;
+    vdp.vram_direct_w(0x7000, 0);
+    assert(!vdp.m_markvi_ready[2]);
+    for (auto &g : vdp.graphics) g.dirty_calls = 0;
     const unsigned font_word = (0xd0d400 - 0xd00000) / 2;
     vdp.vram_direct_w(font_word, 0x1234);
     assert(vdp.vram_direct_r(font_word) == 0x1234);

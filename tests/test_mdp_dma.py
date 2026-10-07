@@ -78,6 +78,7 @@ struct cpu_stub {unsigned calls=0;void spin_until_time(double){++calls;}unsigned
 struct screen_stub {unsigned frame_number(){return 0;}};
 class sega315_5313_device {
 public:
+ void sh2_markvi_dma(u32,u32,u32){} // Presentation observer; no DMA bus effects.
  bool m_mdp_scaler=true;
  u16 m_regs[64]{};
  u16 m_vdp_code=0,m_vdp_address=0,m_vram_fill_length=0;

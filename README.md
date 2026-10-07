@@ -84,9 +84,15 @@ published as an artifact. `SH_MDP_STATE_FRAMES` can extend the replay window.
 
 ## Scope and status
 
+**SH2 Rendering > Mark VI (Experimental)** reconstructs sprite pieces before
+SH2's native list quotas and renders an extensible host list with independent
+zoom values. **Original (M2)** remains the default. Mark VI keeps the original
+game speed and animation cadence; it adds no ROM patch or frame interpolation.
+See the [implementation and validation](docs/SH2_MARK_VI.md).
+
 **SH1 Deflicker (Native)** and **SH2 Deflicker (Native)** expose the original
 OFF/ON1/ON2 modes separately. **Game Setting** preserves the in-game choice by
-default. Changes apply without restarting; the renderer is unchanged. See the
+default. Changes apply without restarting; the original renderer remains the default. See the
 [user guide](USER_GUIDE.md#native-deflicker-options) and
 [native-setting validation](docs/NATIVE_DEFLICKER.md).
 

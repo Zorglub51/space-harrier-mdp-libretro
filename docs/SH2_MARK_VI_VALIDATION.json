@@ -1,0 +1,515 @@
+{
+  "schema_version": 1,
+  "feature": "SH2 Mark VI experimental rendering",
+  "version": "0.1.16",
+  "date": "2026-10-07",
+  "platform": "macos-arm64",
+  "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+  "constructor_comparison": {
+    "reference": "Compatibility-restored native SH2 68000 constructor; private paired emitter-entry/end RAM captures",
+    "matched_records": 15742,
+    "unmatched_records": 0,
+    "sequences": [
+      {
+        "name": "stage1",
+        "records": 5182
+      },
+      {
+        "name": "stage4",
+        "records": 3196
+      },
+      {
+        "name": "all8flags_scaled_unscaled",
+        "records": 7364,
+        "max_host_entries": 171
+      }
+    ],
+    "comparison": "Every native non-sentinel record is matched by y, size/bank, tile/palette/flip attributes, x, and zoom in compiled host output. This checks emitted records; extra host pieces are tested separately."
+  },
+  "public_tests": {
+    "passed": 108,
+    "skipped_optional": 12,
+    "dynamic_entries": 600,
+    "independent_transforms": 200,
+    "asan_ubsan_production_renderer_and_lifecycle": true
+  },
+  "runs": [
+    {
+      "name": "final-stage1",
+      "result": {
+        "passed": true,
+        "game": 2,
+        "rendering": "mark_vi",
+        "deflicker": "game",
+        "input": "reference",
+        "frames": 7000,
+        "threaded": false,
+        "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+        "messages": [],
+        "option_queried": true,
+        "option_query_count": 1,
+        "rendering_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true,
+        "stream": {
+          "video_sha256": "31caea3445cd11de23bfdcf936c075a6a45ccc4d73383a948c2e343df8e1c314",
+          "audio_sha256": "b08e80cca08b6de89b58f10513c5fd4ccf666245654eee7b109338d74bcb592e",
+          "video_frames": 6999,
+          "audio_stereo_frames": 5608015
+        },
+        "state": {
+          "passed": true,
+          "capacity": 9613971,
+          "frames": 120
+        },
+        "game_audit": {
+          "sha256": "6ffcc6933d9cb426906e933800882f27153abcd4fc696151b4479a0eb012bce5",
+          "samples": 60,
+          "interval_video_frames": 120,
+          "bytes_per_sample": 131144
+        },
+        "comparison": {
+          "audio_equal": true,
+          "game_audit_equal": true,
+          "video_equal": false,
+          "changed_frames": 1668
+        }
+      }
+    },
+    {
+      "name": "final-stage3",
+      "result": {
+        "passed": true,
+        "game": 2,
+        "rendering": "mark_vi",
+        "deflicker": "game",
+        "input": "stage3fire",
+        "frames": 7000,
+        "threaded": false,
+        "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+        "messages": [],
+        "option_queried": true,
+        "option_query_count": 1,
+        "rendering_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true,
+        "stream": {
+          "video_sha256": "5e2cc66876536dbabcb8e0273cb29ee4768c850eb3f1856b13e2d199977fa33e",
+          "audio_sha256": "b34c76f060a5c0caba49cb617619d8eeba4dd1c8681a47b7aafc20793c9f5412",
+          "video_frames": 6999,
+          "audio_stereo_frames": 5608015
+        },
+        "state": {
+          "passed": true,
+          "capacity": 9613971,
+          "frames": 120
+        },
+        "game_audit": {
+          "sha256": "15301fa8b4e28aea0ff3c5a7b14a9744151a048c5d1c93bd17953f2e11dc8278",
+          "samples": 60,
+          "interval_video_frames": 120,
+          "bytes_per_sample": 131144
+        },
+        "comparison": {
+          "audio_equal": true,
+          "game_audit_equal": true,
+          "video_equal": false,
+          "changed_frames": 1058
+        }
+      }
+    },
+    {
+      "name": "final-stage4",
+      "result": {
+        "passed": true,
+        "game": 2,
+        "rendering": "mark_vi",
+        "deflicker": "game",
+        "input": "stage4fire",
+        "frames": 7000,
+        "threaded": false,
+        "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+        "messages": [],
+        "option_queried": true,
+        "option_query_count": 1,
+        "rendering_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true,
+        "stream": {
+          "video_sha256": "f322681535f7fdaddaf495c3764b5cdb6f8ffd1a8588f909b1094ca6becaf393",
+          "audio_sha256": "6c8dd49639d6cb2c267d3e77c13f477b09ec71090bc6b85955a18c67e8c29ef4",
+          "video_frames": 6999,
+          "audio_stereo_frames": 5608015
+        },
+        "state": {
+          "passed": true,
+          "capacity": 9613971,
+          "frames": 120
+        },
+        "game_audit": {
+          "sha256": "7f4859efd4829825f419e63957087706d061ced76c11df2ec7ae2f51e2a35c9b",
+          "samples": 60,
+          "interval_video_frames": 120,
+          "bytes_per_sample": 131144
+        },
+        "comparison": {
+          "audio_equal": true,
+          "game_audit_equal": true,
+          "video_equal": false,
+          "changed_frames": 1472
+        }
+      }
+    },
+    {
+      "name": "final-original",
+      "result": {
+        "passed": true,
+        "game": 2,
+        "rendering": "original",
+        "deflicker": "game",
+        "input": "reference",
+        "frames": 7000,
+        "threaded": false,
+        "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+        "messages": [],
+        "option_queried": true,
+        "option_query_count": 1,
+        "rendering_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true,
+        "stream": {
+          "video_sha256": "23d2724db7c524ba0becaec9465feb0123e313cce85f1a9ea7284a68872a0788",
+          "audio_sha256": "b08e80cca08b6de89b58f10513c5fd4ccf666245654eee7b109338d74bcb592e",
+          "video_frames": 6999,
+          "audio_stereo_frames": 5608015
+        },
+        "state": {
+          "passed": true,
+          "capacity": 9613971,
+          "frames": 120
+        },
+        "game_audit": {
+          "sha256": "6ffcc6933d9cb426906e933800882f27153abcd4fc696151b4479a0eb012bce5",
+          "samples": 60,
+          "interval_video_frames": 120,
+          "bytes_per_sample": 131144
+        },
+        "comparison": {
+          "audio_equal": true,
+          "game_audit_equal": true,
+          "video_equal": true,
+          "changed_frames": 0
+        }
+      }
+    },
+    {
+      "name": "final-sh1",
+      "result": {
+        "passed": true,
+        "game": 1,
+        "rendering": "mark_vi",
+        "deflicker": "game",
+        "input": "scripted",
+        "frames": 4000,
+        "threaded": false,
+        "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+        "messages": [],
+        "option_queried": true,
+        "option_query_count": 1,
+        "rendering_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true,
+        "stream": {
+          "video_sha256": "3776327f818ac3ffcc56cdf8ac4bf2878e7214341426d719a3858874e2ab4f16",
+          "audio_sha256": "9c98d8ea9216c586348ffd5b85688d3ecb200697d6f811f1037395ac1620567b",
+          "video_frames": 3999,
+          "audio_stereo_frames": 3204924
+        },
+        "state": {
+          "passed": true,
+          "capacity": 9613955,
+          "frames": 120
+        },
+        "game_audit": {
+          "sha256": "b52182c67f8c697190ad13a3ba7d7bbc99f585238bf8797dfd6cdfb1ec63ad08",
+          "samples": 35,
+          "interval_video_frames": 120,
+          "bytes_per_sample": 131144
+        },
+        "comparison": {
+          "audio_equal": true,
+          "game_audit_equal": true,
+          "video_equal": true,
+          "changed_frames": 0
+        }
+      }
+    },
+    {
+      "name": "final-on1",
+      "result": {
+        "passed": true,
+        "game": 2,
+        "rendering": "mark_vi",
+        "deflicker": "on1",
+        "input": "reference",
+        "frames": 7000,
+        "threaded": false,
+        "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+        "messages": [],
+        "option_queried": true,
+        "option_query_count": 1,
+        "rendering_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true,
+        "stream": {
+          "video_sha256": "01a50386009e2e6bedef5fefb8922131c6eab4f6f36b24cac757a43e44805cc6",
+          "audio_sha256": "7be5ae963601a338884d6e4d954f26ad591d74db4a81f79d3d1d65c6592deb28",
+          "video_frames": 6999,
+          "audio_stereo_frames": 5608015
+        },
+        "state": {
+          "passed": true,
+          "capacity": 9613971,
+          "frames": 120
+        },
+        "game_audit": {
+          "sha256": "bf34b27059eb151291ed5fe69c4c2bff6e96526562845372574a4dd668c04988",
+          "samples": 60,
+          "interval_video_frames": 120,
+          "bytes_per_sample": 131144
+        },
+        "comparison": {
+          "audio_equal": true,
+          "game_audit_equal": true,
+          "video_equal": false,
+          "changed_frames": 1514
+        }
+      }
+    },
+    {
+      "name": "final-on2",
+      "result": {
+        "passed": true,
+        "game": 2,
+        "rendering": "mark_vi",
+        "deflicker": "on2",
+        "input": "reference",
+        "frames": 7000,
+        "threaded": false,
+        "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+        "messages": [],
+        "option_queried": true,
+        "option_query_count": 1,
+        "rendering_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true,
+        "stream": {
+          "video_sha256": "e6fea51ac8020e418c2bddf2501d7f31465313b425e04e92fa872c2b2120fc4c",
+          "audio_sha256": "451e68601ca452d82fed9de79aa883b02f801938aebeb1e58d6fbc407a12f2e8",
+          "video_frames": 6999,
+          "audio_stereo_frames": 5608015
+        },
+        "state": {
+          "passed": true,
+          "capacity": 9613971,
+          "frames": 120
+        },
+        "game_audit": {
+          "sha256": "a6ba289ebaf6af82f56f243c2e1e003e1c846001956311a8faf5d5912aa79595",
+          "samples": 60,
+          "interval_video_frames": 120,
+          "bytes_per_sample": 131144
+        },
+        "comparison": {
+          "audio_equal": true,
+          "game_audit_equal": true,
+          "video_equal": false,
+          "changed_frames": 1592
+        }
+      }
+    },
+    {
+      "name": "final-donor",
+      "result": {
+        "passed": true,
+        "game": 2,
+        "rendering": "mark_vi",
+        "deflicker": "game",
+        "input": "stage3fire",
+        "frames": 7000,
+        "threaded": false,
+        "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+        "messages": [
+          "SH2: SH1 explosions enabled for all exploding objects."
+        ],
+        "option_queried": true,
+        "option_query_count": 1,
+        "rendering_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true,
+        "stream": {
+          "video_sha256": "e94eb2e4a8d0d4febede30475e8fd71550d6649a2c9c6fd2879f55d25934cc21",
+          "audio_sha256": "9925aa0e63c606420b59c84a4c5f555d0be62600c996ee6c57aa939fec6e4199",
+          "video_frames": 6999,
+          "audio_stereo_frames": 5608015
+        },
+        "state": {
+          "passed": true,
+          "capacity": 9613971,
+          "frames": 120
+        },
+        "game_audit": {
+          "sha256": "e1bc026a0e9c548ce329923437e4d8780e129548fa47cfd8c1ec7bffec4816f7",
+          "samples": 60,
+          "interval_video_frames": 120,
+          "bytes_per_sample": 131144
+        },
+        "comparison": {
+          "audio_equal": true,
+          "game_audit_equal": true,
+          "video_equal": false,
+          "changed_frames": 973
+        }
+      }
+    },
+    {
+      "name": "final-toggle",
+      "result": {
+        "passed": true,
+        "game": 2,
+        "rendering": "mark_vi",
+        "deflicker": "game",
+        "input": "reference",
+        "frames": 3000,
+        "threaded": true,
+        "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+        "messages": [],
+        "option_queried": true,
+        "option_query_count": 5,
+        "rendering_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true,
+        "stream": {
+          "video_sha256": "2f5a5745c7261e7d4f8ce156b33d3ebf4bd64bb92779346c6835d815b7a9bbf0",
+          "audio_sha256": "4b0ce5633049f9d44caa558aefafd278330d0031d55862e8cda3f98738981937",
+          "video_frames": 2999,
+          "audio_stereo_frames": 2403889
+        },
+        "state": {
+          "passed": true,
+          "capacity": 9613971,
+          "frames": 120
+        },
+        "toggles": [
+          {
+            "mode": "original",
+            "stream": {
+              "video_sha256": "feead2de0dc3c46b8de6c83fa63b0506ace4444b8701ae983dba54c80468b57c",
+              "audio_sha256": "370fb2a0c639ca6f4d1aa8cf500e30ea2bf19678014a907d9c16cbd6441c0839",
+              "video_frames": 300,
+              "audio_stereo_frames": 240312
+            },
+            "state": {
+              "passed": true,
+              "capacity": 9613971,
+              "frames": 120
+            }
+          },
+          {
+            "mode": "mark_vi",
+            "stream": {
+              "video_sha256": "ef0f1389708726ecad36de1013558190852da6de56e32332253d7a0c9781fada",
+              "audio_sha256": "370fb2a0c639ca6f4d1aa8cf500e30ea2bf19678014a907d9c16cbd6441c0839",
+              "video_frames": 300,
+              "audio_stereo_frames": 240312
+            },
+            "state": {
+              "passed": true,
+              "capacity": 9613971,
+              "frames": 120
+            }
+          },
+          {
+            "mode": "original",
+            "stream": {
+              "video_sha256": "feead2de0dc3c46b8de6c83fa63b0506ace4444b8701ae983dba54c80468b57c",
+              "audio_sha256": "370fb2a0c639ca6f4d1aa8cf500e30ea2bf19678014a907d9c16cbd6441c0839",
+              "video_frames": 300,
+              "audio_stereo_frames": 240312
+            },
+            "state": {
+              "passed": true,
+              "capacity": 9613971,
+              "frames": 120
+            }
+          },
+          {
+            "mode": "mark_vi",
+            "stream": {
+              "video_sha256": "ef0f1389708726ecad36de1013558190852da6de56e32332253d7a0c9781fada",
+              "audio_sha256": "370fb2a0c639ca6f4d1aa8cf500e30ea2bf19678014a907d9c16cbd6441c0839",
+              "video_frames": 300,
+              "audio_stereo_frames": 240312
+            },
+            "state": {
+              "passed": true,
+              "capacity": 9613971,
+              "frames": 120
+            }
+          }
+        ],
+        "option_update_notifications": 4,
+        "toggle_video_differs": true,
+        "game_audit": {
+          "sha256": "eb993af931016d34a489d462f2c2ea5d2eef774bc169d64aa1f10e44c58a94b2",
+          "samples": 44,
+          "interval_video_frames": 120,
+          "bytes_per_sample": 131144
+        }
+      }
+    },
+    {
+      "name": "title-final",
+      "result": {
+        "passed": true,
+        "game": 2,
+        "rendering": "mark_vi",
+        "deflicker": "game",
+        "input": "reference",
+        "frames": 1400,
+        "threaded": false,
+        "core_sha256": "22f3680b363fd1bcf4198dda10ab7583cabcc94ac1241493eec20cd6c18bc424",
+        "messages": [],
+        "option_queried": true,
+        "option_query_count": 1,
+        "rendering_queried": true,
+        "thread_mode_option_queried": true,
+        "auto_save_option_queried": true,
+        "stream": {
+          "video_sha256": "a1d5b7476047a35271ff0591634a1b1088738cda4bdc0943d31ce4d9157a6a20",
+          "audio_sha256": "d0c80574d9eb8566fb876bfe9f3ef71fad31c9cfcb7bd073398a4f73383938bf",
+          "video_frames": 1399,
+          "audio_stereo_frames": 1122244
+        },
+        "state": {
+          "passed": true,
+          "capacity": 9613971,
+          "frames": 120
+        },
+        "game_audit": {
+          "sha256": "576a8c6039639b6c9458fa757274b7d692784c2f423a0f637ff68fd9c5d8b4d7",
+          "samples": 13,
+          "interval_video_frames": 120,
+          "bytes_per_sample": 131144
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Targeted scripted sequences, not complete playthroughs.",
+    "Work RAM/CPU snapshots every 120 video frames, not every instruction.",
+    "Constructor reference is restored guest execution, not an independent original-ARM run.",
+    "Original game cadence; no interpolation or CPU clock change.",
+    "Intentional blinking/visibility decisions remain."
+  ]
+}
