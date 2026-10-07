@@ -78,6 +78,24 @@ manuellement.
 C’est tout : le cœur reconnaît la ROM originale et applique les corrections en
 mémoire. Il ne modifie jamais votre fichier `.smp`.
 
+## Options Deflicker natives
+
+Dans **Menu rapide > Options du cœur > Emulation Hacks**, choisissez **SH1
+Deflicker (Native)** ou **SH2 Deflicker (Native)**. Chaque jeu a son réglage :
+
+- **Game Setting** (par défaut) : laisser le réglage interne du jeu décider.
+- **OFF**, **ON1**, **ON2** : sélectionner directement la stratégie originale.
+
+Le changement prend effet pendant la partie, sans redémarrage. ON1 et ON2 peuvent
+réduire les scintillements, mais aussi omettre des sprites : ce sont les compromis
+originaux. Aucun filtre d’image, mélange de trames ou effet de persistance n’est
+ajouté. Le choix interne du jeu est conservé ; **Game Setting** lui rend la main.
+
+Le choix du cœur s’applique aussi après un reset ou le chargement d’une sauvegarde
+instantanée. Gardez le même réglage pour reproduire une séquence à l’identique.
+Le format des sauvegardes reste inchangé, y compris le mode explosions SH1 de
+la version 0.1.14.
+
 ## Explosions de SH1 dans SH2 — option facultative
 
 Placez votre ROM originale `jp_jp_space_harrier.smp` à côté de celle de SH2,

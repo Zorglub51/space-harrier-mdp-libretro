@@ -74,6 +74,23 @@ needed.
 
 See [Troubleshooting](docs/TROUBLESHOOTING.md) if the core or game does not load.
 
+## Native Deflicker options
+
+Under **Quick Menu > Core Options > Emulation Hacks**, choose **SH1 Deflicker
+(Native)** or **SH2 Deflicker (Native)**. Each game has its own setting:
+
+- **Game Setting** (default): let the original in-game setting control the mode.
+- **OFF**, **ON1**, **ON2**: select that original sprite-list strategy directly.
+
+Changes take effect during gameplay without restarting. ON1 and ON2 can reduce
+flicker, but may omit sprites; they reproduce the original tradeoffs. No image
+filter, frame blending or sprite persistence is added. The underlying in-game
+choice is retained, and **Game Setting** returns control to it.
+
+The core preference also applies after a reset or a save-state load. Keep the
+same Deflicker selection when you want an identical replay of a saved sequence.
+Save-state formats are unchanged, including the 0.1.14 SH1-explosion mode.
+
 ## Optional SH1 explosions in SH2
 
 Put your original `jp_jp_space_harrier.smp` next to the SH2 ROM, or in

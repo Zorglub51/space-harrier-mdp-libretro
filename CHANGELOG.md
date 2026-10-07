@@ -6,6 +6,30 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.15] - 2026-10-07
+
+### Native Deflicker core options
+
+- Add separate **SH1 Deflicker (Native)** and **SH2 Deflicker (Native)** options
+  under **Emulation Hacks**, with **Game Setting**, **OFF**, **ON1** and **ON2**.
+  The default leaves the original in-game choice in control.
+- Apply explicit choices to the native setting reads used by each ROM's sprite
+  list generator. Changes take effect during gameplay without restarting. The
+  stored game setting, adjacent RAM byte, renderer limits and save formats stay
+  unchanged. ON1/ON2 retain the original tradeoffs, including omitted sprites.
+- Keep the preference active after a reset or state load. Limit the integration
+  to authenticated SH1/SH2 cartridges, with independent settings for each game.
+  Version 0.1.14 explosion-mode states remain compatible.
+- Compare 4,000-step runs for each game and mode against 0.1.14 with its native
+  RAM setting selected directly: video and PCM hashes match. Default/game mode,
+  missing or invalid options and changes to the other game's setting preserve
+  the measured baseline output.
+- Verify threaded Game Setting → ON1 → ON2 → OFF → Game Setting switching,
+  reset and state replay for both games, including SH2 with SH1 explosions.
+  These are sampled sequences, not complete-game validation.
+- Pass 99 configured regression tests with 12 optional native-reference skips;
+  verify both legacy and version-2 Libretro option registration.
+
 ## [0.1.14] - 2026-10-07
 
 ### SH1 explosions for all exploding SH2 objects

@@ -84,6 +84,12 @@ published as an artifact. `SH_MDP_STATE_FRAMES` can extend the replay window.
 
 ## Scope and status
 
+**SH1 Deflicker (Native)** and **SH2 Deflicker (Native)** expose the original
+OFF/ON1/ON2 modes separately. **Game Setting** preserves the in-game choice by
+default. Changes apply without restarting; the renderer is unchanged. See the
+[user guide](USER_GUIDE.md#native-deflicker-options) and
+[native-setting validation](docs/NATIVE_DEFLICKER.md).
+
 An optional **SH2 Explosions** core setting imports SH1's original eleven-pose
 sequence and its cadence for all exploding SH2 objects, including scenery and
 player-collision effects, using

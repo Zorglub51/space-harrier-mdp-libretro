@@ -31,7 +31,7 @@ python3 "${repo_root}/scripts/generate_rom_patch_header.py" \
     "${repo_root}/rompatch/patch.py" \
     "${generated_header}"
 
-for header in "${repo_root}"/src/markv/sh2_explosion_*.h; do
+for header in "${repo_root}"/src/markv/sh2_explosion_*.h "${repo_root}"/src/markv/sh_deflicker_options.h; do
     cp "${header}" "${mame_tree}/src/devices/bus/megadrive/"
 done
 

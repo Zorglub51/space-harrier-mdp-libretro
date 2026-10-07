@@ -9,20 +9,24 @@
  
  //**************************************************************************
  //  GLOBAL VARIABLES
-@@ -310,6 +312,7 @@
+@@ -310,6 +312,8 @@
  
  std::pair<std::error_condition, std::string> base_md_cart_slot_device::call_load()
  {
 +	m_sh2_text_compat = false;
++	m_sh_mdp_game = 0;
  	if (m_cart)
  	{
  		m_type = SEGA_STD;
-@@ -362,10 +365,15 @@
+@@ -362,10 +366,18 @@
  	m_cart->rom_alloc(length);
  	ROM = m_cart->get_rom_base();
  	memcpy((uint8_t *)ROM, get_software_region("rom"), get_software_region_length("rom"));
 +	if (sh1_mdp_rom::apply(reinterpret_cast<uint8_t *>(ROM), get_software_region_length("rom"), &m_sh2_text_compat))
++	{
++		m_sh_mdp_game = m_sh2_text_compat ? 2 : 1;
 +		osd_printf_info("Applied the Space Harrier MDP compatibility patch in memory.\n");
++	}
  
  	// if we allocated a ROM larger that the file (e.g. due to uneven cart size), set remaining space to 0xff
  	if (length > get_software_region_length("rom"))
@@ -33,12 +37,15 @@
  
  	if ((slot_name = get_feature("slot")) == nullptr)
  		m_type = SEGA_STD;
-@@ -508,10 +516,14 @@
+@@ -508,10 +520,17 @@
  		fread(ROM, len);
  	}
  
 +	if (sh1_mdp_rom::apply(ROM, tmplen - offset, &m_sh2_text_compat))
++	{
++		m_sh_mdp_game = m_sh2_text_compat ? 2 : 1;
 +		osd_printf_info("Applied the Space Harrier MDP compatibility patch in memory.\n");
++	}
 +
  	// if we allocated a ROM larger that the file (e.g. due to uneven cart size), set remaining space to 0xff
  	if (len > (tmplen - offset))
@@ -48,11 +55,12 @@
  
  	// STEP 4: determine the cart type (to deal with sram/eeprom & pirate mappers)
  	m_type = get_cart_type(ROM, tmplen - offset);
-@@ -541,6 +553,7 @@
+@@ -541,6 +560,8 @@
  
  void base_md_cart_slot_device::call_unload()
  {
 +	m_sh2_text_compat = false;
++	m_sh_mdp_game = 0;
  	if (m_cart && m_cart->get_nvram_base() && m_cart->get_nvram_size())
  		battery_save(m_cart->get_nvram_base(), m_cart->get_nvram_size());
  }
@@ -1491,45 +1499,88 @@
  
 --- a/src/devices/bus/megadrive/md_slot.h
 +++ b/src/devices/bus/megadrive/md_slot.h
-@@ -168,6 +168,7 @@
+@@ -168,6 +168,8 @@
  	virtual std::string get_default_card_software(get_default_card_software_hook &hook) const override;
  
  	int get_type() { return m_type; }
 +	bool sh2_text_compat() const { return m_sh2_text_compat; }
++	int sh_mdp_game() const { return m_sh_mdp_game; }
  
  	std::error_condition load_list();
  	std::error_condition load_nonlist();
-@@ -194,6 +195,7 @@
+@@ -194,6 +196,8 @@
  //private:
  
  	int m_type;
 +	bool m_sh2_text_compat = false;
++	int m_sh_mdp_game = 0; // Authenticated SH1/SH2, or zero for other cartridges.
  	device_md_cart_interface*       m_cart;
  
  protected:
 --- a/src/mame/sega/mdconsole.cpp
 +++ b/src/mame/sega/mdconsole.cpp
-@@ -148,6 +148,9 @@
+@@ -3,6 +3,7 @@
+ 
+ #include "emu.h"
+ #include "mdconsole.h"
++#include "bus/megadrive/sh_deflicker_options.h"
+ 
+ #include "bus/generic/carts.h"
+ #include "bus/sms_ctrl/controllers.h"
+@@ -148,6 +149,25 @@
  void md_cons_state::machine_reset()
  {
  	md_base_state::machine_reset();
 +	// Image loading has completed and child devices have reset at this point.
 +	// Keep the SH2-only font workaround out of SH1 and ordinary Mega Drive games.
 +	m_vdp->set_sh2_text_compat(m_cart && m_cart->sh2_text_compat());
++
++	// Expose the ROM's native OFF/ON1/ON2 list strategies, without altering its
++	// stored setting, renderer limits or save-state format. Install only after
++	// cartridge authentication and remove the previous tap on every reset.
++	m_sh_deflicker_tap.remove();
++	const int game = m_cart ? m_cart->sh_mdp_game() : 0;
++	if (game)
++	{
++		const u32 address = game == 1 ? sh_mdp_deflicker::sh1_address : sh_mdp_deflicker::sh2_address;
++		m_sh_deflicker_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(address, address + 1,
++			"sh_native_deflicker", [game](offs_t offset, u16 &data, u16 mem_mask)
++			{
++				const int mode = (game == 1 ? sh_mdp_deflicker::sh1 : sh_mdp_deflicker::sh2).load(std::memory_order_relaxed);
++				data = sh_mdp_deflicker::read(data, mem_mask, mode);
++			});
++	}
  
  	// if the system has a 32x, pause the extra CPUs until they are actually turned on
  	if (m_32x)
 --- a/src/osd/libretro/libretro-internal/libretro.cpp
 +++ b/src/osd/libretro/libretro-internal/libretro.cpp
-@@ -18,6 +18,7 @@
+@@ -18,6 +18,8 @@
  #include "libretro.h"
  #include "libretro_shared.h"
  #include "libretro_core_options.h"
 +#include "bus/megadrive/sh2_explosion_options.h"
++#include "bus/megadrive/sh_deflicker_options.h"
  
  /* forward decls / externs / prototypes */
  
-@@ -714,9 +715,9 @@
+@@ -379,6 +381,15 @@
+ 
+ static void check_variables(void)
+ {
++   // Atomic preferences are consumed by the emulation thread at native reads.
++   // Missing/unknown values always restore control to the in-game option.
++   struct retro_variable sh1_deflicker = {CORE_NAME "_sh1_deflicker", NULL};
++   struct retro_variable sh2_deflicker = {CORE_NAME "_sh2_deflicker", NULL};
++   const bool has_sh1 = environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &sh1_deflicker);
++   const bool has_sh2 = environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &sh2_deflicker);
++   sh_mdp_deflicker::sh1.store(sh_mdp_deflicker::parse(has_sh1 ? sh1_deflicker.value : NULL), std::memory_order_relaxed);
++   sh_mdp_deflicker::sh2.store(sh_mdp_deflicker::parse(has_sh2 ? sh2_deflicker.value : NULL), std::memory_order_relaxed);
++
+    struct retro_variable var = {0};
+ 
+    var.key   = CORE_NAME "_joystick_deadzone";
+@@ -714,9 +725,9 @@
  {
     memset(info, 0, sizeof(*info));
  
@@ -1541,7 +1592,7 @@
     info->need_fullpath    = true;
     info->block_extract    = true;
  }
-@@ -874,7 +875,10 @@
+@@ -874,7 +885,10 @@
  {
     free_output_audio_buffer();
     if (retro_load_ok)
@@ -1552,7 +1603,7 @@
  }
  
  void retro_reset(void)
-@@ -883,6 +887,45 @@
+@@ -883,6 +897,45 @@
     coin_inserted = 0;
  }
  
@@ -1598,7 +1649,7 @@
  void retro_run(void)
  {
     bool updated = false;
-@@ -890,15 +933,24 @@
+@@ -890,15 +943,24 @@
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
     {
        check_variables();
@@ -1628,7 +1679,7 @@
        retro_autoloadfastforwarding();
  
     /* LED interface */
-@@ -932,6 +984,24 @@
+@@ -932,6 +994,24 @@
  bool retro_load_game(const struct retro_game_info *info)
  {
     retro_load_ok = false;
@@ -1653,7 +1704,7 @@
  
     check_variables();
  
-@@ -962,7 +1032,20 @@
+@@ -962,7 +1042,20 @@
        strcpy(RPATH, info->path);
     }
  
@@ -1675,7 +1726,7 @@
  
     /* Force success with empty content */
     if (!RPATH[0])
-@@ -988,19 +1071,34 @@
+@@ -988,19 +1081,34 @@
     if (     mame_machine_manager::instance() != NULL
           && mame_machine_manager::instance()->machine() != NULL
           && mame_machine_manager::instance()->machine()->options().autosave()
@@ -1716,7 +1767,7 @@
  
     return 0;
  }
-@@ -1008,9 +1106,27 @@
+@@ -1008,9 +1116,27 @@
  {
     save_error error = STATERR_NOT_FOUND;
     if (     mame_machine_manager::instance() != NULL
@@ -1746,7 +1797,7 @@
  
     if (error != STATERR_NONE)
        log_cb(RETRO_LOG_ERROR, "State save error %d.\n", error);
-@@ -1018,11 +1134,42 @@
+@@ -1018,11 +1144,42 @@
  }
  bool retro_unserialize(const void *data, size_t size)
  {
@@ -1814,10 +1865,43 @@
  void audio_effect_filter::reset_lowpass_active()
 --- a/src/osd/libretro/libretro-internal/libretro_core_options.h
 +++ b/src/osd/libretro/libretro-internal/libretro_core_options.h
-@@ -83,6 +83,20 @@
+@@ -83,6 +83,53 @@
  };
  
  struct retro_core_option_v2_definition option_defs_us[] = {
++   {
++      CORE_NAME "_sh1_deflicker",
++      "SH1 Deflicker (Native)",
++      NULL,
++      "Select the original game's OFF, ON1 or ON2 sprite-list strategy. Game Setting leaves the in-game choice in control. Applies during gameplay without restarting. ON1/ON2 can reduce flicker but may omit sprites; these are the original modes, not an image filter. Keep the same choice when replaying save states.",
++      NULL,
++      "hacks",
++      {
++         { "game", "Game Setting" },
++         { "off", "OFF" },
++         { "on1", "ON1" },
++         { "on2", "ON2" },
++         { NULL, NULL },
++      },
++      "game"
++   },
++   {
++      CORE_NAME "_sh2_deflicker",
++      "SH2 Deflicker (Native)",
++      NULL,
++      "Select the original game's OFF, ON1 or ON2 sprite-list strategy. Game Setting leaves the in-game choice in control. Applies during gameplay without restarting. ON1/ON2 can reduce flicker but may omit sprites; these are the original modes, not an image filter. Keep the same choice when replaying save states.",
++      NULL,
++      "hacks",
++      {
++         { "game", "Game Setting" },
++         { "off", "OFF" },
++         { "on1", "ON1" },
++         { "on2", "ON2" },
++         { NULL, NULL },
++      },
++      "game"
++   },
++
 +   {
 +      CORE_NAME "_sh2_enemy_explosions",
 +      "SH2 Explosions",
@@ -1883,3 +1967,13 @@
  		result = string_format("%s%s%s.sta", statename, PATH_SEPARATOR, filename);
  	}
  	return result;
+--- a/src/mame/sega/mdconsole.h
++++ b/src/mame/sega/mdconsole.h
+@@ -62,6 +62,7 @@
+ 	void _32x_interrupt_callback(int scanline, int irq6);
+ 	void _32x_scanline_helper_callback(int scanline);
+ 
++	memory_passthrough_handler m_sh_deflicker_tap;
+ 	uint16_t tmss_r(offs_t offset);
+ 	void tmss_swap_w(uint16_t data);
+ };
