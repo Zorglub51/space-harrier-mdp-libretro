@@ -80,26 +80,38 @@ mémoire. Il ne modifie jamais votre fichier `.smp`.
 
 ## Mode Mark VI pour SH2
 
-Dans **Menu rapide > Options du cœur > Emulation Hacks > SH2 Rendering**,
-choisissez **Mark VI (Experimental)**. Le cœur reconstruit les morceaux de
-sprites avant les quotas de 40/80 entrées du jeu, puis affiche une liste
-extensible, sans quotas par ligne ni indices de liste/zoom limités à 128.
-**Original (M2)** reste le réglage fidèle par défaut.
+Dans **Menu rapide > Options du cœur > Emulation Hacks > SH2 Rendering** :
 
-Le changement s'applique sans redémarrage. SH1 n'est pas affecté. Mark VI peut
-être combiné avec Deflicker et les explosions SH1. Aucun patch ROM supplémentaire
-n'est nécessaire et votre fichier ROM reste inchangé.
+- **Original (M2)** : rendu fidèle par défaut, avec les limites d'origine.
+- **Mark VI (Native Refresh)** : reconstruit les morceaux de sprites avant les
+  quotas de 40/80 entrées, avec une liste extensible, sans quotas par ligne ni
+  indices de liste/zoom limités à 128.
+- **Mark VI (120 Hz, Experimental)** : ajoute des positions et des niveaux de
+  zoom intermédiaires à deux fois la fréquence native, soit 119,845 Hz. Un écran
+  à 120 Hz ou plus est nécessaire pour voir toutes les images supplémentaires.
 
-La vitesse du jeu et la cadence des animations restent celles d'origine.
-Mark VI supprime les omissions dues à la capacité des listes et du rendu ;
-il conserve les clignotements et les décisions de visibilité intentionnels.
-Il n'ajoute pas d'objets au jeu ni d'images d'animation et ne propose pas encore
-d'interpolation à 60/120 images/s. Afficher davantage de sprites peut demander
-plus de calcul à l'ordinateur.
+Le changement s'applique sans redémarrage. SH1 reste inchangé. Les deux modes
+Mark VI peuvent être combinés avec Deflicker et les explosions SH1. Aucun patch
+ROM supplémentaire n'est nécessaire ; le fichier ROM reste inchangé.
 
-**Les états sauvegardés avec les anciennes versions ne sont pas compatibles
-avec la 0.1.16.** Dans cette version, ils fonctionnent dans les deux modes ;
-conservez le même choix pour obtenir un rendu identique après reprise.
+À 120 Hz, la logique du jeu, les collisions, la lecture des commandes et le son
+conservent leur cadence et leur vitesse d'origine. Le cœur interpole les
+positions et le zoom ; il ne mélange pas les images et n'invente pas de nouveaux
+dessins. Cela ajoute environ un intervalle de mise à jour des objets de retard
+visuel, généralement 17 à 33 ms. Le sol, les changements de dessin et les
+clignotements intentionnels restent à leur cadence native. Les apparitions,
+disparitions, changements de pose et grands déplacements brusques ne sont pas
+lissés. Il s'agit d'une amélioration facultative du rendu.
+
+Si le frontend refuse le changement de fréquence, un message s'affiche et la
+fréquence précédente est conservée. Aucun overclock du processeur émulé n'est
+nécessaire ; l'ordinateur doit pouvoir assurer le rendu supplémentaire.
+
+**Les états des anciennes versions ne sont pas compatibles avec la 0.1.17.**
+Les trois réglages utilisent le même nouveau format. Conservez le même mode
+pour une reprise visuellement identique. Les états incluent la demi-image et
+l'audio en attente, et occupent environ 60 Mo avant compression ; la taille
+compressée dépend du frontend et de la scène.
 
 ## Options Deflicker natives
 

@@ -1,0 +1,471 @@
+{
+  "schema_version": 1,
+  "version": "0.1.17",
+  "platform": "macOS arm64",
+  "core_sha256": "03a876c46be05bcfd8966bc301cff68e65ddec1081a88f854af3569a0f5a1290",
+  "scope": "Targeted private-ROM sequences; not a full-game or instruction-by-instruction proof. Game pixels, ROMs, RAM, save states and PCM are not published. Native refresh is 59.92274475097656 Hz; optional presentation is twice that rate.",
+  "public_tests": {
+    "run": 122,
+    "passed": 110,
+    "skipped_optional_native_oracles": 12,
+    "sanitized_markvi_tests": 4
+  },
+  "runs": {
+    "stage1": {
+      "passed": true,
+      "core_sha256": "03a876c46be05bcfd8966bc301cff68e65ddec1081a88f854af3569a0f5a1290",
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "input": "reference",
+      "frames": 14000,
+      "threaded": false,
+      "resolution": null,
+      "distinct_half_pairs": 2648,
+      "state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 240
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 6999
+      },
+      "game_audit": {
+        "sha256": "6ffcc6933d9cb426906e933800882f27153abcd4fc696151b4479a0eb012bce5",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "no_av_update_during_load": true,
+      "stream": {
+        "video_sha256": "a677022ec3730f7f418891cbbc34932304421089f05c749613043b6562926e4a",
+        "audio_sha256": "b08e80cca08b6de89b58f10513c5fd4ccf666245654eee7b109338d74bcb592e",
+        "video_frames": 13998,
+        "audio_stereo_frames": 5608015
+      }
+    },
+    "stage4": {
+      "passed": true,
+      "core_sha256": "03a876c46be05bcfd8966bc301cff68e65ddec1081a88f854af3569a0f5a1290",
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "input": "stage4fire",
+      "frames": 14000,
+      "threaded": false,
+      "resolution": null,
+      "distinct_half_pairs": 1139,
+      "state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 240
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 6999
+      },
+      "game_audit": {
+        "sha256": "7f4859efd4829825f419e63957087706d061ced76c11df2ec7ae2f51e2a35c9b",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "no_av_update_during_load": true,
+      "stream": {
+        "video_sha256": "98c5c12079cd8f76f68feb2cc6d5f87fc10cd2e065d5f64435afafd317cd91fd",
+        "audio_sha256": "6c8dd49639d6cb2c267d3e77c13f477b09ec71090bc6b85955a18c67e8c29ef4",
+        "video_frames": 13998,
+        "audio_stereo_frames": 5608015
+      }
+    },
+    "donor": {
+      "passed": true,
+      "core_sha256": "03a876c46be05bcfd8966bc301cff68e65ddec1081a88f854af3569a0f5a1290",
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "input": "stage3fire",
+      "frames": 14000,
+      "threaded": false,
+      "resolution": null,
+      "distinct_half_pairs": 1769,
+      "state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 240
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 6999
+      },
+      "game_audit": {
+        "sha256": "e1bc026a0e9c548ce329923437e4d8780e129548fa47cfd8c1ec7bffec4816f7",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "no_av_update_during_load": true,
+      "stream": {
+        "video_sha256": "c7cc0f0864d460b2b7f1ff061623a384ee62664a39ff49a853b8bf15ce308266",
+        "audio_sha256": "9925aa0e63c606420b59c84a4c5f555d0be62600c996ee6c57aa939fec6e4199",
+        "video_frames": 13998,
+        "audio_stereo_frames": 5608015
+      }
+    },
+    "threaded": {
+      "passed": true,
+      "core_sha256": "03a876c46be05bcfd8966bc301cff68e65ddec1081a88f854af3569a0f5a1290",
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "input": "reference",
+      "frames": 14000,
+      "threaded": true,
+      "resolution": null,
+      "distinct_half_pairs": 2648,
+      "state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 240
+      },
+      "game_audit": {
+        "sha256": "6ffcc6933d9cb426906e933800882f27153abcd4fc696151b4479a0eb012bce5",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        },
+        {
+          "frame": 7242,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "accepted": true
+        },
+        {
+          "frame": 14483,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "accepted": true
+        },
+        {
+          "frame": 7242,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "accepted": true
+        },
+        {
+          "frame": 14483,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "accepted": true
+        }
+      ],
+      "no_av_update_during_load": true,
+      "stream": {
+        "video_sha256": "a677022ec3730f7f418891cbbc34932304421089f05c749613043b6562926e4a",
+        "audio_sha256": "b08e80cca08b6de89b58f10513c5fd4ccf666245654eee7b109338d74bcb592e",
+        "video_frames": 13998,
+        "audio_stereo_frames": 5608015
+      },
+      "toggles": [
+        {
+          "mode": "original",
+          "audio_sha256": "48a8aa59b7762f58972e974f9cd3d4eefd7694acbf12630ab8a8384bd77ba496",
+          "state": {
+            "passed": true,
+            "capacity": 60273322,
+            "frames": 240
+          }
+        },
+        {
+          "mode": "mark_vi_120",
+          "audio_sha256": "48a8aa59b7762f58972e974f9cd3d4eefd7694acbf12630ab8a8384bd77ba496",
+          "state": {
+            "passed": true,
+            "capacity": 60273322,
+            "frames": 240
+          }
+        },
+        {
+          "mode": "original",
+          "audio_sha256": "48a8aa59b7762f58972e974f9cd3d4eefd7694acbf12630ab8a8384bd77ba496",
+          "state": {
+            "passed": true,
+            "capacity": 60273322,
+            "frames": 240
+          }
+        },
+        {
+          "mode": "mark_vi_120",
+          "audio_sha256": "48a8aa59b7762f58972e974f9cd3d4eefd7694acbf12630ab8a8384bd77ba496",
+          "state": {
+            "passed": true,
+            "capacity": 60273322,
+            "frames": 240
+          }
+        }
+      ]
+    },
+    "scaled": {
+      "passed": true,
+      "core_sha256": "03a876c46be05bcfd8966bc301cff68e65ddec1081a88f854af3569a0f5a1290",
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "input": "reference",
+      "frames": 14000,
+      "threaded": false,
+      "resolution": "640x480",
+      "distinct_half_pairs": 2648,
+      "state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 240
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 6999
+      },
+      "game_audit": {
+        "sha256": "6ffcc6933d9cb426906e933800882f27153abcd4fc696151b4479a0eb012bce5",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "no_av_update_during_load": true,
+      "stream": {
+        "video_sha256": "50b749b14cca0beef68b81b46d9d301ec4d55f2eb51eff49d24db0f6c1eda883",
+        "audio_sha256": "b08e80cca08b6de89b58f10513c5fd4ccf666245654eee7b109338d74bcb592e",
+        "video_frames": 13998,
+        "audio_stereo_frames": 5608015
+      }
+    },
+    "sh1": {
+      "passed": true,
+      "core_sha256": "03a876c46be05bcfd8966bc301cff68e65ddec1081a88f854af3569a0f5a1290",
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "input": "scripted",
+      "frames": 4000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60273306,
+        "frames": 120
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "b52182c67f8c697190ad13a3ba7d7bbc99f585238bf8797dfd6cdfb1ec63ad08",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "no_av_update_during_load": true,
+      "stream": {
+        "video_sha256": "3776327f818ac3ffcc56cdf8ac4bf2878e7214341426d719a3858874e2ab4f16",
+        "audio_sha256": "9c98d8ea9216c586348ffd5b85688d3ecb200697d6f811f1037395ac1620567b",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    "original": {
+      "passed": true,
+      "core_sha256": "03a876c46be05bcfd8966bc301cff68e65ddec1081a88f854af3569a0f5a1290",
+      "game": 2,
+      "rendering": "original",
+      "input": "reference",
+      "frames": 7000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 120
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "6ffcc6933d9cb426906e933800882f27153abcd4fc696151b4479a0eb012bce5",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "no_av_update_during_load": true,
+      "stream": {
+        "video_sha256": "23d2724db7c524ba0becaec9465feb0123e313cce85f1a9ea7284a68872a0788",
+        "audio_sha256": "b08e80cca08b6de89b58f10513c5fd4ccf666245654eee7b109338d74bcb592e",
+        "video_frames": 6999,
+        "audio_stereo_frames": 5608015
+      }
+    },
+    "rejected": {
+      "passed": true,
+      "core_sha256": "03a876c46be05bcfd8966bc301cff68e65ddec1081a88f854af3569a0f5a1290",
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "input": "reference",
+      "frames": 7000,
+      "threaded": false,
+      "resolution": null,
+      "state": {
+        "passed": true,
+        "capacity": 60273322,
+        "frames": 120
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "6ffcc6933d9cb426906e933800882f27153abcd4fc696151b4479a0eb012bce5",
+        "samples": 60,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        },
+        {
+          "frame": 1,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "accepted": false
+        }
+      ],
+      "no_av_update_during_load": true,
+      "stream": {
+        "video_sha256": "31caea3445cd11de23bfdcf936c075a6a45ccc4d73383a948c2e343df8e1c314",
+        "audio_sha256": "b08e80cca08b6de89b58f10513c5fd4ccf666245654eee7b109338d74bcb592e",
+        "video_frames": 6999,
+        "audio_stereo_frames": 5608015
+      },
+      "messages": [
+        "Frontend rejected the refresh change; keeping the previous refresh rate."
+      ]
+    }
+  },
+  "local_benchmark": {
+    "presentation_calls": 6000,
+    "seconds": 5.051206667000001,
+    "calls_per_second": 1187.8349858853635,
+    "emulated_seconds": 50.064462375133594,
+    "scope": "Headless local arm64 run, includes Python callbacks; no VSync or display latency measurement."
+  },
+  "options_v0": {
+    "mame_sh2_rendering": "SH2 Rendering; original|mark_vi|mark_vi_120"
+  },
+  "options_v2": {
+    "mame_sh2_rendering": {
+      "label": "SH2 Rendering",
+      "category": "hacks",
+      "default": "original",
+      "values": [
+        "original",
+        "mark_vi",
+        "mark_vi_120"
+      ]
+    }
+  }
+}

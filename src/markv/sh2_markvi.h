@@ -3,6 +3,8 @@
 
 #include <cstdint>
 #include <unordered_set>
+#include <unordered_map>
+#include <algorithm>
 #include <vector>
 
 namespace sh2_markvi {
@@ -11,6 +13,8 @@ namespace sh2_markvi {
 // to the record itself, so neither list length nor zoom count wraps at 128.
 struct sprite {
     std::uint16_t y, size, attr, x, zoom;
+    // Presentation identity; never an index into guest VRAM or a quota.
+    std::uint32_t owner = 0, routine = 0, descriptor = 0, part = 0;
 };
 
 // Translation of SH2 13B000..13D21E, before its 40/80-entry partitioning.
@@ -60,7 +64,8 @@ template<class Read> bool build(Read read, std::vector<sprite> &out)
                 // Preserve the native offscreen test; it isn't a sprite budget.
                 if (u16(px - 96) <= ((shadow && scale < 0) ? 383 : 351))
                     out.push_back({py, u16((byte(p + 1) | ((alloc >> 7) & 16)) << 8), attr, px,
-                                   u16(scale < 0 ? 0x1000 : scale + 0x100)});
+                                   u16(scale < 0 ? 0x1000 : scale + 0x100), o, lng(o), desc,
+                                   u32(i | (half << 8) | (unsigned(shadow) << 9))});
                 attr += word(p + 2);
             }
         }
@@ -97,6 +102,38 @@ template<class Read> bool build(Read read, std::vector<sprite> &out)
         emit(o, desc, 0, scale, sw(o + 12), y, true);
     }
     return true;
+}
+
+// Only interpolate matching pieces that exist in both snapshots. A hidden,
+// destroyed or newly spawned object is never recreated from an old picture.
+// Pose/LOD changes deliberately snap to the game's current artwork.
+inline std::vector<sprite> interpolate(const std::vector<sprite> &previous,
+                                       const std::vector<sprite> &current,
+                                       unsigned numerator, unsigned denominator)
+{
+    auto out = current;
+    if (!denominator || numerator >= denominator) return out;
+    std::unordered_map<std::uint64_t, const sprite *> by_piece;
+    auto key = [](const sprite &s) { return (std::uint64_t(s.owner) << 32) | s.part; };
+    for (const auto &s : previous) by_piece.emplace(key(s), &s);
+    auto mix = [&](unsigned a, unsigned b) -> std::uint16_t {
+        return (std::uint64_t(a) * (denominator - numerator) + std::uint64_t(b) * numerator + denominator / 2) / denominator;
+    };
+    for (auto &s : out) {
+        const auto found = by_piece.find(key(s));
+        if (found == by_piece.end()) continue;
+        const auto &p = *found->second;
+        if (!s.owner || s.routine != p.routine || s.descriptor != p.descriptor ||
+            s.size != p.size || (s.attr & 0xf800) != (p.attr & 0xf800)) continue;
+        // Screen-coordinate wrapping and large discontinuities are cuts, not
+        // travel across the screen. This guard affects only optional smoothing.
+        const int dx = int(s.x) - int(p.x), dy = int(s.y) - int(p.y);
+        if (dx < -128 || dx > 128 || dy < -128 || dy > 128 ||
+            ((s.zoom ^ p.zoom) & 0x8000)) continue;
+        s.x = mix(p.x, s.x); s.y = mix(p.y, s.y);
+        s.zoom = mix(p.zoom, s.zoom);
+    }
+    return out;
 }
 
 } // namespace sh2_markvi

@@ -84,10 +84,12 @@ published as an artifact. `SH_MDP_STATE_FRAMES` can extend the replay window.
 
 ## Scope and status
 
-**SH2 Rendering > Mark VI (Experimental)** reconstructs sprite pieces before
-SH2's native list quotas and renders an extensible host list with independent
-zoom values. **Original (M2)** remains the default. Mark VI keeps the original
-game speed and animation cadence; it adds no ROM patch or frame interpolation.
+**SH2 Rendering** offers **Original (M2)** (default), **Mark VI (Native
+Refresh)** and **Mark VI (120 Hz, Experimental)**. Both Mark VI modes reconstruct
+sprite pieces before SH2's native list quotas. The 120 Hz option interpolates
+sprite positions and zoom at twice the native refresh (119.845 Hz), without
+advancing gameplay or audio faster. Background animation and changes of sprite
+artwork retain their native cadence. No additional ROM patch is required.
 See the [implementation and validation](docs/SH2_MARK_VI.md).
 
 **SH1 Deflicker (Native)** and **SH2 Deflicker (Native)** expose the original

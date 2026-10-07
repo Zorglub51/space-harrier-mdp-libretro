@@ -6,6 +6,46 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.17] - 2026-10-07
+
+### Optional Mark VI 120 Hz presentation for SH2
+
+- Add **SH2 Rendering > Mark VI (120 Hz, Experimental)**. Retain **Original
+  (M2)** as the default and offer the existing Mark VI mode as **Native Refresh**.
+- Present at twice the native refresh (119.845 Hz), interpolating matching sprite
+  positions and zoom across measured object updates. A typical 30 Hz object
+  update receives four presentation steps. Use the existing pixel sampler and
+  current artwork instead of blending consecutive frame images.
+- Preserve native game speed, CPU execution, input sampling, collisions and the
+  complete PCM stream. Run one emulated refresh per two frontend calls and split
+  its audio between them. No additional ROM patch or CPU overclock is required.
+- Preserve normal display scaling and MAME overlays on both subframes. Keep
+  background/ground animation, sprite pose changes and deliberate blinking at
+  their native cadence. Interpolation adds roughly one object-update interval
+  of visual delay, commonly 17–33 ms; collision positions remain native.
+- Skip smoothing for missing/new pieces, pose/LOD or handler changes and large
+  coordinate discontinuities. Hold the endpoint instead of extrapolating when
+  an object stops updating. This mode is experimental and is not pixel-perfect
+  M2 output.
+- Allow runtime refresh changes without restarting, completing any pending half
+  first. Report frontend refusal and retain the prior refresh rate. SH1 remains
+  unchanged; SH2 native Deflicker and optional SH1 explosions remain supported.
+- Save pending video/PCM and interpolation history, including states captured
+  between two presentations. **Earlier core states are incompatible.** Fixed
+  framebuffer capacity raises uncompressed state size to approximately 60 MB.
+
+### Validation
+
+- Compare 14,000 120 Hz presentation calls with 7,000 native-refresh calls for
+  stage 1, stage 4 and stage 3 with SH1 artwork: identical full PCM and sampled
+  RAM/68000 state, with distinct intermediate video frames.
+- Verify deterministic replay at both presentation phases, repeated refresh
+  changes, threaded mode, frontend rejection, SH1 isolation and unchanged
+  default SH2 output. Add synthetic interpolation/timeline checks and run the
+  four Mark VI probes under AddressSanitizer and UndefinedBehaviorSanitizer.
+- Publish versioned Windows x64, Linux x64, macOS arm64/x64 binaries and complete
+  corresponding source through the existing verified GitHub release workflow.
+
 ## [0.1.16] - 2026-10-07
 
 ### Experimental Mark VI rendering for SH2

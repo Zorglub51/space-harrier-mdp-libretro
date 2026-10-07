@@ -19,16 +19,41 @@ from libretro_state_regression import first_video_difference, first_audio_differ
 from libretro_deflicker_regression import IDENTITIES
 
 
+class Geometry(C.Structure):
+    _fields_ = [('width', C.c_uint), ('height', C.c_uint), ('max_width', C.c_uint), ('max_height', C.c_uint), ('aspect', C.c_float)]
+
+class Timing(C.Structure):
+    _fields_ = [('fps', C.c_double), ('sample_rate', C.c_double)]
+
+class AVInfo(C.Structure):
+    _fields_ = [('geometry', Geometry), ('timing', Timing)]
+
 class RenderingFrontend(ExplosionFrontend):
     def __init__(self, *args, rendering, deflicker, capture_dir, **kwargs):
+        self.loading = False
+        self.resolution = None
+        self.double_rate = False
+        self.reject_120 = False
         self.rendering = rendering.encode()
         self.deflicker = deflicker.encode()
         self.capture_dir = capture_dir
         super().__init__(*args, **kwargs)
 
     def environment(self, command, data):
+        if command == 32:
+            if self.loading:
+                self.report['av_update_during_load'] = True
+            info = C.cast(data, C.POINTER(AVInfo)).contents
+            accepted = not (self.reject_120 and info.timing.fps > 100)
+            self.report.setdefault('av_updates', []).append({'frame': self.frame, 'fps': info.timing.fps, 'sample_rate': info.timing.sample_rate, 'accepted': accepted})
+            if not accepted:
+                return False
+            self.double_rate = info.timing.fps > 100
         if command == 15:
             v = C.cast(data, C.POINTER(Variable)).contents
+            if self.resolution and v.key in (b'mame_alternate_renderer', b'mame_altres'):
+                v.value = b'enabled' if v.key == b'mame_alternate_renderer' else self.resolution
+                return True
             if v.key == b'mame_sh2_rendering':
                 self.report['rendering_queried'] = True
                 if self.rendering == b'missing':
@@ -40,9 +65,18 @@ class RenderingFrontend(ExplosionFrontend):
                 return True
         return super().environment(command, data)
 
+    def input_state(self, port, device, index, control):
+        saved = self.frame
+        if self.double_rate:
+            self.frame = (self.frame + 1) // 2
+        try:
+            return super().input_state(port, device, index, control)
+        finally:
+            self.frame = saved
+
     def video(self, data, width, height, pitch):
         super().video(data, width, height, pitch)
-        if self.capture_dir and self.frame % 10 == 0 and self.last_frame:
+        if self.capture_dir and self.last_frame and self.capture_start <= self.frame <= self.capture_end and self.frame % self.capture_step == 0:
             from PIL import Image
             packed, w, h = self.last_frame
             Image.frombytes('RGB', (w, h), packed, 'raw', 'BGRX').save(
@@ -54,7 +88,7 @@ def main():
     p.add_argument('--core', type=Path, required=True)
     p.add_argument('--rom', type=Path, required=True)
     p.add_argument('--report', type=Path, required=True)
-    p.add_argument('--rendering', default='original', choices=['original','mark_vi','missing','invalid'])
+    p.add_argument('--rendering', default='original', choices=['original','mark_vi','mark_vi_120','missing','invalid'])
     p.add_argument('--deflicker', default='game', choices=['game','off','on1','on2'])
     p.add_argument('--input', default='reference', choices=['reference','stage3fire','stage4fire','scripted','attract'])
     p.add_argument('--frames', type=int, default=7000)
@@ -65,6 +99,12 @@ def main():
     p.add_argument('--toggle', action='store_true')
     p.add_argument('--donor', type=Path)
     p.add_argument('--capture-dir', type=Path)
+    p.add_argument('--capture-start', type=int, default=0)
+    p.add_argument('--capture-end', type=int, default=2**31-1)
+    p.add_argument('--capture-step', type=int, default=10)
+    p.add_argument('--resolution', help='Exercise the MAME software renderer at an alternate resolution, e.g. 640x480')
+    p.add_argument('--reject-120', action='store_true', help='Simulate a frontend refusing the 120 Hz request')
+    p.add_argument('--half-state', action='store_true', help='Also replay a state taken between two 120 Hz halves')
     a = p.parse_args()
     if a.frames < 240 or a.state_frames < 1:
         p.error('at least 240 frames and a positive replay window are required')
@@ -106,6 +146,10 @@ STOP=emu.add_machine_stop_notifier(function() out:close() end)
             content.write_text(f'megadrij -skip_gameinfo -autoboot_delay 0 -autoboot_script {script} -cart {rom}\n')
             f = RenderingFrontend(a.core.resolve(), content, 'sh1' if a.donor else 'original', a.input, report,
                                   rendering=a.rendering, deflicker=a.deflicker, capture_dir=a.capture_dir)
+            f.resolution = a.resolution.encode() if a.resolution else None
+            report['resolution'] = a.resolution
+            f.reject_120 = a.reject_120
+            f.capture_start, f.capture_end, f.capture_step = a.capture_start, a.capture_end, a.capture_step
             f.thread_mode_value = b'enabled' if a.threaded else b'disabled'
             f.system_dir = os.fsencode(temp/'system'); f.save_dir = os.fsencode(temp/'save')
             core=f.core
@@ -128,10 +172,33 @@ STOP=emu.add_machine_stop_notifier(function() out:close() end)
                 return {'passed':True,'capacity':size,'frames':a.state_frames}
             try:
                 gi=GameInfo(os.fsencode(content),None,0,None)
-                loaded=bool(core.retro_load_game(C.byref(gi)));assert loaded
+                if a.reject_120:
+                    f.rendering=b'mark_vi'  # Refusal applies to runtime changes, not the initial AV query.
+                f.loading=True
+                loaded=bool(core.retro_load_game(C.byref(gi)));f.loading=False;assert loaded
+                assert not report.get('av_update_during_load', False)
+                core.retro_get_system_av_info.argtypes=[C.POINTER(AVInfo)]
+                info=AVInfo();core.retro_get_system_av_info(C.byref(info))
+                f.double_rate=info.timing.fps>100
+                report.setdefault('av_updates', []).append({'frame':0,'fps':info.timing.fps,'sample_rate':info.timing.sample_rate,'initial_query':True,'accepted':True})
+                if a.reject_120:
+                    f.rendering=a.rendering.encode();f.option_update_pending=True
                 stream=f.run_window(1,a.frames)
                 report['stream']=stream.summary()
+                if a.rendering == 'mark_vi_120' and game == 2 and not a.reject_120:
+                    hashes = {x['frame']: x['sha256'] for x in report['stream']['video_frame_hashes']}
+                    pairs = [(i, i+1) for i in hashes if i%2 and i+1 in hashes]
+                    report['distinct_half_pairs'] = sum(hashes[x]!=hashes[y] for x,y in pairs)
+                    assert any(119 < x['fps'] < 121 for x in report.get('av_updates', []))
+                    assert report['distinct_half_pairs'] > 0
                 report['state']=replay()
+                audit_data = None
+                if a.half_state:
+                    assert a.rendering == 'mark_vi_120' and game == 2 and a.frames % 2 == 0
+                    audit_data = audit.read_bytes()  # Keep the main comparison window identical.
+                    f.run_window(f.frame+1, 1)
+                    report['half_state']=replay()
+                    f.run_window(f.frame+1, 1)  # Complete the pair before cadence-switch comparisons.
                 if a.toggle:
                     report['toggles']=[]
                     # Restore one game state before each mode. Repeating a mode
@@ -142,7 +209,9 @@ STOP=emu.add_machine_stop_notifier(function() out:close() end)
                         assert core.retro_unserialize(state,size)
                         f.frame,f.last_frame,f.frames_seen=saved
                         f.rendering=mode.encode();f.option_update_pending=True
-                        capture=f.run_window(f.frame+1,300)
+                        if a.rendering == 'mark_vi_120' and game == 2 and not a.reject_120:
+                            f.frame = saved[0] if mode == 'mark_vi_120' else saved[0] // 2
+                        capture=f.run_window(f.frame+1,600 if mode=='mark_vi_120' and game==2 else 300)
                         if mode in results:
                             assert first_video_difference(results[mode],capture) is None
                             assert first_audio_difference(results[mode],capture) is None
@@ -154,7 +223,7 @@ STOP=emu.add_machine_stop_notifier(function() out:close() end)
             finally:
                 if loaded:core.retro_unload_game()
                 core.retro_deinit()
-            data=audit.read_bytes()
+            data=audit_data if audit_data is not None else audit.read_bytes()
             block=131072+18*4
             assert data and len(data)%block==0
             report['game_audit']={'sha256':hashlib.sha256(data).hexdigest(),'samples':len(data)//block,'interval_video_frames':120,'bytes_per_sample':block}
@@ -166,7 +235,10 @@ STOP=emu.add_machine_stop_notifier(function() out:close() end)
                     'game_audit_equal':b['game_audit']==report['game_audit'],
                     'video_equal':before['video_sha256']==after['video_sha256'],
                     'changed_frames':sum(x!=y for x,y in zip(before['video_frame_hashes'],after['video_frame_hashes']))}
-                assert len(before['video_frame_hashes'])==len(after['video_frame_hashes'])
+                if a.rendering == 'mark_vi_120' and b['rendering'] != 'mark_vi_120' and game == 2 and not a.reject_120:
+                    assert a.frames == b['frames'] * 2
+                else:
+                    assert len(before['video_frame_hashes'])==len(after['video_frame_hashes'])
                 assert report['comparison']['audio_equal'] and report['comparison']['game_audit_equal']
                 assert report['comparison']['video_equal']==(a.expect_video=='same')
             report['passed']=True

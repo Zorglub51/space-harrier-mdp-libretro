@@ -522,7 +522,7 @@
  	save_pointer(NAME(m_internal_sprite_attribute_table), 0x400 / 2);
  
  	save_item(NAME(m_command_pending));
-@@ -340,8 +392,16 @@
+@@ -340,8 +392,28 @@
  	save_item(NAME(m_scanline_counter));
  	save_item(NAME(m_vblank_flag));
  	save_item(NAME(m_total_scanlines));
@@ -533,25 +533,40 @@
 +	save_item(NAME(m_markvi_source));
 +	save_item(NAME(m_markvi_sat));
 +	save_item(NAME(m_markvi_build_bank));
++    save_item(NAME(m_markvi_history));
++    save_item(NAME(m_markvi_history_valid));
++    save_item(NAME(m_markvi_age));
++    save_item(NAME(m_markvi_span));
++    save_item(NAME(sh_mdp_video::second_half));
++    save_item(NAME(sh_mdp_video::pending_draw));
++    save_item(NAME(sh_mdp_video::pending_width));
++    save_item(NAME(sh_mdp_video::pending_height));
++    save_item(NAME(sh_mdp_video::pending_samples));
++    save_item(NAME(sh_mdp_video::pending_pixels));
++    save_item(NAME(sh_mdp_video::pending_audio));
 +	machine().save().register_postload(save_prepost_delegate(FUNC(sega315_5313_device::sh2_markvi_rebuild), this));
 +	save_item(NAME(m_mdp_raster_cram));
 +	save_item(NAME(m_mdp_raster_cram_set));
 +
++	m_markvi_half_bitmap = std::make_unique<bitmap_rgb32>(1280, 512);
 +	m_sprite_renderline = std::make_unique<u16[]>(1024);
  	m_highpri_renderline = std::make_unique<u8[]>(320);
  	m_video_renderline = std::make_unique<u32[]>(320);
  
-@@ -384,6 +444,9 @@
+@@ -384,6 +456,12 @@
  
  void sega315_5313_device::device_reset()
  {
++    m_markvi_history_valid = false;
++    m_markvi_age = 0; m_markvi_span = 1;
++    sh_mdp_video::clear_pending();
 +	std::fill(std::begin(m_markvi_ready), std::end(m_markvi_ready), false);
 +	m_markvi_build_bank = -1;
 +	m_markvi_sprites.clear();
  	m_command_pending = 0;
  	m_command_part1 = 0;
  	m_command_part2 = 0;
-@@ -400,6 +463,7 @@
+@@ -400,6 +478,7 @@
  	m_scanline_counter = 0;
  	m_vblank_flag = 0;
  	m_total_scanlines = 262;
@@ -559,7 +574,7 @@
  
  	sega315_5313_mode4_device::device_reset();
  }
-@@ -446,9 +510,22 @@
+@@ -446,9 +525,22 @@
  	vdp_address_inc();
  }
  
@@ -583,7 +598,7 @@
  
  	//logerror("Wrote to VSRAM addr %04x data %04x\n", m_vdp_address & 0xfffe, m_vsram[m_vdp_address >> 1]);
  
-@@ -460,7 +537,10 @@
+@@ -460,7 +552,10 @@
  	m_cram[offset] = data;
  
  	//logerror("Wrote to CRAM addr %04x data %04x\n", m_vdp_address & 0xfffe, m_cram[m_vdp_address >> 1]);
@@ -595,7 +610,7 @@
  	{
  		data = ((m_cram[offset] & 0xe) >> 1) | ((m_cram[offset] & 0xe0) >> 2) | ((m_cram[offset] & 0xe00) >> 3);
  		m_palette_lookup[offset] = data;
-@@ -468,9 +548,9 @@
+@@ -468,9 +563,9 @@
  		{
  			if (m_palwrite_base != -1)
  			{
@@ -608,7 +623,7 @@
  			}
  		}
  	}
-@@ -478,14 +558,53 @@
+@@ -478,14 +573,53 @@
  
  void sega315_5313_device::vdp_cram_write(u16 data)
  {
@@ -663,7 +678,7 @@
  
  	/*
  	0000b : VRAM read
-@@ -711,6 +830,20 @@
+@@ -711,6 +845,20 @@
  /* Instant, but we pause the 68k a bit */
  void sega315_5313_device::insta_68k_to_vram_dma(u32 source, int length)
  {
@@ -684,7 +699,7 @@
  	if (length == 0x00) length = 0xffff;
  
  	/* This is a hack until real DMA timings are implemented */
-@@ -742,7 +875,7 @@
+@@ -742,7 +890,7 @@
  	{
  		//if (m_vdp_address >= 0x80) return; // abandon
  
@@ -693,7 +708,7 @@
  		source += 2;
  
  		if (source > 0xffffff) source = 0xfe0000;
-@@ -783,9 +916,103 @@
+@@ -783,9 +931,103 @@
  	m_regs[0x17] = (source >> 17) & 0xff;
  }
  
@@ -797,7 +812,7 @@
  #if 0
  	const u32 source = (MEGADRIVE_REG15_DMASOURCE1 | (MEGADRIVE_REG16_DMASOURCE2 << 8) | ((MEGADRIVE_REG17_DMASOURCE3 & 0xff) << 16)) << 1;
  	const u16 length = (MEGADRIVE_REG13_DMALENGTH1 | (MEGADRIVE_REG14_DMALENGTH2 << 8)) << 1;
-@@ -879,8 +1106,13 @@
+@@ -879,8 +1121,13 @@
  			if (regnum & 0x20) osd_printf_debug("reg error\n");
  
  			vdp_set_register(regnum & 0x1f, value);
@@ -813,7 +828,7 @@
  		}
  		else
  		{
-@@ -890,6 +1122,91 @@
+@@ -890,6 +1137,91 @@
  			//logerror("VDP Write Part 1 setting Code %02x Address %04x\n", m_vdp_code, m_vdp_address);
  		}
  	}
@@ -905,7 +920,7 @@
  }
  
  void sega315_5313_device::vdp_w(offs_t offset, u16 data, u16 mem_mask)
-@@ -953,7 +1270,7 @@
+@@ -953,7 +1285,7 @@
  
  u16 sega315_5313_device::vdp_cram_r(void)
  {
@@ -914,7 +929,7 @@
  }
  
  u16 sega315_5313_device::data_port_r()
-@@ -1396,8 +1713,278 @@
+@@ -1396,8 +1728,316 @@
  
  */
  
@@ -976,6 +991,7 @@
 +
 +void sega315_5313_device::sh2_markvi_rebuild()
 +{
++    m_markvi_smooth_valid = false;
 +	m_markvi_sprites.clear();
 +	if (!m_markvi_ready[2] || !m_space68k)
 +		return;
@@ -1103,6 +1119,43 @@
 +	}
 +}
 +
++// Run once per native refresh. Keep the last two emitter snapshots and play
++// their movement over the measured update interval, at two presentation times.
++// No CPU cycles, timers, object fields or collision data are modified.
++void sega315_5313_device::sh2_markvi_begin_frame()
++{
++    m_markvi_smooth_valid = false;
++    if (!sh_mdp_video::hz120 || !m_markvi_ready[2]) {
++        m_markvi_history_valid = false;
++        m_markvi_phases[0].clear(); m_markvi_phases[1].clear();
++        return;
++    }
++    if (!m_markvi_history_valid) {
++        std::copy_n(m_markvi_ram[2], 0x10000, m_markvi_history[0]);
++        std::copy_n(m_markvi_ram[2], 0x10000, m_markvi_history[1]);
++        m_markvi_age = 0; m_markvi_span = 1;
++        m_markvi_history_valid = true;
++    } else {
++        ++m_markvi_age;
++        if (std::memcmp(m_markvi_history[1], m_markvi_ram[2], sizeof(m_markvi_history[1]))) {
++            std::copy_n(m_markvi_history[1], 0x10000, m_markvi_history[0]);
++            std::copy_n(m_markvi_ram[2], 0x10000, m_markvi_history[1]);
++            m_markvi_span = std::max(1U, m_markvi_age);
++            m_markvi_age = 0;
++        }
++    }
++    m_markvi_smooth_valid = true;
++    std::vector<sh2_markvi::sprite> previous;
++    auto read = [this](u32 a) -> u16 {
++        return a >= 0xfe0000 ? m_markvi_history[0][(a - 0xfe0000) >> 1] :
++            (a < 0x400000 ? m_space68k->read_word(a) : 0);
++    };
++    if (!sh2_markvi::build(read, previous)) previous.clear();
++    for (unsigned phase = 0; phase < 2; ++phase)
++        m_markvi_phases[phase] = sh2_markvi::interpolate(previous, m_markvi_sprites,
++            std::min(m_markvi_age, m_markvi_span) * 2 + phase + 1, m_markvi_span * 2);
++}
++
 +bool sega315_5313_device::mdp_render_markvi_spriteline(int scanline)
 +{
 +	if (!m_sh2_text_compat || !m_markvi_ready[2] || !sh_mdp_video::markvi.load(std::memory_order_relaxed))
@@ -1193,7 +1246,7 @@
  	const int ytile_shift = (m_imode == 3) ? 4 : 3;
  	const int yline_mask = (m_imode == 3) ? 0xf : 0x7;
  	gfx_element *spr_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
-@@ -1416,7 +2003,7 @@
+@@ -1416,7 +2056,7 @@
  	}
  
  	/* Clear our Render Buffer */
@@ -1202,7 +1255,7 @@
  
  	{
  		int ypos, xpos, addr;
-@@ -1596,6 +2183,9 @@
+@@ -1596,6 +2236,9 @@
  	tile.pri =   (tile_dat & 0x8000) >> 15;
  	u16 code =   (tile_dat & 0x07ff);
  
@@ -1212,7 +1265,7 @@
  	if (m_imode == 3)
  		code &= 0x3ff;
  
-@@ -1662,8 +2252,192 @@
+@@ -1662,8 +2305,192 @@
  }
  
  /* Clean up this function (!) */
@@ -1405,7 +1458,7 @@
  	gfx_element *tile_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
  	u16 base_w = 0;
  
-@@ -1687,7 +2461,7 @@
+@@ -1687,7 +2514,7 @@
  	/* Clear our Render Buffer */
  	for (int x = 0; x < horz; x++)
  	{
@@ -1414,7 +1467,7 @@
  	}
  
  	memset(m_highpri_renderline.get(), 0, horz);
-@@ -1847,7 +2621,7 @@
+@@ -1847,7 +2674,7 @@
  	int vscroll;
  	/* Low Priority B Tiles */
  	{
@@ -1423,7 +1476,7 @@
  		{   /* 20x 16x1 blocks */
  			int vcolumn;
  
-@@ -1910,6 +2684,7 @@
+@@ -1910,6 +2737,7 @@
  		}
  		/* END */
  	}
@@ -1431,7 +1484,7 @@
  	/* Low Priority A Tiles + Window(!) */
  
  	{
-@@ -1934,7 +2709,8 @@
+@@ -1934,7 +2762,8 @@
  
  		/* Non Window Part */
  
@@ -1441,7 +1494,7 @@
  		{   /* 20x 16x1 blocks */
  		//  int xx;
  			int vcolumn;
-@@ -2003,6 +2779,25 @@
+@@ -2003,6 +2832,25 @@
  		}
  	}
  		/* END */
@@ -1467,7 +1520,7 @@
  
  /* MEGADRIVE_REG0C_SHADOW_HIGLIGHT */
  	/* Low Priority Sprites */
-@@ -2139,9 +2934,9 @@
+@@ -2139,9 +2987,9 @@
  			if (!MEGADRIVE_REG0_SPECIAL_PAL) // 3 bit color mode, correct?
  				clut &= 0x49; // (1 << 6) | (1 << 3) | (1 << 0);
  
@@ -1480,7 +1533,7 @@
  		}
  	}
  
-@@ -2155,7 +2950,13 @@
+@@ -2155,7 +3003,13 @@
  		else
  			m_render_line_raw[srcx] = 0x000;
  
@@ -1495,7 +1548,7 @@
  		{
  			if (dat & 0x10000)
  			{
-@@ -2217,7 +3018,7 @@
+@@ -2217,7 +3071,7 @@
  		}
  	}
  
@@ -1504,6 +1557,35 @@
  		m_32x_scanline_helper_func(scanline);
  	if (!m_32x_scanline_func.isnull())
  	{
+@@ -2239,10 +3093,24 @@
+ 
+ 	if (scanline >= 0 && scanline < m_visible_scanlines)
+ 	{
+-		//if (MEGADRIVE_REG01_DMA_ENABLE == 0) osd_printf_debug("off\n");
+-		render_spriteline_to_spritebuffer(get_scanline_counter());
+-		render_videoline_to_videobuffer(scanline);
+-		render_videobuffer_to_screenbuffer(scanline);
++        if (scanline == 0) sh2_markvi_begin_frame();
++        const bool smooth = sh_mdp_video::hz120 && m_markvi_ready[2] && m_markvi_history_valid && m_markvi_smooth_valid;
++        if (smooth) {
++            m_markvi_sprites.swap(m_markvi_phases[0]);
++            render_spriteline_to_spritebuffer(scanline);
++            render_videoline_to_videobuffer(scanline);
++            m_render_bitmap.swap(m_markvi_half_bitmap);
++            render_videobuffer_to_screenbuffer(scanline);
++            m_render_bitmap.swap(m_markvi_half_bitmap);
++            m_markvi_sprites.swap(m_markvi_phases[0]);
++            m_markvi_sprites.swap(m_markvi_phases[1]);
++        }
++        render_spriteline_to_spritebuffer(scanline);
++        render_videoline_to_videobuffer(scanline);
++        render_videobuffer_to_screenbuffer(scanline);
++        if (smooth) m_markvi_sprites.swap(m_markvi_phases[1]);
++        else if (sh_mdp_video::hz120 && !m_use_alt_timing)
++            std::copy_n(&m_render_bitmap->pix(scanline), 1280, &m_markvi_half_bitmap->pix(scanline));
+ 	}
+ }
+ 
 --- a/src/devices/video/315_5313.h
 +++ b/src/devices/video/315_5313.h
 @@ -1,24 +1,25 @@
@@ -1616,7 +1698,39 @@
  	int get_scanline_counter();
  
  	TIMER_CALLBACK_MEMBER(render_scanline);
-@@ -220,36 +270,73 @@
+@@ -95,30 +145,31 @@
+ 	void set_total_scanlines(int total) { m_base_total_scanlines = total; }
+ 	void set_framerate(int rate) { m_framerate = rate; }
+ 	void set_vdp_pal(bool pal) { m_vdp_pal = pal ? 1 : 0; }
+ 	void set_use_cram(int cram) { m_use_cram = cram; }
+ 	void set_dma_delay(int delay) { m_dma_delay = delay; }
+ 	double get_framerate() { return has_screen() ? screen().frame_period().as_hz() : double(m_framerate); }
+ 	int get_imode() { return m_imode; }
+ 
+ 	void vdp_clear_bitmap()
+ 	{
+ 		if (m_render_bitmap)
+ 			m_render_bitmap->fill(0);
+ 	}
+ 
+ 	std::unique_ptr<bitmap_rgb32> m_render_bitmap;
++    std::unique_ptr<bitmap_rgb32> m_markvi_half_bitmap;
+ 	std::unique_ptr<u32[]> m_render_line;
+ 	std::unique_ptr<u16[]> m_render_line_raw;
+ 
+ 	TIMER_DEVICE_CALLBACK_MEMBER(megadriv_scanline_timer_callback_alt_timing);
+ 	TIMER_DEVICE_CALLBACK_MEMBER(megadriv_scanline_timer_callback);
+ 	timer_device* m_megadriv_scanline_timer;
+ 
+ 	inline u16 vdp_get_word_from_68k_mem(u32 source);
+ 
+ protected:
+ 	virtual void device_post_load() override;
+ 	virtual void device_start() override ATTR_COLD;
+ 	virtual void device_reset() override ATTR_COLD;
+ 	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
+ 
+@@ -220,36 +271,79 @@
  	void vdp_address_inc();
  	void vdp_set_register(int regnum, u8 value);
  
@@ -1664,6 +1778,12 @@
 +	u16 m_markvi_sat[2][0x140]{};
 +	int m_markvi_build_bank = -1;
 +	std::vector<sh2_markvi::sprite> m_markvi_sprites;
++    u16 m_markvi_history[2][0x10000]{};
++    bool m_markvi_history_valid = false;
++    bool m_markvi_smooth_valid = false;
++    unsigned m_markvi_age = 0, m_markvi_span = 1;
++    std::vector<sh2_markvi::sprite> m_markvi_phases[2];
++    void sh2_markvi_begin_frame();
 +	void sh2_markvi_rebuild();
 +	void sh2_markvi_dma(u32 source, u32 address, u32 count);
 +	bool mdp_render_markvi_spriteline(int scanline);
@@ -1693,7 +1813,15 @@
  
 --- a/src/mame/sega/megadriv.cpp
 +++ b/src/mame/sega/megadriv.cpp
-@@ -328,11 +328,17 @@ void md_base_state::megadriv_68k_base_map(address_map &map)
+@@ -25,6 +25,7 @@
+ 
+ #include "emu.h"
+ #include "megadriv.h"
++#include "bus/megadrive/sh_video_options.h"
+ 
+ #include "machine/input_merger.h"
+ 
+@@ -328,11 +329,17 @@
  	map(0xa11100, 0xa11101).rw(FUNC(md_base_state::megadriv_68k_check_z80_bus), FUNC(md_base_state::megadriv_68k_req_z80_bus));
  	map(0xa11200, 0xa11201).w(FUNC(md_base_state::megadriv_68k_req_z80_reset));
  
@@ -1716,17 +1844,25 @@
  }
  
  void md_base_state::megadriv_68k_map(address_map &map)
-@@ -651,6 +657,9 @@ uint32_t md_core_state::screen_update_megadriv(screen_device &screen, bitmap_rgb
+@@ -651,6 +658,17 @@
  		}
  	}
  
-+	// Optional MDP inspection; the core outputs the current frame unchanged.
++	if (sh_mdp_video::hz120 && !m_vdp->m_use_alt_timing) {
++        const auto &visible = screen.visible_area();
++        sh_mdp_video::screen = &screen;
++        sh_mdp_video::half_texture = &m_vdp->m_markvi_half_bitmap->pix(visible.min_y, visible.min_x);
++        sh_mdp_video::texture_width = visible.width();
++        sh_mdp_video::texture_height = visible.height();
++        sh_mdp_video::texture_stride = m_vdp->m_markvi_half_bitmap->rowpixels();
++    }
++    // Optional MDP inspection; the core outputs the current frame unchanged.
 +	m_vdp->mdp_debug_frame();
 +
  	return 0;
  }
  
-@@ -691,7 +700,7 @@ void md_base_state::machine_reset()
+@@ -691,7 +709,7 @@
  	m_genz80.z80_run_timer->adjust(attotime::zero);
  
  	if (m_megadrive_ram)
@@ -1822,13 +1958,38 @@
  
  /* forward decls / externs / prototypes */
  
-@@ -379,6 +382,19 @@
+@@ -172,7 +175,21 @@
+       memset(output_audio_buffer.data + output_audio_buffer.size, 0, samples * sizeof(*output_audio_buffer.data));
+       output_audio_buffer.size += samples;
+    }
+-   audio_batch_cb(output_audio_buffer.data, output_audio_buffer.size / 2);
++   if (sh_mdp_video::hz120) {
++      const unsigned first_samples = (output_audio_buffer.size / 4) * 2;
++      const unsigned remaining = output_audio_buffer.size - first_samples;
++      if (remaining <= std::size(sh_mdp_video::pending_audio)) {
++         std::copy_n(output_audio_buffer.data + first_samples, remaining, sh_mdp_video::pending_audio);
++         sh_mdp_video::pending_samples = remaining;
++         audio_batch_cb(output_audio_buffer.data, first_samples / 2);
++      } else {
++         // Keep all PCM even if an unusual frontend/audio configuration queues
++         // more than a native refresh; never truncate it to fit the half queue.
++         sh_mdp_video::pending_samples = 0;
++         audio_batch_cb(output_audio_buffer.data, output_audio_buffer.size / 2);
++      }
++   } else
++      audio_batch_cb(output_audio_buffer.data, output_audio_buffer.size / 2);
+    output_audio_buffer.size = 0;
+ 
+    audio_ready = false;
+@@ -379,6 +396,21 @@
  
  static void check_variables(void)
  {
 +   struct retro_variable sh2_video = {CORE_NAME "_sh2_rendering", NULL};
 +   const bool has_sh2_video = environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &sh2_video);
-+   sh_mdp_video::markvi.store(has_sh2_video && sh2_video.value && !strcmp(sh2_video.value, "mark_vi"), std::memory_order_relaxed);
++   const bool smooth = has_sh2_video && sh2_video.value && !strcmp(sh2_video.value, "mark_vi_120");
++   sh_mdp_video::request_120.store(smooth, std::memory_order_relaxed);
++   sh_mdp_video::markvi.store(smooth || (has_sh2_video && sh2_video.value && !strcmp(sh2_video.value, "mark_vi")), std::memory_order_relaxed);
 +
 +   // Atomic preferences are consumed by the emulation thread at native reads.
 +   // Missing/unknown values always restore control to the in-game option.
@@ -1842,7 +2003,7 @@
     struct retro_variable var = {0};
  
     var.key   = CORE_NAME "_joystick_deadzone";
-@@ -714,9 +730,9 @@
+@@ -714,9 +746,9 @@
  {
     memset(info, 0, sizeof(*info));
  
@@ -1854,7 +2015,16 @@
     info->need_fullpath    = true;
     info->block_extract    = true;
  }
-@@ -874,7 +890,10 @@
+@@ -748,7 +780,7 @@
+    info->geometry.max_width    = max_width;
+    info->geometry.max_height   = max_height;
+ 
+-   info->timing.fps            = retro_fps;
++   info->timing.fps            = retro_fps * (sh_mdp_video::hz120 ? 2.0 : 1.0);
+    info->timing.sample_rate    = sample_rate;
+ }
+ 
+@@ -874,15 +906,78 @@
  {
     free_output_audio_buffer();
     if (retro_load_ok)
@@ -1865,7 +2035,9 @@
  }
  
  void retro_reset(void)
-@@ -883,6 +902,45 @@
+ {
++   sh_mdp_video::clear_pending();
+    mame_reset = 1;
     coin_inserted = 0;
  }
  
@@ -1908,10 +2080,30 @@
 +   return true;
 +}
 +
++static bool rate_request_seen = false;
++static bool rate_request_value = false;
++
++static void update_markvi_refresh()
++{
++   const bool wanted = sh_mdp_explosions::eligible && sh_mdp_video::request_120.load(std::memory_order_relaxed);
++   if (rate_request_seen && wanted == rate_request_value) return;
++   rate_request_seen = true; rate_request_value = wanted;
++   if (wanted == sh_mdp_video::hz120) return;
++   const bool previous = sh_mdp_video::hz120;
++   sh_mdp_video::hz120 = wanted;
++   struct retro_system_av_info info;
++   retro_get_system_av_info(&info);
++   if (!environ_cb(RETRO_ENVIRONMENT_SET_SYSTEM_AV_INFO, &info)) {
++      sh_mdp_video::hz120 = previous;
++      struct retro_message message = {"Frontend rejected the refresh change; keeping the previous refresh rate.", 360};
++      environ_cb(RETRO_ENVIRONMENT_SET_MESSAGE, &message);
++   }
++}
++
  void retro_run(void)
  {
     bool updated = false;
-@@ -890,15 +948,24 @@
+@@ -890,15 +985,39 @@
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE_UPDATE, &updated) && updated)
     {
        check_variables();
@@ -1923,6 +2115,21 @@
 +         update_runtime_variables(false);
 +   }
 +
++   // Finish a native refresh before changing cadence. This call does not run
++   // the CPU, read input again, or generate any additional audio samples.
++   if (sh_mdp_video::second_half) {
++      if (sh_mdp_video::pending_width <= 4096 && sh_mdp_video::pending_height <= 3072 &&
++          sh_mdp_video::pending_samples <= std::size(sh_mdp_video::pending_audio)) {
++         video_cb(sh_mdp_video::pending_draw ? sh_mdp_video::pending_pixels : NULL,
++            sh_mdp_video::pending_width, sh_mdp_video::pending_height, sh_mdp_video::pending_width * 4);
++         audio_batch_cb(sh_mdp_video::pending_audio, sh_mdp_video::pending_samples / 2);
++      }
++      sh_mdp_video::second_half = false;
++      sh_mdp_video::pending_samples = 0;
++      return;
++   }
++   update_markvi_refresh();
++   sh_mdp_video::half_valid = false;
 +   if (retro_load_ok && !retro_pause)
        retro_main_loop();
     RLOOP = 1;
@@ -1941,10 +2148,31 @@
        retro_autoloadfastforwarding();
  
     /* LED interface */
-@@ -932,6 +999,24 @@
+@@ -916,7 +1035,16 @@
+ #if defined(HAVE_OPENGL) || defined(HAVE_OPENGLES)
+    do_glflush();
+ #else
+-   if (draw_this_frame)
++   if (sh_mdp_video::hz120) {
++      sh_mdp_video::pending_draw = draw_this_frame;
++      sh_mdp_video::pending_width = fb_width;
++      sh_mdp_video::pending_height = fb_height;
++      if (draw_this_frame)
++         std::copy_n(videoBuffer, size_t(fb_width) * fb_height, sh_mdp_video::pending_pixels);
++      const void *pixels = sh_mdp_video::half_valid ? sh_mdp_video::half_output.data() : videoBuffer;
++      video_cb(draw_this_frame ? pixels : NULL, fb_width, fb_height, fb_width << LOG_PIXEL_BYTES);
++      sh_mdp_video::second_half = true;
++   } else if (draw_this_frame)
+       video_cb(videoBuffer, fb_width, fb_height, fb_width << LOG_PIXEL_BYTES);
+    else
+       video_cb(NULL, fb_width, fb_height, fb_width << LOG_PIXEL_BYTES);
+@@ -932,6 +1060,27 @@
  bool retro_load_game(const struct retro_game_info *info)
  {
     retro_load_ok = false;
++   sh_mdp_video::clear_pending();
++   sh_mdp_video::hz120 = false;
++   rate_request_seen = false;
 +   retro_pause = 0;
 +   first_run = true;
 +   draw_this_frame = true;
@@ -1966,7 +2194,7 @@
  
     check_variables();
  
-@@ -962,7 +1047,20 @@
+@@ -962,7 +1111,20 @@
        strcpy(RPATH, info->path);
     }
  
@@ -1988,7 +2216,24 @@
  
     /* Force success with empty content */
     if (!RPATH[0])
-@@ -988,19 +1086,34 @@
+@@ -979,28 +1141,51 @@
+ 
+    retro_load_ok = true;
+    update_runtime_variables(true);
++   // Initial timing is reported by retro_get_system_av_info. Libretro only
++   // permits SET_SYSTEM_AV_INFO from retro_run, for later option changes.
++   sh_mdp_video::hz120 = sh_mdp_explosions::eligible && sh_mdp_video::request_120.load(std::memory_order_relaxed);
++   rate_request_seen = true;
++   rate_request_value = sh_mdp_video::hz120;
+ 
+    return true;
+ }
+ 
+ void retro_unload_game(void)
+ {
++   sh_mdp_video::clear_pending();
++   sh_mdp_video::hz120 = false;
++   rate_request_seen = false;
     if (     mame_machine_manager::instance() != NULL
           && mame_machine_manager::instance()->machine() != NULL
           && mame_machine_manager::instance()->machine()->options().autosave()
@@ -2029,7 +2274,7 @@
  
     return 0;
  }
-@@ -1008,9 +1121,27 @@
+@@ -1008,9 +1193,27 @@
  {
     save_error error = STATERR_NOT_FOUND;
     if (     mame_machine_manager::instance() != NULL
@@ -2059,7 +2304,7 @@
  
     if (error != STATERR_NONE)
        log_cb(RETRO_LOG_ERROR, "State save error %d.\n", error);
-@@ -1018,11 +1149,42 @@
+@@ -1018,11 +1221,42 @@
  }
  bool retro_unserialize(const void *data, size_t size)
  {
@@ -2127,7 +2372,7 @@
  void audio_effect_filter::reset_lowpass_active()
 --- a/src/osd/libretro/libretro-internal/libretro_core_options.h
 +++ b/src/osd/libretro/libretro-internal/libretro_core_options.h
-@@ -83,6 +83,67 @@
+@@ -83,6 +83,68 @@
  };
  
  struct retro_core_option_v2_definition option_defs_us[] = {
@@ -2135,12 +2380,13 @@
 +      CORE_NAME "_sh2_rendering",
 +      "SH2 Rendering",
 +      NULL,
-+      "Mark VI reconstructs SH2 sprites before the native list quotas, with an extensible host list and per-sprite zoom. It removes list, per-line sprite and source-column budgets. Original game speed and animation cadence are retained. Original (M2) is the faithful default.",
++      "Mark VI reconstructs SH2 sprites before the native list quotas, with an extensible host list and per-sprite zoom. It removes list, per-line sprite and source-column budgets. 120 Hz interpolates sprite positions and zoom at twice the native refresh, with a small visual delay. Game logic, audio, background animation and sprite artwork timing stay native. Original (M2) is the faithful default.",
 +      NULL,
 +      "hacks",
 +      {
 +         { "original", "Original (M2)" },
-+         { "mark_vi", "Mark VI (Experimental)" },
++         { "mark_vi", "Mark VI (Native Refresh)" },
++         { "mark_vi_120", "Mark VI (120 Hz, Experimental)" },
 +         { NULL, NULL },
 +      },
 +      "original"
@@ -2255,3 +2501,39 @@
  	uint16_t tmss_r(offs_t offset);
  	void tmss_swap_w(uint16_t data);
  };
+--- a/src/osd/modules/render/drawretro.cpp
++++ b/src/osd/modules/render/drawretro.cpp
+@@ -11,6 +11,7 @@
+ 
+ #include "drawretro.h"
+ #include "rendersw.hxx"
++#include "bus/megadrive/sh_video_options.h"
+ 
+ //============================================================
+ //  destructor
+@@ -78,6 +79,25 @@
+ 	// draw the primitives to the bitmap
+ 	window().m_primlist->acquire_lock();
+ 	software_renderer<uint32_t, 0,0,0, 16,8,0>::draw_primitives(*window().m_primlist, m_bmdata, width, height, width);
++    if (sh_mdp_video::hz120 && sh_mdp_video::half_texture) {
++        std::vector<std::pair<render_primitive *, render_texinfo>> restored;
++        for (auto &prim : *window().m_primlist) {
++            if (prim.texture.base && prim.container && prim.container->screen() == sh_mdp_video::screen) {
++                restored.emplace_back(&prim, prim.texture);
++                prim.texture.base = const_cast<uint32_t *>(sh_mdp_video::half_texture);
++                prim.texture.width = sh_mdp_video::texture_width;
++                prim.texture.height = sh_mdp_video::texture_height;
++                prim.texture.rowpixels = sh_mdp_video::texture_stride;
++            }
++        }
++        if (!restored.empty()) {
++            sh_mdp_video::half_output.resize(size_t(width) * height);
++            software_renderer<uint32_t, 0,0,0, 16,8,0>::draw_primitives(*window().m_primlist,
++                sh_mdp_video::half_output.data(), width, height, width);
++            sh_mdp_video::half_valid = true;
++        }
++        for (auto &entry : restored) entry.first->texture = entry.second;
++    }
+ 	window().m_primlist->release_lock();
+ 
+ 	return 0;

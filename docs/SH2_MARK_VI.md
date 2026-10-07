@@ -1,6 +1,7 @@
 # Mark VI: unbounded SH2 sprite presentation
 
-`mame_sh2_rendering` offers `original` (default) and `mark_vi` (experimental).
+`mame_sh2_rendering` offers `original` (default), `mark_vi` (native refresh) and
+`mark_vi_120` (experimental interpolation).
 Only the authenticated SH2 cartridge enables the enhancement. The original
 M2-compatible pixel path remains unchanged. No additional ROM patch, guest
 RAM write, CPU overclock or extra game update is needed for Mark VI.
@@ -38,16 +39,58 @@ geometry changes caused by a bank clear/replacement invalidate the snapshot.
 Direct VRAM writes/fills also invalidate a displayed host list. This prevents
 old title sprites from appearing with newly loaded stage artwork.
 
-Three fixed RAM snapshots and their lifecycle metadata are saved. The variable
-host vector is rebuilt after state load. This changes the MAME state layout:
-pre-0.1.16 states are incompatible. Both rendering modes within 0.1.16 share the
-new format, and the current core preference controls the next rendered frame.
+The three native RAM snapshots and their lifecycle metadata are saved. The
+variable host list is rebuilt after state load. Version 0.1.17 also saves the
+presentation history and pending half-frame output; earlier state layouts are
+incompatible. All current rendering choices share one state size/layout.
 
-This changes presentation, not simulation. Extra construction/drawing runs on
-the host, without consuming additional emulated 68000 cycles. Native Deflicker
-continues to control the original guest lists; Mark VI obtains pieces before
-those lists lose entries. Original speed, collisions, audio and animation
-cadence are retained. Interpolation and new animation poses are not included.
+## Optional 120 Hz presentation
+
+The original and native-refresh Mark VI paths retain their existing cadence.
+`mark_vi_120` negotiates twice the native screen refresh with libretro:
+119.8454895 Hz for the supported NTSC cartridge. `retro_fps` remains the native
+clock used by MAME and the audio fallback. Every two `retro_run` calls execute
+one native main loop. The existing stereo PCM sequence is split between the
+two calls without resampling, inserting or dropping samples. The second call
+does not execute the CPU or poll game input. A pending half is completed before
+a runtime cadence change; a refused frontend request preserves the prior rate.
+
+At each native frame boundary, two emitter snapshots identify the observed
+object update interval. Each matching sprite piece is drawn at two points
+along that interval, including interpolated position and zoom. A two-refresh
+object update therefore has four presentation steps, rather than two duplicate
+pictures. Interpolation is clamped at the endpoint; there is no extrapolation.
+This delays geometry by approximately one object-update interval, commonly
+17–33 ms. This first implementation does not interpolate the background/ground
+or generate intermediate sprite artwork. Collision and input timing remain
+native, so interpolated visuals can be offset from current collision positions.
+
+Matching uses guest object address, handler, pose/LOD descriptor, piece and
+mirror/shadow identity. Tile-cache relocation uses current artwork. Changes of
+size, flip or palette skip interpolation. Missing/hidden pieces disappear
+immediately; new pieces appear immediately. Coordinate wraps or displacements
+larger than 128 pixels in either axis snap to the current position. These are
+presentation guards, not sprite/count/computing quotas. An indistinguishable
+same-slot, same-handler reuse between observations cannot be proven to be the
+same object; this remains an experimental visual enhancement.
+
+Both subframes use the existing M2 pixel sampler and compositor, with the
+current raster palette, tile data and priority rules. A mid-frame list rebuild
+falls back to the current native list until the next frame boundary. The
+software renderer substitutes the screen texture for the first half and draws
+the same MAME primitives, preserving normal scaling, colour settings and UI
+overlays. Pixels from consecutive frames are never blended together.
+
+The pending second framebuffer and PCM are saved, including at odd presentation
+boundaries. The framebuffer reservation matches libretro's existing maximum
+4096×3072 buffer, adding roughly 50 MB to uncompressed states (about 60 MB total).
+This fixed capacity avoids growing a state buffer cached by the frontend after
+an option or resolution change. Transient interpolation vectors and renderer
+pointers are not serialized. Same-mode state replay and runtime mode changes
+are tested; changing preferences necessarily changes subsequent presentation.
+
+No additional ROM patch, guest RAM write, CPU overclock or gameplay update is
+introduced. Native Deflicker continues to control the guest lists independently.
 
 ## Evidence and limits
 
@@ -76,5 +119,17 @@ hash and integration results. Private game data and images are not distributed.
 These are targeted sequences and controlled constructor comparisons, not full
 playthroughs of every stage/boss or an independent original-ARM oracle for the
 entire constructor. Capacity limits have been removed from this host path;
-intentional blinking remains. No universal real-time performance or 120 FPS
-claim is made. The original M2 renderer still passes its 76-case native fixture.
+intentional blinking remains. No universal real-time performance claim is made.
+The original M2 renderer still passes its 76-case native fixture.
+
+## 0.1.17 interpolation validation
+
+[SH2_120HZ_VALIDATION.json](SH2_120HZ_VALIDATION.json) records core hashes and
+results without game assets. At equal emulated time, 14,000 presentation calls
+are compared with 7,000 native-refresh calls. Full PCM streams and periodic
+128 KiB RAM/eighteen-register samples match for stages 1 and 4, and stage 3 with
+SH1 explosion artwork. Tests also cover both save phases, threaded mode,
+repeated refresh changes, SH1 isolation, unchanged default rendering and a
+frontend rejecting the new refresh rate. Synthetic tests verify four distinct
+geometry steps, long lists, identity changes, cuts, holds and invalidation.
+These targeted sequences do not prove full-game visual correctness.

@@ -76,24 +76,40 @@ See [Troubleshooting](docs/TROUBLESHOOTING.md) if the core or game does not load
 
 ## Mark VI rendering for SH2
 
-In **Quick Menu > Core Options > Emulation Hacks > SH2 Rendering**, choose
-**Mark VI (Experimental)**. It reconstructs the sprite pieces before the game's
-40/80-entry quotas, then draws an extensible list without per-line limits or
-128-entry/zoom-index wrapping. **Original (M2)** remains the faithful default.
+In **Quick Menu > Core Options > Emulation Hacks > SH2 Rendering**, choose:
 
-Changes apply without restarting. SH1 is unaffected. Mark VI can be combined
+- **Original (M2)**: faithful default, including the original sprite limits.
+- **Mark VI (Native Refresh)**: reconstruct sprite pieces before the game's
+  40/80-entry quotas and render an extensible list without per-line limits or
+  128-entry/zoom-index wrapping.
+- **Mark VI (120 Hz, Experimental)**: the same extended rendering, plus
+  interpolation of sprite positions and zoom at twice the native refresh
+  (119.845 Hz). A 120 Hz or faster display is needed to see all the extra frames.
+
+Changes apply without restarting. SH1 is unaffected. Both Mark VI modes work
 with native Deflicker and the SH1 explosion option. No additional ROM patch is
 required, and your ROM file stays unchanged.
 
-The original game speed and animation cadence are retained. This mode removes
-capacity-related omissions in the sprite constructor/renderer; it preserves
-intentional flashing and visibility decisions. It does not add objects to the
-game, create animation poses or provide 60/120 FPS interpolation. Rendering
-more sprites can increase work on the host computer.
+The 120 Hz mode keeps game logic, collisions, input sampling and audio at their
+original speed. It adds intermediate positions, not new sprite drawings or
+image blending. It follows the measured object-update interval and introduces
+approximately one such interval of visual delay (usually around 17–33 ms).
+Background/ground animation, pose changes and intentional blinking remain native.
+New, hidden or removed pieces are not recreated from previous images; pose/LOD
+changes and large position discontinuities are displayed immediately. This is
+an optional visual enhancement, not a pixel-perfect reproduction of M2's output.
 
-**Save states made with earlier core versions cannot be loaded in 0.1.16.**
-Within this version, states work in either rendering mode. Keep the same mode
-when checking identical visual replay.
+If the frontend refuses the refresh change, the core reports it and keeps the
+previous refresh rate. More rendering work is performed on the host computer;
+no emulated CPU overclock is needed. The frontend must be able to sustain the
+negotiated refresh rate. Use Native Refresh to compare with the enhancement off.
+
+**Save states from earlier core versions are incompatible with 0.1.17.**
+All three rendering choices share the new format. Keep the same mode for
+identical visual replay. Pending half-frame video and PCM are included, so
+states also restore correctly between two 120 Hz presentations. The maximum
+framebuffer reservation increases uncompressed state size to about 60 MB;
+compressed state size depends on the frontend and scene.
 
 ## Native Deflicker options
 
