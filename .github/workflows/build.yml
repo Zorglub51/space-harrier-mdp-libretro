@@ -94,6 +94,33 @@ jobs:
           compression-level: 0
           if-no-files-found: error
 
+  windows-runtime:
+    name: Windows x64 runtime smoke test
+    needs: windows
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - uses: actions/setup-python@v6
+        with:
+          python-version: '3.12'
+          architecture: x64
+      - uses: actions/download-artifact@v8
+        with:
+          name: space-harrier-mdp-windows-x86_64
+          path: downloads
+      - name: Load, run, save and restore the packaged DLL
+        shell: pwsh
+        run: ./scripts/check-windows-runtime.ps1 downloads
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: windows-runtime-report
+          path: test-results/windows-runtime/*
+          if-no-files-found: warn
+
   macos:
     name: macOS ${{ matrix.arch }}
     timeout-minutes: 60

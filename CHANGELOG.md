@@ -6,6 +6,18 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+### Windows runtime diagnostics
+
+- Execute the packaged Windows DLL on a native Windows Server 2022 x64 runner
+  before future release publication. Cover initialization, an animated generated
+  cartridge, audio/video callbacks, deterministic save/restore and shutdown,
+  with MAME worker threads both disabled and enabled.
+- Add a manual workflow to run the same checks against an existing release.
+  The fixture contains original test code and requires no commercial ROMs.
+- These checks cover the host integration and generic machine lifecycle. They
+  do not exercise authenticated SH1/SH2 gameplay or certify Windows 10 support.
+  The reported crashes in 0.1.16 and later remain under investigation.
+
 ## [0.1.21] - 2026-10-08
 
 ### Stage 7 boss visibility in Mark VI
