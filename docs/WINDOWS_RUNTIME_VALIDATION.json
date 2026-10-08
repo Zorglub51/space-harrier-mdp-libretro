@@ -1,0 +1,128 @@
+{
+  "date": "2026-10-08",
+  "status": "Reported Windows 10 crash remains unconfirmed; no runtime fix claimed.",
+  "test_commit": "3a0b45ee02ea774a5d0739c9b70b016f1ff9d050",
+  "scope": "Generated cartridge; no commercial ROMs or authenticated SH1/SH2 paths on hosted runners.",
+  "native_windows_runs": [
+    {
+      "version": "v0.1.15",
+      "workflow_url": "https://github.com/Zorglub51/space-harrier-mdp-libretro/actions/runs/37762805339",
+      "passed": true,
+      "platform": "Windows-2022Server-10.0.20348-SP0",
+      "machine": "AMD64",
+      "threaded": false,
+      "core_sha256": "3b91812ac36e2e7e3af83c695b186ecf2bc33820cdfcb70e6b99aeba95050821",
+      "serialize_size": 9219444,
+      "video_identical": true,
+      "audio_identical": true
+    },
+    {
+      "version": "v0.1.15",
+      "workflow_url": "https://github.com/Zorglub51/space-harrier-mdp-libretro/actions/runs/37762805339",
+      "passed": true,
+      "platform": "Windows-2022Server-10.0.20348-SP0",
+      "machine": "AMD64",
+      "threaded": true,
+      "core_sha256": "3b91812ac36e2e7e3af83c695b186ecf2bc33820cdfcb70e6b99aeba95050821",
+      "serialize_size": 9219444,
+      "video_identical": true,
+      "audio_identical": true
+    },
+    {
+      "version": "v0.1.17",
+      "workflow_url": "https://github.com/Zorglub51/space-harrier-mdp-libretro/actions/runs/37762810772",
+      "passed": true,
+      "platform": "Windows-2022Server-10.0.20348-SP0",
+      "machine": "AMD64",
+      "threaded": false,
+      "core_sha256": "192dab37f2d5bb552e6f48b2f1bed1d4a51b4170e2d4e50bb3ac1d8666309130",
+      "serialize_size": 60273306,
+      "video_identical": true,
+      "audio_identical": true
+    },
+    {
+      "version": "v0.1.17",
+      "workflow_url": "https://github.com/Zorglub51/space-harrier-mdp-libretro/actions/runs/37762810772",
+      "passed": true,
+      "platform": "Windows-2022Server-10.0.20348-SP0",
+      "machine": "AMD64",
+      "threaded": true,
+      "core_sha256": "192dab37f2d5bb552e6f48b2f1bed1d4a51b4170e2d4e50bb3ac1d8666309130",
+      "serialize_size": 60273306,
+      "video_identical": true,
+      "audio_identical": true
+    },
+    {
+      "version": "v0.1.20",
+      "workflow_url": "https://github.com/Zorglub51/space-harrier-mdp-libretro/actions/runs/37762815006",
+      "passed": true,
+      "platform": "Windows-2022Server-10.0.20348-SP0",
+      "machine": "AMD64",
+      "threaded": false,
+      "core_sha256": "90702659878332289007eef7d377ee05b9fbbf93c40dee445fcec0be1ef5444e",
+      "serialize_size": 60275880,
+      "video_identical": true,
+      "audio_identical": true
+    },
+    {
+      "version": "v0.1.20",
+      "workflow_url": "https://github.com/Zorglub51/space-harrier-mdp-libretro/actions/runs/37762815006",
+      "passed": true,
+      "platform": "Windows-2022Server-10.0.20348-SP0",
+      "machine": "AMD64",
+      "threaded": true,
+      "core_sha256": "90702659878332289007eef7d377ee05b9fbbf93c40dee445fcec0be1ef5444e",
+      "serialize_size": 60275880,
+      "video_identical": true,
+      "audio_identical": true
+    }
+  ],
+  "local_windows_11_arm_x64_emulation": {
+    "core": "v0.1.20",
+    "sh1": {
+      "frames": 3000,
+      "threaded": true,
+      "rendering": "original",
+      "save_load_passed": true,
+      "shutdown_passed": true
+    },
+    "sh2": [
+      {
+        "rendering": "original",
+        "frames": 3600,
+        "threaded": false,
+        "shutdown_passed": true
+      },
+      {
+        "rendering": "mark_vi",
+        "frames": 3600,
+        "threaded": true,
+        "stack_reserve_bytes": 1048576,
+        "shutdown_passed": true
+      },
+      {
+        "rendering": "mark_vi_120",
+        "frames": 5000,
+        "threaded": true,
+        "shutdown_passed": true
+      },
+      {
+        "rendering": "mark_vi_120",
+        "frames": 1500,
+        "threaded": true,
+        "save_load_passed": true,
+        "shutdown_passed": true
+      }
+    ],
+    "retroarch": {
+      "version": "1.22.2",
+      "cores": [
+        "v0.1.15",
+        "v0.1.20"
+      ],
+      "null_driver_frames_each": 4000,
+      "d3d11_startup": "Both versions fail at the same retroarch.exe offset 0x414da5 before emulation frames; not evidence of the reported regression."
+    },
+    "limitations": "ARM Windows VM emulates x64; these runs are not native Windows 10 validation or a complete playthrough."
+  }
+}
