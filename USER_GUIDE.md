@@ -112,6 +112,9 @@ Mark VI removes display quotas independently. Version 0.1.18 fixes the
 intermittent return to limited rendering during overflow sprite uploads.
 Version 0.1.20 also handles a completed subsequent sprite generation with an
 overclocked CPU, fixing missing column strips reproduced at 200% and 400%.
+Version 0.1.21 also removes the stage 7 boss's alternating nearby body segments
+in Mark VI, while preserving the hiding of coincident segments and other
+gameplay visibility rules.
 
 The 120 Hz mode keeps game logic, collisions, input sampling and audio at their
 original speed. It adds intermediate positions, not new sprite drawings or
@@ -127,7 +130,7 @@ previous refresh rate. More rendering work is performed on the host computer;
 no emulated CPU overclock is needed. The frontend must be able to sustain the
 negotiated refresh rate. Use Native Refresh to compare with the enhancement off.
 
-**Save states from versions before 0.1.19 are incompatible with the current format.**
+**Save states from versions before 0.1.21 are incompatible with the current format.**
 All three rendering choices share the new format. Keep the same mode for
 identical visual replay. Pending half-frame video and PCM are included, so
 states also restore correctly between two 120 Hz presentations. The maximum

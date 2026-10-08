@@ -17,6 +17,20 @@ struct sprite {
     std::uint32_t owner = 0, routine = 0, descriptor = 0, part = 0;
 };
 
+// Remove only visibility masks whose executed native branch was the stage-7
+// boss's near-camera alternation. Normalize the private emitter snapshot, never
+// guest RAM. A separate native branch hides coincident trailing segments and
+// must not be inferred from coordinates that another object may have updated.
+inline void clear_traced_boss_budget(std::uint16_t *ram, const bool *budget)
+{
+    for (unsigned slot = 0; slot <= 0xffb4 / 2; ++slot) {
+        if (!budget[slot]) continue;
+        auto *o = ram + 0x8000 + slot;
+        if (o[8] == 0x16 && o[9] == 0xd6ea && o[14] == 0 && o[15] == 0x17c4)
+            o[0x2a / 2] &= 0xff7f;
+    }
+}
+
 // Translation of SH2 13B000..13D21E, before its 40/80-entry partitioning.
 // Read returns a big-endian guest word. It must read an emitter-entry snapshot,
 // not live objects (the game can update those before the next SAT upload).

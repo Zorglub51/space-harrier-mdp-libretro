@@ -1,0 +1,229 @@
+{
+  "version": "0.1.21",
+  "date": "2026-10-08",
+  "core_sha256": "914d23e149b7dca19c710c816dd7350ffec1e5ba7457901b4860be5362a63203",
+  "public_tests": {
+    "passed": 114,
+    "skipped_optional_native_oracle": 12
+  },
+  "sanitizers": [
+    "AddressSanitizer",
+    "UndefinedBehaviorSanitizer"
+  ],
+  "branch_trace": {
+    "native_refresh_window": [
+      10300,
+      11000
+    ],
+    "budget_masks_correctly_identified": 388,
+    "coincident_masks_correctly_preserved": 248,
+    "misclassified_at_constructor_entry": 0,
+    "reason": "Actual executed branch observed; final-coordinate inference would incorrectly unhide four coincident-mask observations."
+  },
+  "diagnostic_preconditions": "Stage7fire uses normal menu/direction/fire inputs. Keep-lives maintains nine player lives after native refresh2600; boss HP, RNG, object positions and timers are untouched. Stage5 and SH1 isolation tests do not maintain lives.",
+  "state_layout": "32768 saved boolean provenance entries added, one for each aligned address in the 64 KiB object domain. Earlier core states are incompatible.",
+  "cases": [
+    {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "aspect": "widescreen",
+      "deflicker": "game",
+      "cpu_overclock": "400",
+      "explosions": "sh1",
+      "keep_lives": true,
+      "input": "stage7fire",
+      "frames": 21400,
+      "threaded": true,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 642
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 240
+      },
+      "game_audit": {
+        "sha256": "f968d71aeefc44a04a985e01b401a146201486dbe6469efb40242d9b5e9ab2b0",
+        "samples": 91,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "final-120-wide400"
+    },
+    {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi",
+      "aspect": "original",
+      "deflicker": "game",
+      "cpu_overclock": "default",
+      "explosions": "sh1",
+      "keep_lives": true,
+      "input": "stage7fire",
+      "frames": 10700,
+      "threaded": false,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 277
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "be174230dde75c34b39675420321cc9b4a7b1b049161739b90247029d8304d82",
+        "samples": 91,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "final-native-4by3-100"
+    },
+    {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi",
+      "aspect": "widescreen",
+      "deflicker": "game",
+      "cpu_overclock": "400",
+      "explosions": "sh1",
+      "keep_lives": true,
+      "input": "stage7fire",
+      "frames": 10700,
+      "threaded": false,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 312
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "f968d71aeefc44a04a985e01b401a146201486dbe6469efb40242d9b5e9ab2b0",
+        "samples": 91,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "final-native-wide400"
+    },
+    {
+      "passed": true,
+      "game": 2,
+      "rendering": "original",
+      "aspect": "widescreen",
+      "deflicker": "game",
+      "cpu_overclock": "400",
+      "explosions": "sh1",
+      "keep_lives": true,
+      "input": "stage7fire",
+      "frames": 10700,
+      "threaded": false,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "9d1c1259007ea6c42189a89f5925760943090e27f800fdbf8f07d8cbde7c673e",
+        "samples": 91,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "final-original-wide400"
+    },
+    {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "aspect": "widescreen",
+      "deflicker": "game",
+      "cpu_overclock": "400",
+      "explosions": "sh1",
+      "keep_lives": false,
+      "input": "stage5crash",
+      "frames": 9000,
+      "threaded": true,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 240
+      },
+      "markvi_watch": {
+        "start": 3200,
+        "end": 3500,
+        "observed": 301,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "7b7850aa27634dd1888f0ce582b253769f0ee4af4356567f8d7a1597a1f5f60e",
+        "samples": 39,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "stage5-unchanged"
+    },
+    {
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "aspect": "original",
+      "deflicker": "game",
+      "cpu_overclock": "default",
+      "explosions": "original",
+      "keep_lives": false,
+      "input": "scripted",
+      "frames": 4000,
+      "threaded": false,
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "b52182c67f8c697190ad13a3ba7d7bbc99f585238bf8797dfd6cdfb1ec63ad08",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "name": "sh1-unchanged"
+    }
+  ]
+}

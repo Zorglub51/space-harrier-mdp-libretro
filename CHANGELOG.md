@@ -6,6 +6,37 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.21] - 2026-10-08
+
+### Stage 7 boss visibility in Mark VI
+
+- Remove the stage 7 boss's alternating near-camera body-segment budget in
+  both Mark VI modes. The game hides every other segment before sprite-list
+  construction when it is close, so lifting renderer quotas alone did not
+  prevent the large body parts from blinking in 0.1.20.
+- Trace the native branch that sets each visibility mask. Clear only the
+  budget mask in the private rendering snapshot; preserve the separate mask
+  for coincident trailing segments, other actors' visibility and death logic.
+  Original (M2) rendering keeps the original behavior. Do not patch ROM files,
+  write guest RAM or change game timing/audio.
+- Save the visibility provenance so save/load and 120 Hz interpolation use
+  the same decision. **Save states from earlier core versions are incompatible
+  with 0.1.21.** Start the content normally after upgrading.
+- Add a repeatable stage 7 test input and an explicit diagnostic option to
+  maintain player lives while reaching the boss. Add public tests for the
+  actual instruction observers, snapshot filtering and invalid/reused slots.
+
+### Validation
+
+- Identify 388 budget masks and preserve 248 coincident-segment masks at
+  constructor entry, with no misclassification in the captured boss interval.
+- Compare stage 7 at native refresh/120 Hz, 4:3/16:9 and 100%/400% CPU speed.
+  Full PCM and sampled RAM/CPU state match 0.1.20. Save-state replay is
+  deterministic, including both halves of 120 Hz presentation.
+- Preserve video, audio and sampled game state in the tested Original (M2),
+  SH1 and stage 5 collision sequences. Pass 114 public tests (12 optional
+  native-oracle tests skipped) and the visibility probe under ASan/UBSan.
+
 ## [0.1.20] - 2026-10-08
 
 ### Mark VI sprite stability with CPU overclocking

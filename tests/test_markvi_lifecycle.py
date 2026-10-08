@@ -32,6 +32,7 @@ public:
  bool m_sh2_text_compat=true, m_markvi_smooth_valid=false;
  u16 m_regs[64]{},m_vdp_code=0x21;
  u16 m_markvi_ram[3][0x10000]{};
+ bool m_markvi_boss_budget[0x8000]{};
  bool m_markvi_ready[3]{};
  u32 m_markvi_source[3]{};
  u16 m_markvi_sat[3][0x140]{};

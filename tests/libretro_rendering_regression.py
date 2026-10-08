@@ -107,7 +107,8 @@ def main():
     p.add_argument('--aspect', default='original', choices=['original','widescreen'])
     p.add_argument('--aspect-toggle', action='store_true')
     p.add_argument('--deflicker', default='game', choices=['game','off','on1','on2'])
-    p.add_argument('--input', default='reference', choices=['reference','stage3fire','stage4fire','stage5fire','stage5crash','scripted','attract'])
+    p.add_argument('--input', default='reference', choices=['reference','stage3fire','stage4fire','stage5fire','stage5crash','stage7fire','scripted','attract'])
+    p.add_argument('--keep-lives', action='store_true', help='Diagnostic SH2 precondition: maintain nine player lives after entering gameplay; do not change boss HP or objects')
     p.add_argument('--cpu-overclock', default='default', choices=['default','100','150','200','250','300','350','400'])
     p.add_argument('--require-markvi', metavar='START:END', help='Require the extended sprite list on every native refresh in this inclusive gameplay window')
     p.add_argument('--frames', type=int, default=7000)
@@ -128,6 +129,8 @@ def main():
     if a.frames < 240 or a.state_frames < 1:
         p.error('at least 240 frames and a positive replay window are required')
     game = IDENTITIES[hashlib.sha1(a.rom.read_bytes()).hexdigest()][0]
+    if a.keep_lives and game != 2:
+        p.error('--keep-lives is only defined for the authenticated SH2 ROM')
     watch = None
     if a.require_markvi:
         try:
@@ -140,6 +143,7 @@ def main():
     report = dict(passed=False, game=game, rendering=a.rendering, deflicker=a.deflicker, aspect=a.aspect,
                   input=a.input, frames=a.frames, threaded=a.threaded, cpu_overclock=a.cpu_overclock,
                   explosions='sh1' if a.donor else 'original',
+                  keep_lives=a.keep_lives,
                   core_sha256=hashlib.sha256(a.core.read_bytes()).hexdigest(), messages=[])
     if a.capture_dir:
         a.capture_dir.mkdir(parents=True, exist_ok=True)
@@ -161,6 +165,7 @@ local frame=0
 local out=assert(io.open("{audit}","ab"))
 FRAME=emu.add_machine_frame_notifier(function()
  frame=frame+1
+ {'if frame>=2600 then mem:write_u8(0xff1170,9) end' if a.keep_lives else ''}
  if frame%120==0 then
   out:write(mem:read_range(0xfe0000,0xffffff,8))
   for _,name in ipairs({{"PC","SR","D0","D1","D2","D3","D4","D5","D6","D7","A0","A1","A2","A3","A4","A5","A6","SP"}}) do

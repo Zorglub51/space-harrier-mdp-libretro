@@ -21,8 +21,10 @@ links and transform indices are seven bits wide. Mark VI constructs a host
 `std::vector` instead: each record has its own coordinates, tile attributes and
 zoom value. There is no 128/256/512-entry selection array or arbitrary sprite
 budget. Invalid/cyclic object chains are rejected, rather than followed forever.
-The game's object pool, allocation, lifetime and deliberate invisibility flags
-remain gameplay decisions. The enhancement does not create additional enemies.
+The game's object pool, allocation, lifetime and gameplay invisibility flags
+remain gameplay decisions. Version 0.1.21 additionally lifts the stage 7 boss's
+verified near-camera visibility budget, described below. The enhancement does
+not create additional enemies.
 
 Both the body and shadow passes preserve their object/piece traversal order.
 Pixel sampling uses the verified M2 cell-scaling algorithm, palettes and priority
@@ -194,3 +196,33 @@ Two 0.1.19 save states taken at odd/even presentation phases load in 0.1.20 and
 replay 240 frames deterministically; their audio matches the older core.
 The saved-state layout is unchanged. These are specific regression checks,
 not certification that every animation in both games is free of defects.
+
+## Stage 7 boss's upstream visibility budget (0.1.21)
+
+The native body handler at `16D6EA` masks alternating nearby segments at
+`16D756..16D774`, based on the leader's counter, the segment index and the
+distance threshold at `FF38CA >> 2`. It sets bit 7 of object byte `+2B` before
+the sprite constructor runs. Mark VI previously honored that flag even though
+it was another display budget. This defect is separate from the overflow-DMA
+validation fixed in 0.1.20: the extended renderer stays active throughout it.
+
+The same flag also hides coincident trailing segments through `16D820..16D836`.
+Re-evaluating that condition from final object coordinates is insufficient:
+another object can update the leader later in the same game step. Read-only
+instruction observers therefore track the actual executed branch. They are
+installed only for the authenticated SH2 cartridge with matching instructions;
+debug reads and unrelated PCs cannot change the classification.
+
+At constructor entry, only the private snapshot's visibility bit is cleared
+for a traced budget mask on a matching live boss-body handler/descriptor. Guest
+RAM, the native SAT, ROM contents and CPU execution remain unchanged. Coincident
+segments and other actors keep their masks. Both native-refresh and 120 Hz Mark
+VI consume these snapshots; Original (M2) retains the native image and cadence.
+
+A saved provenance table covers every aligned object address in the existing
+64 KiB object address domain; it is not a sprite quota. Reset clears it, while
+save/load restores it alongside the normalized snapshots and interpolation
+history. **Earlier save states are incompatible with 0.1.21.**
+
+[SH2_MARK_VI_V021_VALIDATION.json](SH2_MARK_VI_V021_VALIDATION.json) records the
+regression results without private ROM data, RAM dumps or screenshots.
