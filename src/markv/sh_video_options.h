@@ -2,10 +2,38 @@
 #pragma once
 #include <atomic>
 #include <cstdint>
+#include <cstring>
 #include <vector>
 namespace sh_mdp_video {
+// Authenticated cartridge profile, supplied by the machine driver. Options
+// alone never enable enhanced rendering for an unrelated Mega Drive game.
+inline std::atomic<unsigned> game{0}; // 0 = other, 1 = SH1, 2 = SH2
+// Retain each game's preference across load/unload, and select only the active
+// game's option after its profile has been authenticated.
+enum class rendering { original, mark_vi, mark_vi_120 };
+inline std::atomic<rendering> sh1_rendering{rendering::original};
+inline std::atomic<rendering> sh2_rendering{rendering::original};
 inline std::atomic<bool> markvi{false};
 inline std::atomic<bool> request_120{false};
+inline rendering parse_rendering(const char *value)
+{
+    if (value && !std::strcmp(value, "mark_vi_120")) return rendering::mark_vi_120;
+    if (value && !std::strcmp(value, "mark_vi")) return rendering::mark_vi;
+    return rendering::original;
+}
+inline void apply_rendering_options()
+{
+    const unsigned profile = game.load(std::memory_order_relaxed);
+    const rendering mode = profile == 1 ? sh1_rendering.load(std::memory_order_relaxed) :
+        profile == 2 ? sh2_rendering.load(std::memory_order_relaxed) : rendering::original;
+    markvi.store(mode != rendering::original, std::memory_order_relaxed);
+    request_120.store(mode == rendering::mark_vi_120, std::memory_order_relaxed);
+}
+inline void set_game(unsigned profile)
+{
+    game.store(profile == 1 || profile == 2 ? profile : 0, std::memory_order_relaxed);
+    apply_rendering_options();
+}
 // Independent host viewport preference; eligibility comes only from the
 // authenticated SH1/SH2 cartridge profile. Apply at native-frame boundaries.
 inline std::atomic<bool> request_wide{false};

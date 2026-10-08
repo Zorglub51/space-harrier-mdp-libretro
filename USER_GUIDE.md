@@ -81,21 +81,23 @@ In **Quick Menu > Core Options > Video > SH1 / SH2 Screen Format**, choose
 so it uses the core's 16:9 geometry. **Original (4:3)** is the default.
 
 This adds scenery and visible sprites on both sides, with 53 extra source pixels
-per side. It works in SH1 and SH2, independently of Deflicker, SH2 Rendering and
-the SH1 explosion option. SH2's 120 Hz mode and alternate output resolutions are
-supported. Changes apply during gameplay without restarting. Text, menus and the
-hardware window stay in the central area; fixed artwork is not redrawn wider.
+per side. It works in SH1 and SH2, independently of each game's Rendering and
+Deflicker settings and SH2's SH1 explosion option. Both games' 120 Hz modes and
+alternate output resolutions are supported. Changes apply during gameplay
+without restarting. Text, menus and the hardware window stay in the central
+area; fixed artwork is not redrawn wider.
 
 Player movement bounds, aiming and collision formulas stay native. Objects are
 removed at wider offscreen boundaries, so their longer presence can affect
 object availability or phase completion timing. Original rendering retains its
-sprite quotas; use Mark VI in SH2 when you want the extended list without those
+sprite quotas; use Mark VI when you want the extended list without those
 display limits. The 4:3 setting remains the faithful M2 reference. No ROM file is
 modified on disk. Use the same format for matching save-state playback.
 
-## Mark VI rendering for SH2
+## Mark VI rendering for SH1 and SH2
 
-In **Quick Menu > Core Options > Emulation Hacks > SH2 Rendering**, choose:
+In **Quick Menu > Core Options > Emulation Hacks**, open **SH1 Rendering** or
+**SH2 Rendering** for the game you are playing. Each game has its own preference:
 
 - **Original (M2)**: faithful default, including the original sprite limits.
 - **Mark VI (Native Refresh)**: reconstruct sprite pieces before the game's
@@ -105,16 +107,32 @@ In **Quick Menu > Core Options > Emulation Hacks > SH2 Rendering**, choose:
   interpolation of sprite positions and zoom at twice the native refresh
   (119.845 Hz). A 120 Hz or faster display is needed to see all the extra frames.
 
-Changes apply without restarting. SH1 is unaffected. Both Mark VI modes work
-with native Deflicker and the SH1 explosion option. No additional ROM patch is
-required, and your ROM file stays unchanged. Native Deflicker can remain OFF:
-Mark VI removes display quotas independently. Version 0.1.18 fixes the
-intermittent return to limited rendering during overflow sprite uploads.
-Version 0.1.20 also handles a completed subsequent sprite generation with an
-overclocked CPU, fixing missing column strips reproduced at 200% and 400%.
-Version 0.1.21 also removes the stage 7 boss's alternating nearby body segments
-in Mark VI, while preserving the hiding of coincident segments and other
-gameplay visibility rules.
+Changes apply without restarting. Both games support the native-refresh and
+120 Hz choices, in 4:3 and 16:9. Native Deflicker can remain OFF or on Game
+Setting: Mark VI removes display quotas independently. SH2's optional SH1
+explosions can also be used. No additional ROM patch is required, and your ROM
+file stays unchanged.
+
+SH1 support starts in 0.1.22. It reconstructs SH1's own object list, piece layout,
+zoom and shadows, and removes verified near-camera segment thinning from bodies
+and their eligible shadows. It preserves deliberate Harrier blinking, deleted
+objects, structural hiding and the separate rules that disable shadows. Validation does not yet cover every stage and scene;
+this is not a guarantee that every visible flicker has been eliminated.
+
+For SH2, 0.1.18 and 0.1.20 fix returns to limited rendering during overflow
+uploads, including missing column strips with an overclocked CPU. Version
+0.1.21 also removes the stage 7 boss's alternating nearby body segments while
+preserving the hiding of coincident segments and other gameplay visibility
+rules.
+
+SH1's displayed list also stays stable when a sprite upload interrupts
+construction of the next list. This prevents temporary returns to the original
+display quotas around large sprite groups, including the first boss, without
+requiring a CPU overclock.
+
+Version 0.1.22 also fixes missing edge pixels in both games' Mark VI modes:
+shrunken sprite pieces crossing the left edge of the original 4:3 area retain
+their visible portions, including in 16:9. The Original (M2) renderer is unchanged.
 
 The 120 Hz mode keeps game logic, collisions, input sampling and audio at their
 original speed. It adds intermediate positions, not new sprite drawings or
@@ -128,10 +146,12 @@ an optional visual enhancement, not a pixel-perfect reproduction of M2's output.
 If the frontend refuses the refresh change, the core reports it and keeps the
 previous refresh rate. More rendering work is performed on the host computer;
 no emulated CPU overclock is needed. The frontend must be able to sustain the
-negotiated refresh rate. Use Native Refresh to compare with the enhancement off.
+negotiated refresh rate. Use **Mark VI (Native Refresh)** to keep the extended
+sprite list without interpolation, or **Original (M2)** to restore native
+rendering limits.
 
 **Save states from versions before 0.1.21 are incompatible with the current format.**
-All three rendering choices share the new format. Keep the same mode for
+All three rendering choices share the current format. Keep the same mode for
 identical visual replay. Pending half-frame video and PCM are included, so
 states also restore correctly between two 120 Hz presentations. The maximum
 framebuffer reservation increases uncompressed state size to about 60 MB;

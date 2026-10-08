@@ -87,7 +87,8 @@ rapport d’image **Core Provided** pour utiliser celui annoncé par le cœur.
 
 Le champ s’élargit de 53 pixels de chaque côté, avec du décor et des sprites
 supplémentaires. Cela fonctionne pour SH1 et SH2, indépendamment de Deflicker,
-du rendu SH2 et des explosions SH1, y compris avec Mark VI à 120 Hz et les
+du rendu choisi pour chaque jeu et des explosions SH1 dans SH2, y compris avec
+Mark VI à 120 Hz pour les deux jeux et les
 résolutions de sortie alternatives. Le changement s’applique sans redémarrage.
 Les textes, menus et la fenêtre matérielle restent dans la zone centrale ; les
 dessins fixes ne sont pas recréés en version large.
@@ -96,13 +97,14 @@ Les limites de déplacement du joueur, la visée et les formules de collision
 restent celles du jeu. Les objets sont supprimés plus loin hors écran : leur
 présence prolongée peut modifier la disponibilité d’autres objets ou la fin de
 certaines phases. Le rendu Original garde ses quotas et peut donc scintiller ;
-Mark VI supprime ces limites dans SH2. Le 4/3 reste la référence fidèle à M2.
+Mark VI supprime ces limites dans les deux jeux. Le 4/3 reste la référence fidèle à M2.
 Aucun fichier ROM n’est modifié sur disque. Gardez le même format pour rejouer
 une sauvegarde à l’identique.
 
-## Mode Mark VI pour SH2
+## Mode Mark VI pour SH1 et SH2
 
-Dans **Menu rapide > Options du cœur > Emulation Hacks > SH2 Rendering** :
+Dans **Menu rapide > Options du cœur > Emulation Hacks**, ouvrez **SH1 Rendering**
+ou **SH2 Rendering** selon le jeu. Chaque jeu conserve son propre réglage :
 
 - **Original (M2)** : rendu fidèle par défaut, avec les limites d'origine.
 - **Mark VI (Native Refresh)** : reconstruit les morceaux de sprites avant les
@@ -112,18 +114,36 @@ Dans **Menu rapide > Options du cœur > Emulation Hacks > SH2 Rendering** :
   zoom intermédiaires à deux fois la fréquence native, soit 119,845 Hz. Un écran
   à 120 Hz ou plus est nécessaire pour voir toutes les images supplémentaires.
 
-Le changement s'applique sans redémarrage. SH1 reste inchangé. Les deux modes
-Mark VI peuvent être combinés avec Deflicker et les explosions SH1. Aucun patch
-ROM supplémentaire n'est nécessaire ; le fichier ROM reste inchangé. Deflicker
-peut rester sur OFF : Mark VI supprime les quotas d'affichage indépendamment.
-La 0.1.18 corrige les retours intermittents au rendu limité lors du transfert
-du complément de la liste de sprites.
-La 0.1.20 traite également le cas où le processeur overclocké a déjà terminé
-la génération suivante, corrigeant les bandes manquantes reproduites dans
-les colonnes à 200 % et 400 %.
-La 0.1.21 supprime aussi l'alternance des segments proches du boss du stage 7
-dans Mark VI. Les segments exactement superposés et les autres masquages liés
-au jeu gardent leur comportement.
+Le changement s'applique sans redémarrage. Les deux jeux proposent les variantes
+à fréquence native et à 120 Hz, en 4/3 comme en 16/9. Deflicker peut rester sur
+OFF ou Game Setting : Mark VI supprime les quotas d'affichage indépendamment.
+Dans SH2, les explosions SH1 restent disponibles. Aucun patch ROM supplémentaire
+n'est nécessaire ; le fichier ROM reste inchangé.
+
+SH1 bénéficie de Mark VI à partir de la 0.1.22, avec une reconstruction propre
+à sa liste d'objets, ses morceaux de sprites, son zoom et ses ombres. Le mode
+supprime aussi les omissions de segments proches qui ont été identifiées comme
+des limites d'affichage, pour les corps et leurs ombres lorsqu'elles sont
+autorisées. Les clignotements volontaires de Harrier, les objets supprimés,
+les masquages structurels et les règles indépendantes qui désactivent les ombres
+sont conservés. Tous les stages et toutes les scènes n'ont pas encore été validés :
+ce n'est pas une garantie d'absence de tout scintillement visible.
+
+Pour SH2, les versions 0.1.18 et 0.1.20 corrigent les retours au rendu limité lors
+du transfert du complément de la liste, notamment les bandes manquantes dans
+les colonnes avec un processeur overclocké. La 0.1.21 supprime aussi l'alternance
+des segments proches du boss du stage 7, tout en préservant les segments
+exactement superposés et les autres masquages liés au jeu.
+
+Dans SH1, la liste affichée reste également stable quand un transfert de sprites
+interrompt la construction de la liste suivante. Cela évite des retours temporaires
+aux quotas d'origine autour des groupes de grands sprites, notamment au premier
+boss, sans nécessiter d'overclock.
+
+La 0.1.22 corrige également des pixels manquants dans Mark VI pour les deux jeux :
+les morceaux de sprites réduits qui traversent le bord gauche de la zone 4/3
+conservent leur partie visible, y compris en 16/9. Le rendu Original (M2) reste
+inchangé.
 
 À 120 Hz, la logique du jeu, les collisions, la lecture des commandes et le son
 conservent leur cadence et leur vitesse d'origine. Le cœur interpole les
@@ -136,10 +156,12 @@ lissés. Il s'agit d'une amélioration facultative du rendu.
 
 Si le frontend refuse le changement de fréquence, un message s'affiche et la
 fréquence précédente est conservée. Aucun overclock du processeur émulé n'est
-nécessaire ; l'ordinateur doit pouvoir assurer le rendu supplémentaire.
+nécessaire ; l'ordinateur doit pouvoir assurer le rendu supplémentaire. Choisissez
+**Mark VI (Native Refresh)** pour garder la liste étendue sans interpolation, ou
+**Original (M2)** pour retrouver les limites d'affichage natives.
 
 **Les états antérieurs à la 0.1.21 ne sont pas compatibles avec le format actuel.**
-Les trois réglages utilisent le même nouveau format. Conservez le même mode
+Les trois réglages utilisent le même format actuel. Conservez le même mode
 pour une reprise visuellement identique. Les états incluent la demi-image et
 l'audio en attente, et occupent environ 60 Mo avant compression ; la taille
 compressée dépend du frontend et de la scène.

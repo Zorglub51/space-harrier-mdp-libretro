@@ -13,6 +13,7 @@ class Timeline(unittest.TestCase):
                              'void sega315_5313_device::sh2_markvi_begin_frame()')
         program=r'''
 #include "sh2_markvi.h"
+#include "sh1_markvi.h"
 #include "sh_video_options.h"
 #include <algorithm>
 #include <cassert>
@@ -24,6 +25,7 @@ struct space {
 };
 class sega315_5313_device {
 public:
+ unsigned m_markvi_game=2;
  int mdp_widescreen_padding() const {return 0;}
  bool m_markvi_ready[3]{false,false,true},m_markvi_history_valid=false,m_markvi_smooth_valid=false;
  u16 m_markvi_ram[3][0x10000]{},m_markvi_history[2][0x10000]{};
@@ -33,7 +35,7 @@ public:
  void sh2_markvi_begin_frame();
  void put(u32 a,u16 v){if(a>=0xfe0000)m_markvi_ram[2][(a-0xfe0000)/2]=v;else memory.rom[a/2]=v;}
  void lng(u32 a,u32 v){put(a,v>>16);put(a+2,v);}
- void build(){assert(sh2_markvi::build([this](u32 a){return a>=0xfe0000?m_markvi_ram[2][(a-0xfe0000)/2]:memory.read_word(a);},m_markvi_sprites));}
+ void build(){auto read=[this](u32 a){return a>=0xfe0000?m_markvi_ram[2][(a-0xfe0000)/2]:memory.read_word(a);};assert(m_markvi_game==1?sh1_markvi::build(read,m_markvi_sprites):sh2_markvi::build(read,m_markvi_sprites));}
 };
 METHOD
 int main(){
@@ -60,13 +62,25 @@ int main(){
  assert(!v.m_markvi_history_valid && !v.m_markvi_smooth_valid && v.m_markvi_phases[0].empty());
  v.m_markvi_ready[2]=true;v.put(0xff500c,80);v.build();v.sh2_markvi_begin_frame();
  assert(v.m_markvi_phases[0][0].x==208);
+ // A complete empty producer frame is valid and immediately clears every
+ // body, including after rebuilding the transient host list after a load.
+ v.lng(0xff38f2,0);v.build();v.sh2_markvi_begin_frame();
+ assert(v.m_markvi_ready[2]&&v.m_markvi_phases[0].empty()&&v.m_markvi_phases[1].empty());
+ v.build();v.sh2_markvi_begin_frame();assert(v.m_markvi_phases[0].empty());
+ v.lng(0xff38f2,0xff5000);v.build();v.sh2_markvi_begin_frame();
+ assert(v.m_markvi_phases[0].size()==1&&v.m_markvi_phases[0][0].x==208);
  sh_mdp_video::hz120=false;v.sh2_markvi_begin_frame();assert(!v.m_markvi_history_valid);
 }
 '''.replace('METHOD',method)
         with tempfile.TemporaryDirectory() as tmp:
-            p=Path(tmp)/'probe.cpp';p.write_text(program);binary=Path(tmp)/'probe'
-            subprocess.run(shlex.split(os.environ.get('CXX','c++'))+[
-                '-std=c++17','-Wall','-Wextra','-Werror','-I',str(PATCH.parent.parent/'src/markv'),str(p),'-o',str(binary)],check=True)
-            subprocess.run([str(binary)],check=True)
+            for game in (1, 2):
+                candidate = program
+                if game == 1:
+                    candidate = candidate.replace('m_markvi_game=2', 'm_markvi_game=1')
+                    candidate = candidate.replace('0xff38f2', '0xff40b8').replace('0xff3542', '0xff3d16')
+                p=Path(tmp)/f'probe-{game}.cpp';p.write_text(candidate);binary=Path(tmp)/f'probe-{game}'
+                subprocess.run(shlex.split(os.environ.get('CXX','c++'))+[
+                    '-std=c++17','-Wall','-Wextra','-Werror','-I',str(PATCH.parent.parent/'src/markv'),str(p),'-o',str(binary)],check=True)
+                subprocess.run([str(binary)],check=True)
 
 if __name__=='__main__':unittest.main()

@@ -17,6 +17,8 @@ class MarkVILifecycle(unittest.TestCase):
             'void sega315_5313_device::sh2_markvi_dma(u32 source, u32 address, u32 count, bool was_active)'))
         program=r'''
 #include "sh2_markvi.h"
+#include "sh1_markvi.h"
+#include "sh_markvi_profile.h"
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -26,9 +28,12 @@ struct space {
  u16 *get_read_ptr(u32 p){return p>=0xfe0000&&p<=0xfffffe?&ram[(p-0xfe0000)/2]:nullptr;}
  u16 read_word(u32 p){auto q=get_read_ptr(p);return q?*q:0;}
 };
+struct cpu { u32 value=0; u32 pc() const {return value;} };
 class sega315_5313_device {
 public:
+ cpu processor;cpu *m_cpu68k=&processor;
  int mdp_widescreen_padding() const {return 0;}
+ unsigned m_markvi_game=2;
  bool m_sh2_text_compat=true, m_markvi_smooth_valid=false;
  u16 m_regs[64]{},m_vdp_code=0x21;
  u16 m_markvi_ram[3][0x10000]{};
@@ -138,12 +143,67 @@ int main(){
  upload(0xff118a,0xe278,4);assert(!v.m_markvi_ready[2]);
  upload(0xff3080,0xe000,0x140);
  assert(v.m_markvi_ready[2]&&v.m_markvi_ram[2][0]==0x2222);
+ // SH1 can be interrupted while rebuilding the same bank's overflow RAM.
+ // Only its exact native interrupt caller may retain the complete active
+ // presentation; SH2 and all unrelated updates remain strictly authenticated.
+ const auto &layout=sh_markvi::layout(v.m_markvi_game);
+ auto set=[&](u32 a,u16 value){r[(a-0xfe0000)/2]=value;};
+ auto arm_interrupted=[&](unsigned bank,unsigned count){
+  v.m_regs[15]=2;v.m_vdp_code=0x21;
+  set(layout.selector,bank);set(layout.tail_count[bank],count/4);
+  r[0]=0x1111;set(layout.tail[bank],0x88);
+  v.sh2_markvi_capture();v.sh2_markvi_finalize();
+  upload(bank?layout.second_head:0xff415e,0xe000,0x140);
+  assert(v.m_markvi_ready[2]);
+  r[0]=0x2222;v.sh2_markvi_capture();set(layout.tail[bank],0x99);
+  assert(v.m_markvi_build_bank==int(bank)&&!v.m_markvi_ready[bank]);
+  v.processor.value=bank?0x0f49d6:0x0f4b0c;
+ };
+ for(unsigned bank : {0U,1U}) {
+  const u32 tail=layout.tail[bank];
+  arm_interrupted(bank,4);upload(tail,0xe278,4);
+  assert(v.m_markvi_ready[2]==(v.m_markvi_game==1));
+  assert(v.m_markvi_ram[2][0]==0x1111); // Never publish the 2222 partial snapshot.
+  arm_interrupted(bank,4);v.processor.value+=2;upload(tail,0xe278,4);
+  assert(!v.m_markvi_ready[2]);
+  arm_interrupted(bank,4);v.m_markvi_build_bank=1-bank;upload(tail,0xe278,4);
+  assert(!v.m_markvi_ready[2]);
+  arm_interrupted(bank,4);upload(tail,0xe270,8);assert(!v.m_markvi_ready[2]);
+  arm_interrupted(bank,4);v.vram[0xe000/2]^=1;upload(tail,0xe278,4);
+  assert(!v.m_markvi_ready[2]);
+  arm_interrupted(bank,4);v.sh2_markvi_finalize();set(tail,0xaa);
+  upload(tail,0xe278,4);assert(!v.m_markvi_ready[2]);
+  arm_interrupted(bank,4);v.m_markvi_ready[2]=false;upload(tail,0xe278,4);
+  assert(!v.m_markvi_ready[2]);
+  arm_interrupted(bank,4);v.m_regs[15]=4;upload(tail,0xe278,4);
+  assert(!v.m_markvi_ready[2]);
+  arm_interrupted(bank,4);v.m_vdp_code=0x23;upload(tail,0xe278,4);
+  assert(!v.m_markvi_ready[2]);
+  arm_interrupted(bank,0x140);upload(tail,0xe000,0x140);
+  assert(v.m_markvi_ready[2]==(v.m_markvi_game==1));
+  assert(v.m_markvi_ram[2][0]==0x1111);
+  arm_interrupted(bank,0x140);v.processor.value=0;upload(tail,0xe000,0x140);
+  assert(!v.m_markvi_ready[2]);
+ }
 }
 '''.replace('METHODS',methods)
         with tempfile.TemporaryDirectory() as tmp:
-            p=Path(tmp)/'probe.cpp';p.write_text(program);exe=Path(tmp)/'probe'
-            subprocess.run(shlex.split(os.environ.get('CXX','c++'))+[
-                '-std=c++17','-Wall','-Wextra','-Werror','-I',str(PATCH.parent.parent/'src/markv'),str(p),'-o',str(exe)],check=True)
-            subprocess.run([str(exe)],check=True)
+            for game in (1, 2):
+                candidate = program
+                if game == 1:
+                    # Exercise the same production lifetime methods with SH1's
+                    # independently identified selector/head/overflow layout.
+                    candidate = candidate.replace('m_markvi_game=2', 'm_markvi_game=1')
+                    addresses = {'0xff387c':'0xff1be0', '0xff0e00':'0xff1210',
+                                 '0xff0e02':'0xff1212', '0xff3080':'0xff1ec8',
+                                 '0xff118a':'0xff16dc', '0xff140c':'0xff195e',
+                                 '0xff140a':'0xff195c', '0xff168c':'0xff1bde'}
+                    for old, new in addresses.items():
+                        candidate = candidate.replace(old, new)
+                    candidate = candidate.replace('-0x', ' - 0x')
+                p=Path(tmp)/f'probe-{game}.cpp';p.write_text(candidate);exe=Path(tmp)/f'probe-{game}'
+                subprocess.run(shlex.split(os.environ.get('CXX','c++'))+[
+                    '-std=c++17','-Wall','-Wextra','-Werror','-I',str(PATCH.parent.parent/'src/markv'),str(p),'-o',str(exe)],check=True)
+                subprocess.run([str(exe)],check=True)
 
 if __name__=='__main__':unittest.main()

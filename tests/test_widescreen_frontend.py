@@ -165,7 +165,7 @@ def probe_source(patch):
     prefix = cpp[cpp.index("// Track the geometry actually presented"):
                  cpp.index("void update_geometry(void)")]
     parser = cpp[cpp.index("   struct retro_variable aspect ="):
-                 cpp.index("   struct retro_variable sh2_video =")]
+                 cpp.index("   struct retro_variable sh1_video =")]
     initial_start = window.index("\tif (sh_mdp_video::wide_eligible.load")
     initial = window[initial_start:window.index("\t// reset screen configuration", initial_start)]
     update_start = window.index("\t\tunsigned source_width = 0;")

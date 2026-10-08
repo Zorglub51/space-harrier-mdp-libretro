@@ -6,6 +6,52 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+## [0.1.22] - 2026-10-09
+
+### Mark VI rendering and 120 Hz presentation for SH1
+
+- Add **SH1 Rendering > Mark VI (Native Refresh)** and **Mark VI (120 Hz,
+  Experimental)**. Keep **Original (M2)** as the default. SH1 and SH2 have
+  independent rendering preferences; authenticated cartridge profiles select
+  the matching option.
+- Reconstruct SH1 sprite pieces from its own object list, tile cache, projection
+  and shadow rules before the game's 40/80-entry and 128-index limits. Use the
+  extended host list without the native per-line sprite/source-column budgets.
+  Follow completed producer uploads and preserve invalidation on scene clears.
+- Remove verified near-camera segment thinning in six SH1 routines, for both
+  bodies and their eligible shadows. Preserve deliberate Harrier blinking,
+  deleted/uninitialized objects, structural hiding and the independent
+  no-shadow flag. Do not write guest object state or change ROM files for this
+  rendering enhancement.
+- Extend the existing presentation clock to SH1: interpolate sprite positions
+  and zoom at twice the native refresh (119.845 Hz). Keep game logic, input
+  sampling, collisions, audio, background animation and sprite artwork changes
+  at native speed. No automatic CPU overclock is introduced. Interpolation
+  adds approximately one object-update interval of visual delay.
+- Support both rendering variants in 4:3 and optional 16:9, independently of
+  native Deflicker. Finish pending half-frame video/audio before runtime refresh
+  changes; report frontend refusal and retain the accepted refresh rate.
+  Preserve SH2's existing rendering and explosion option names.
+
+### SH1 sprite stability during interrupted construction
+
+- Keep the complete displayed sprite list when SH1's interrupt uploads an
+  overflow partition while the next constructor is rewriting the same bank.
+  Matching only completed overflow bytes could briefly restore native display
+  quotas, including around the first boss, even at the original CPU speed.
+- Authenticate the native interrupt caller, active bank/count, destination,
+  stride and unchanged SAT prefix. Never display the unfinished snapshot, and
+  continue rejecting unrelated writes and clears. SH2's upload checks remain
+  unchanged. No overclock or game-side timing change is required.
+
+### Mark VI edge visibility in both games
+
+- Keep visible pixels of horizontally shrunken sprite cells crossing the left
+  edge of the original 4:3 view, instead of dropping the complete cell. Apply
+  viewport clipping per pixel, including within the extended 16:9 field.
+- Apply the correction to SH1 and SH2, mirrored sprites and both Mark VI refresh
+  modes. Leave the Original (M2) renderer unchanged.
+
 ### Windows runtime diagnostics
 
 - Execute the packaged Windows DLL on a native Windows Server 2022 x64 runner
@@ -16,7 +62,36 @@ GitHub release notes are generated directly from the corresponding entry.
   The fixture contains original test code and requires no commercial ROMs.
 - These checks cover the host integration and generic machine lifecycle. They
   do not exercise authenticated SH1/SH2 gameplay or certify Windows 10 support.
-  The reported crashes in 0.1.16 and later remain under investigation.
+  The reported Windows 10 crashes were subsequently attributed to DirectX by
+  testers; no emulator change is made for that report.
+
+### Validation
+
+- Run 140 public tests: 128 pass and 12 optional native-oracle tests are skipped.
+  Run constructor, lifecycle, interpolation-timeline and renderer probes under
+  AddressSanitizer and UndefinedBehaviorSanitizer.
+- Match all 288 emitted records in 96 controlled native SH1 constructor cases,
+  and all 5,158 recorded pieces from 83 paired gameplay captures. These are
+  targeted reconstructed-68000 comparisons, not a complete original-ARM oracle.
+- Exercise all 18 SH1 stage starts for 4,000 native refreshes each (72,000 total),
+  with varied Deflicker, aspect and CPU settings. All 25,218 monitored refreshes
+  keep Mark VI active, no monitored pause occurs, and all 18 save-state replay
+  checks pass. These are opening sequences, not complete stage playthroughs.
+- Compare four longer runs starting at stages 1, 5, 7 and 18 over 13,000 native
+  refreshes each; the two 120 Hz cases present 26,000 frames. Full PCM and
+  sampled work RAM/68000 state match Original rendering. Mark VI remains active
+  at all 10,301 monitored native refreshes per run. Save-state replay passes,
+  including both presentation halves at 120 Hz. Rapid-fire inputs and a
+  diagnostic remaining-lives counter help reach later scenes; boss HP, collision
+  behavior, object state and RNG are unchanged.
+- Reproduce and eliminate 39 SH1 fallbacks to native rendering around the first
+  boss without overclocking. Inspect the large boss, stage scenery and Harrier
+  in the resulting captures; isolated images do not prove absence of flicker.
+- Preserve SH1 and SH2 Original video, PCM and sampled game state in the tested
+  4,000-frame comparisons with 0.1.21. SH2 Mark VI comparisons preserve PCM and
+  sampled game state; some frames change with the shared left-edge correction.
+- These checks do not cover every complete stage or establish universal
+  pixel-perfect emulation. Intentional blinking and gameplay hides remain.
 
 ## [0.1.21] - 2026-10-08
 

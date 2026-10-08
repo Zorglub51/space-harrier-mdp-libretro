@@ -91,13 +91,24 @@ applicable rendering/Deflicker/explosion options. Offscreen object removal is
 extended too, so some object/phase timing can differ. See the
 [widescreen implementation and validation](docs/WIDESCREEN.md).
 
-**SH2 Rendering** offers **Original (M2)** (default), **Mark VI (Native
-Refresh)** and **Mark VI (120 Hz, Experimental)**. Both Mark VI modes reconstruct
-sprite pieces before SH2's native list quotas. The 120 Hz option interpolates
-sprite positions and zoom at twice the native refresh (119.845 Hz), without
-advancing gameplay or audio faster. Background animation and changes of sprite
-artwork retain their native cadence. No additional ROM patch is required.
-See the [implementation and validation](docs/SH2_MARK_VI.md).
+**SH1 Rendering** and **SH2 Rendering** each offer **Original (M2)** (default),
+**Mark VI (Native Refresh)** and **Mark VI (120 Hz, Experimental)**. Select the
+option for the game you are playing; the two preferences are independent.
+Both Mark VI modes reconstruct sprite pieces before the game's native list
+quotas and remove the renderer's per-line limits. SH1 support starts in 0.1.22
+and also removes verified near-camera segment thinning from bodies and eligible
+shadows. Deliberate Harrier blinking, deleted objects, structural hiding and the
+independent no-shadow rules remain.
+
+The 120 Hz option interpolates sprite positions and zoom at twice the native
+refresh (119.845 Hz), without advancing gameplay or audio faster. Background
+animation and changes of sprite artwork retain their native cadence. Both games
+support 4:3 and the optional 16:9 view. No additional ROM patch or emulated CPU
+overclock is required. These are optional enhancements; validation does not yet
+cover every stage and scene. See the [user guide](USER_GUIDE.md#mark-vi-rendering-for-sh1-and-sh2),
+[SH1 implementation and evidence](docs/SH1_MARK_VI.md),
+[SH1 visibility audit](docs/SH1_MARK_VI_AUDIT.md) and
+[SH2 implementation and validation](docs/SH2_MARK_VI.md).
 
 **SH1 Deflicker (Native)** and **SH2 Deflicker (Native)** expose the original
 OFF/ON1/ON2 modes separately. **Game Setting** preserves the in-game choice by

@@ -1,0 +1,2905 @@
+{
+  "version": "0.1.22",
+  "date": "2026-10-09",
+  "passed": true,
+  "host": "macOS arm64, SDK 26.5",
+  "core_sha256": "5f79ffca39cbfbfbacef0e8c942e7019714bbd5151db6da7958641e16b9603e7",
+  "mame_commit": "85eaed9c22242206b68eaca8310cf0dbde331b43",
+  "patch_sha256": "2e084146abd1f31e27b0a9e2b0a96ebba71a0e375d0073b82111a597c6ec6617",
+  "previous_core_sha256": "914d23e149b7dca19c710c816dd7350ffec1e5ba7457901b4860be5362a63203",
+  "public_tests": {
+    "total": 140,
+    "passed": 128,
+    "skipped_optional_oracles": 12
+  },
+  "sanitizers": {
+    "address_and_undefined_behavior": "passed",
+    "coverage": [
+      "SH1 constructor and visibility",
+      "both-game producer lifecycle, including interrupted SH1 overflow and rejection cases",
+      "both-game interpolation lifecycle",
+      "production pixel renderer: 600 entries and left-edge cells in both games, orientations and viewport widths"
+    ]
+  },
+  "constructor": {
+    "controlled": {
+      "rom_sha256": "a545fc8566e5222891f85669e49717813525f80cf93ae8bef487d4e0a7bf26be",
+      "frames": 96,
+      "native_records": 288,
+      "unmatched_native_records": 0,
+      "extra_host_records": 0,
+      "maximum_host_records": 4
+    },
+    "gameplay": {
+      "rom_sha256": "a545fc8566e5222891f85669e49717813525f80cf93ae8bef487d4e0a7bf26be",
+      "frames": 83,
+      "native_records": 5158,
+      "unmatched_native_records": 0,
+      "extra_host_records": 15,
+      "maximum_host_records": 94
+    }
+  },
+  "interrupted_sh1_overflow": {
+    "cases": 39,
+    "matched": 39,
+    "bank_counts": {
+      "0": 18,
+      "1": 21
+    },
+    "full_tail_count": 17
+  },
+  "runtime_comparisons": [
+    {
+      "case": "release-640x480-120",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "scripted",
+      "frames": 8000,
+      "threaded": false,
+      "cpu_overclock": "default",
+      "explosions": "original",
+      "keep_lives": false,
+      "rapid_fire": false,
+      "resolution": "640x480",
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "distinct_half_pairs": 1755,
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 240
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3500,
+        "observed": 1001,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "b52182c67f8c697190ad13a3ba7d7bbc99f585238bf8797dfd6cdfb1ec63ad08",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "86ed299f0d413e88e072037ef1fbf2d06ee5a06473025ca1175f93ca3cfd4435",
+        "audio_sha256": "9c98d8ea9216c586348ffd5b85688d3ecb200697d6f811f1037395ac1620567b",
+        "video_frames": 7998,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    },
+    {
+      "case": "release-on1-400",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on1",
+      "aspect": "original",
+      "input": "scripted",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": false,
+      "rapid_fire": false,
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3500,
+        "observed": 1001,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "e9b256320fbff5f15e0eb6ea78ffc26599a1d0ccc76acbf7c8cc62887437c4e9",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "515e0cefa79a9b31b15ca1cdd0bcda411eebae67a9df4edb7fca5bc16fbfe54a",
+        "audio_sha256": "bd2221f8988a998b3ab4208435415e39a6795688c00205de6187a7ed8e10010f",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    },
+    {
+      "case": "release-refused120",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "scripted",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "default",
+      "explosions": "original",
+      "keep_lives": false,
+      "rapid_fire": false,
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        },
+        {
+          "frame": 1,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "accepted": false
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "b52182c67f8c697190ad13a3ba7d7bbc99f585238bf8797dfd6cdfb1ec63ad08",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [
+        "Frontend rejected the refresh change; keeping the previous refresh rate."
+      ],
+      "stream": {
+        "video_sha256": "c9338d282f2175be60ac23186229e5f6a74faa7c1e8a0e13b7890bba24485500",
+        "audio_sha256": "9c98d8ea9216c586348ffd5b85688d3ecb200697d6f811f1037395ac1620567b",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true
+      }
+    },
+    {
+      "case": "release-sh1-mark_vi",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "scripted",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "default",
+      "explosions": "original",
+      "keep_lives": false,
+      "rapid_fire": false,
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3500,
+        "observed": 1001,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "b52182c67f8c697190ad13a3ba7d7bbc99f585238bf8797dfd6cdfb1ec63ad08",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "c9338d282f2175be60ac23186229e5f6a74faa7c1e8a0e13b7890bba24485500",
+        "audio_sha256": "9c98d8ea9216c586348ffd5b85688d3ecb200697d6f811f1037395ac1620567b",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    },
+    {
+      "case": "release-sh1-mark_vi_120",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "scripted",
+      "frames": 8000,
+      "threaded": false,
+      "cpu_overclock": "default",
+      "explosions": "original",
+      "keep_lives": false,
+      "rapid_fire": false,
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        },
+        {
+          "frame": 4242,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "accepted": true
+        },
+        {
+          "frame": 8483,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "accepted": true
+        },
+        {
+          "frame": 4242,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "accepted": true
+        },
+        {
+          "frame": 8483,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "accepted": true
+        }
+      ],
+      "distinct_half_pairs": 1755,
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 240
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3500,
+        "observed": 1001,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "b52182c67f8c697190ad13a3ba7d7bbc99f585238bf8797dfd6cdfb1ec63ad08",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "toggle_video_differs": true,
+      "messages": [],
+      "stream": {
+        "video_sha256": "f45605a67679a7b29b8b39aa70bfaf76b2c2549d5b3ed8d0ca366d68f2155efd",
+        "audio_sha256": "9c98d8ea9216c586348ffd5b85688d3ecb200697d6f811f1037395ac1620567b",
+        "video_frames": 7998,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      },
+      "toggles": [
+        {
+          "mode": "original",
+          "stream": {
+            "video_sha256": "17ff32ad36df32beaa1be01ca8898bea1db754673eb1531ef238c68c43df17c8",
+            "audio_sha256": "51152fe4928045f5843fa585b3e1f72f3862e31669c354d7c25229d5022fd53b",
+            "video_frames": 300,
+            "audio_stereo_frames": 240312
+          },
+          "state": {
+            "passed": true,
+            "capacity": 60308648,
+            "frames": 240
+          }
+        },
+        {
+          "mode": "mark_vi_120",
+          "stream": {
+            "video_sha256": "5a2f3a8a66937c5426110817b3379f1ff399dc47eb067d313aeb19585b554e7d",
+            "audio_sha256": "51152fe4928045f5843fa585b3e1f72f3862e31669c354d7c25229d5022fd53b",
+            "video_frames": 600,
+            "audio_stereo_frames": 240312
+          },
+          "state": {
+            "passed": true,
+            "capacity": 60308648,
+            "frames": 240
+          }
+        },
+        {
+          "mode": "original",
+          "stream": {
+            "video_sha256": "17ff32ad36df32beaa1be01ca8898bea1db754673eb1531ef238c68c43df17c8",
+            "audio_sha256": "51152fe4928045f5843fa585b3e1f72f3862e31669c354d7c25229d5022fd53b",
+            "video_frames": 300,
+            "audio_stereo_frames": 240312
+          },
+          "state": {
+            "passed": true,
+            "capacity": 60308648,
+            "frames": 240
+          }
+        },
+        {
+          "mode": "mark_vi_120",
+          "stream": {
+            "video_sha256": "5a2f3a8a66937c5426110817b3379f1ff399dc47eb067d313aeb19585b554e7d",
+            "audio_sha256": "51152fe4928045f5843fa585b3e1f72f3862e31669c354d7c25229d5022fd53b",
+            "video_frames": 600,
+            "audio_stereo_frames": 240312
+          },
+          "state": {
+            "passed": true,
+            "capacity": 60308648,
+            "frames": 240
+          }
+        }
+      ]
+    },
+    {
+      "case": "release-sh1-original",
+      "passed": true,
+      "game": 1,
+      "rendering": "original",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "scripted",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "default",
+      "explosions": "original",
+      "keep_lives": false,
+      "rapid_fire": false,
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "b52182c67f8c697190ad13a3ba7d7bbc99f585238bf8797dfd6cdfb1ec63ad08",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "3776327f818ac3ffcc56cdf8ac4bf2878e7214341426d719a3858874e2ab4f16",
+        "audio_sha256": "9c98d8ea9216c586348ffd5b85688d3ecb200697d6f811f1037395ac1620567b",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true
+      }
+    },
+    {
+      "case": "release-sh2-120",
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "deflicker": "game",
+      "aspect": "widescreen",
+      "input": "stage5crash",
+      "frames": 8000,
+      "threaded": false,
+      "cpu_overclock": "default",
+      "explosions": "sh1",
+      "keep_lives": true,
+      "rapid_fire": false,
+      "keep_lives_precondition": {
+        "address": "FF1170",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "distinct_half_pairs": 806,
+      "state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "95f5833a398bf58348c573706a6b52cbff45f3ebb66a904cd5022e0d16c4d99c",
+        "samples": 34,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [
+        "SH2: SH1 explosions enabled for all exploding objects."
+      ],
+      "stream": {
+        "video_sha256": "2749bc4d5ac6f213d34494dbd7af20ba232fe781a5389907396a0275e46528cf",
+        "audio_sha256": "f75855dc969e030756ebbb8611a01b29018f42f67e4ce8ca3059c0cf856c9916",
+        "video_frames": 7998,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    },
+    {
+      "case": "release-sh2-markvi",
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi",
+      "deflicker": "game",
+      "aspect": "widescreen",
+      "input": "stage7fire",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": false,
+      "keep_lives_precondition": {
+        "address": "FF1170",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "5e5f4efc7f8718be6998eb9b7b67f557d42855da223bd77e616f83cbf3a7e122",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "45ec3ef97fdd830954446fab34baf24f7cf8585e406a43768006c1eb048b19a8",
+        "audio_sha256": "64caaeef6a53ff3684b0eeaae039bc0e1e771a32dd48fa423fb2149b45d0a397",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    },
+    {
+      "case": "release-sh2-original",
+      "passed": true,
+      "game": 2,
+      "rendering": "original",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "default",
+      "explosions": "original",
+      "keep_lives": false,
+      "rapid_fire": false,
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 120
+      },
+      "game_audit": {
+        "sha256": "70d2bcb15af3ee29765b89f446ec2d0f29b2e1903987f946b011f81f0dc984c0",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "6544f5bfde73efbaa8af7b7b1a7ec32cef459994c837e7cc4b7451d04f68a693",
+        "audio_sha256": "ea0100710fdf32b37c314dc1987580298a1913c4d08e304d03c5ddd6c55172cb",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true
+      }
+    },
+    {
+      "case": "release-threaded120",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "scripted",
+      "frames": 8000,
+      "threaded": true,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": false,
+      "rapid_fire": false,
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "distinct_half_pairs": 1833,
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 240
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3500,
+        "observed": 1001,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "7150419385e7649a94d71be21524558cdc0c646bce5306c3ff541d69337b6903",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "b229fd0817a74b1f64a131bc058603a96e8db4bf95602af7f5961579d10d2a43",
+        "audio_sha256": "757eb01f6e206e58257fa0626956dc4abf433fdfa8a1d26041f9040d9c1b38d7",
+        "video_frames": 7998,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    },
+    {
+      "case": "release-wide-off-100-threaded",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "scripted",
+      "frames": 4000,
+      "threaded": true,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": false,
+      "rapid_fire": false,
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3500,
+        "observed": 1001,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "7150419385e7649a94d71be21524558cdc0c646bce5306c3ff541d69337b6903",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "f61938eecdf099de2c751835d80b77358bb225f72f43b8965fcbc300733c1c8a",
+        "audio_sha256": "757eb01f6e206e58257fa0626956dc4abf433fdfa8a1d26041f9040d9c1b38d7",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    },
+    {
+      "case": "release-wide-on2-120",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "deflicker": "on2",
+      "aspect": "widescreen",
+      "input": "scripted",
+      "frames": 8000,
+      "threaded": false,
+      "cpu_overclock": "default",
+      "explosions": "original",
+      "keep_lives": false,
+      "rapid_fire": false,
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "distinct_half_pairs": 1645,
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 240
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3500,
+        "observed": 1001,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "405fc0f2be9946cf60cefaa1353bdb5268e522be07f0ed5074c41010c4584712",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "3b15bcd6d8de5bfd882d4d083fd9de0145cbaea98e0c5d173bf802f1e1c51859",
+        "audio_sha256": "4438c7e0d9f6fbfe47b8a1e11d2855e8067179a5322d3b445aa3d225706e8dc5",
+        "video_frames": 7998,
+        "audio_stereo_frames": 3204924
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    }
+  ],
+  "initial_stage_sweep": [
+    {
+      "case": "stage-01",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "off",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 1,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 1,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 1,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 977
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "5b947c447b5142e15da827ae0fb07695903b7eab11e09b2a419ef0fffef40c2e",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "fc7c011a65c87e647ffdaede15d28d02aa6b00a214a11436c339de667d899a18",
+        "audio_sha256": "6effe4b3e8435eb4a4be417fa2d5913e543de40397d2f4c6ad6e14af3f442a69",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-02",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on1",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 2,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 2,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 2,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 1001
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "83ab49781117663a2a91362f45d4865ce1288f7410a7873bad786feae72d4c8a",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "2e05ce8d7af7ea48118543c35cf13cf2150c747a1ad866053e06fba770f7f6ba",
+        "audio_sha256": "6dcccd1ab29a522964ad5bfb42c1c2b6416e6e32e214864ba42ce17d2cfebf67",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-03",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on2",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 3,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 3,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 3,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 1001
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "bc54787158a0efb7a4c8d98ca73dda9825391687d4a71abed2f12233f6454f96",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "f27af390102e451a154808c3c218cd8d01739a60f08eb3083a47b59c1c4c8424",
+        "audio_sha256": "5058b29eac23b4a5a11f9a2db3c698fde6230e8efb3f39a03078efaae4774c42",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-04",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 4,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 4,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 4,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 460
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "4126749117bce6e32e6a14e192999fea0eecd02e4df50c556c684f83bd8f9131",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "6c94a11fdde5b234466c09d05b834323bd809cbbd8adaf594005dac22f1d393d",
+        "audio_sha256": "48d887628d1ebcffd7adf552232d10f69565f4e3e5f7a8fb9c1764aad5fc0a67",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-05",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on1",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 5,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 5,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 5,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 1001
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "1634f16f490519ea2b67012a5c2f3e62ec5cffdaf2c905c0f2f6ec96140cf722",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "9a0e221aefe7a4b200e03de84c0297426576cbaf0466a93b4548173e718474ac",
+        "audio_sha256": "c3b4b746b16fc9afde36b7be15855d7e89ce76a41703cab1948b28fe7721e14c",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-06",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on2",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 6,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 6,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 6,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 883
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "5dc29685fe5ec03e693b4edb89388df73f617633e88188bc5d7edc513cc31e86",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "5129758955d21b1c5d53ba091f4ce33e2b3288267a9829dbfa118169f669ddb1",
+        "audio_sha256": "52760dff2954201471f7e27f7bf606add77e14e554231c6c388c85fabbe39cb7",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-07",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "off",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 7,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 7,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 7,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 815
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "6d48930721ae0d53e97e2ebc369a0366b74a2b6c63ffc7719876d24f71db2706",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "bf32bf42ba0901d25b788cc950846914eb87ea2c35c7b3fbe71625aa31b212b1",
+        "audio_sha256": "f5ec606b7ececaee14bf447554e528dcca417c87f6e05cb6acd384a4114707ad",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-08",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on1",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 8,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 8,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 8,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 993
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "e196a130cceccc4389fb794c1e75df1088b93007985dc4dd4043f8630ccea4eb",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "c44e70c486e4aec53c050f77a7874e916eca2560fca2e86e5c1d6aa66864ed4c",
+        "audio_sha256": "dc5af8b5eb6bfe8f5ff200336bd511bf1d0e98e44446a634a5a8a4554ac77af9",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-09",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on2",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 9,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 9,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 9,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 559
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "4eede054e8e636edf675df9369fc472ed5557486c4ad9aa17e6b54b725a983ee",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "482b946134228ebd742e22c65cf2bb3b6e59e7f283d61484f98098eaf1bffd15",
+        "audio_sha256": "047f3548e63804cfab182e3d9e0e1f1b3fdbd651dfb4fa0e6f1467817e41efca",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-10",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 10,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 10,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 10,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 931
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "9fc2fdfd96e6513beb164f990b0c0742e3d464986220d6fdd7869045d797eeed",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "ca66185c9998c21295aa6ca00418579b2437ac275a694d19fbf1d6f69b713ad8",
+        "audio_sha256": "f8df78e0e91e3e31983c881cfc514a966c36170f546f24812aa67fcf0778f80d",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-11",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on1",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 11,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 11,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 11,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 815
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "b3d195b8dd823a5308d37e2afff7d773ffc411b23e073885cb9c991393537fcb",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "4d7e7bdf38f57c364a1829adcf784ad0f4703853bc9a138f9d3c41e457bf9526",
+        "audio_sha256": "4367a1c3fd5a0f3fc946da8a97ebd11503d8383242bcd3564f24299fbb6506a3",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-12",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on2",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 12,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 12,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 12,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 999
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "df0edb1d92299650cb88ccec690a0e8ebb5dec6300f702733b2df560c6e17074",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "64215bb0397fda6360a704ea8b1331550f0e895f38cad826b4add62b59b1ac7e",
+        "audio_sha256": "8f2e641a9d1b4481f0bd45ca54e0e243b7c281441005be6fab874a3b362ed1d1",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-13",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "off",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 13,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 13,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 13,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 857
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "53651aed2789c7af6d9ed394418dda42a09c6c90854edeeafade7a45c06369bd",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "405add9ea2c3eeedd818d732d6515746fd74965b33535aa0fd2d18b9ea07551a",
+        "audio_sha256": "8ceed163212d8b3d01d5809e1c4c5a7de707a4b7626efc937a8c5ea415957285",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-14",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on1",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 14,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 14,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 14,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 652
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "8945472a9c786d3c82823fbbe43aa9171f849f732718cbc69343c73ae9a96c24",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "1a8494a82b2338d797b9f6ecd365839c6c8eb19210e9ee8ea8d6b491c60f4978",
+        "audio_sha256": "65955b4f3431bf7cdc5bc9d5b1630df2890e0f1a0b061f9f9bc45a92918f5be1",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-15",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on2",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 15,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 15,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 15,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 913
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "aa952eab722435eebdcb1120ae06af035491b1d189d3be95a8cfb494734ec51b",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "8b06084d2aaf47c9bcfbeb6290e627327d2a7b14dfd00227d9477f9c06267fae",
+        "audio_sha256": "6d6bdca601a5379f64cc0bcd35936625918847ea7e294f83f928133bfd48f799",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-16",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 16,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 16,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 16,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 573
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "03ec957958c75e7e9f2e3e52ac51c50051ef59a4e7e91c2ac4e78ee76635314e",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "28a51669f4157566f53dfa22895b66f80222378af7df90b001bd546debc4ff00",
+        "audio_sha256": "14b7fbdc6fda14af36ebb74f3483b550e4be9cbf95c51c9a73551f2a2f8e422e",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-17",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on1",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 17,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 17,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 17,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 947
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "89c3a3972de60dae691c3372fd886710570678369da669c68f048b31e63ce09a",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "0ac2212fee2754bd183cb2e23b9e825a642300fac83140777febee775d26be58",
+        "audio_sha256": "0daddac3fc206d594ff3d4666d0a0aa703570537102c81ad1b31f23f8f0b7898",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    },
+    {
+      "case": "stage-18",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "on2",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 4000,
+      "threaded": false,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 18,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 18,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 18,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 1399,
+        "start_native_frame": 2600,
+        "end_native_frame": 3998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 1001
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2500,
+        "end": 3900,
+        "observed": 1401,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "efe412b806fd167b007ccac42e18d8b679de0c4020f9339d60f9a067c1ec289e",
+        "samples": 35,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "9b958e0b72026f4f620a59faca6e2516f11471b511d53d219a8d93a015adfe9d",
+        "audio_sha256": "0f06318af568ed3b4a52e718643f0eaa4d5b5034ad23b42e77f98af371c2066e",
+        "video_frames": 3999,
+        "audio_stereo_frames": 3204924
+      }
+    }
+  ],
+  "extended_stage_sequences": [
+    {
+      "case": "final-stage1",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "game",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 13000,
+      "threaded": false,
+      "cpu_overclock": "default",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 1,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 1,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 1,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 10399,
+        "start_native_frame": 2600,
+        "end_native_frame": 12998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 9935
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2600,
+        "end": 12900,
+        "observed": 10301,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "362cfe05c1ed6752fc532e8ee8915c73838ea4c4266ba1708a4479ad8c7ba998",
+        "samples": 110,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "cdd3a18a21c135111075d2d20fa979c35c05e59f6808a3f057a8960c8fa87692",
+        "audio_sha256": "1f726b5399a1c7b9a07f8c754fc5fb31bc65d950f77e2f15a5646c7f94b3df45",
+        "video_frames": 12999,
+        "audio_stereo_frames": 10414197
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    },
+    {
+      "case": "final-stage18",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "deflicker": "off",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 26000,
+      "threaded": false,
+      "cpu_overclock": "default",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 18,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 18,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 18,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 10399,
+        "start_native_frame": 2600,
+        "end_native_frame": 12998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 19641
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "distinct_half_pairs": 11005,
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 240
+      },
+      "markvi_watch": {
+        "start": 2600,
+        "end": 12900,
+        "observed": 10301,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "cf59696ef2d8b3add34043146370fef4f9c99d0a54918ecb8bc2c44318cfedb9",
+        "samples": 110,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "e5aed814af4412b489d2095bef3f36fd28186836c75c9308f5e78aa94bd8c91d",
+        "audio_sha256": "231d3ab2287ddc8cf8805248c1d0aa23617791e8453c4e9e82398e3a488327f8",
+        "video_frames": 25998,
+        "audio_stereo_frames": 10414197
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    },
+    {
+      "case": "final-stage5",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "deflicker": "game",
+      "aspect": "widescreen",
+      "input": "reference",
+      "frames": 13000,
+      "threaded": false,
+      "cpu_overclock": "400",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 5,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 5,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 5,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 10399,
+        "start_native_frame": 2600,
+        "end_native_frame": 12998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 9171
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 120
+      },
+      "markvi_watch": {
+        "start": 2600,
+        "end": 12900,
+        "observed": 10301,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "ced02bbde0ef8d79c1bc86ade035defdb63da7b45bb26c29254f37b4c9e3c762",
+        "samples": 110,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "8553e6f5a4f87b916d795d54e8a1f019b8b407122799b1d47107081bb995e229",
+        "audio_sha256": "9a37d51fa066ef4425bf24accb41767121d0b1e996f5eb8f4ba8c3814dd0de96",
+        "video_frames": 12999,
+        "audio_stereo_frames": 10414197
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    },
+    {
+      "case": "final-stage7",
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "deflicker": "on2",
+      "aspect": "original",
+      "input": "reference",
+      "frames": 26000,
+      "threaded": false,
+      "cpu_overclock": "100",
+      "explosions": "original",
+      "keep_lives": true,
+      "rapid_fire": true,
+      "keep_lives_precondition": {
+        "address": "FF1C04",
+        "value": 9,
+        "start_native_frame": 2600,
+        "scope": "Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged."
+      },
+      "stage_selection": {
+        "requested": 7,
+        "method": "Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.",
+        "stage_address": "FF16CC",
+        "enable_address": "FF3C40",
+        "enable_native_frames": [
+          700,
+          1299
+        ],
+        "startup_reset": "1E5BEC",
+        "start_native_frames": [
+          700,
+          1300
+        ],
+        "observations": [
+          {
+            "native_frame": 1250,
+            "stage": 7,
+            "selector_enabled": 1,
+            "game_phase": 0,
+            "startup_transfers": 0
+          },
+          {
+            "native_frame": 1400,
+            "stage": 7,
+            "selector_enabled": 0,
+            "game_phase": 128,
+            "startup_transfers": 1
+          }
+        ]
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 10399,
+        "start_native_frame": 2600,
+        "end_native_frame": 12998,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 17386
+      },
+      "resolution": null,
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ],
+      "distinct_half_pairs": 9552,
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 240
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 240
+      },
+      "markvi_watch": {
+        "start": 2600,
+        "end": 12900,
+        "observed": 10301,
+        "inactive_frames": []
+      },
+      "game_audit": {
+        "sha256": "f81ca9f1644a236a8c99d519f2cf6e1b6f6f29dfe64add7c370a09721680daff",
+        "samples": 110,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "messages": [],
+      "stream": {
+        "video_sha256": "25c8f6006d7e46bcff702eb6d00a42bc1a34ede80feace0b9414ed24e8a2a739",
+        "audio_sha256": "188be941830d909f0c146e86fa4068101333c6f54d4102cc5eba26f15f72ebbf",
+        "video_frames": 25998,
+        "audio_stereo_frames": 10414197
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false
+      }
+    }
+  ],
+  "scope": [
+    "Private authenticated SH1/SH2 ROMs were copied into isolated temporary directories. No ROM, RAM, PCM, save-state bytes or screenshots are published.",
+    "The 18-stage sweep covers the opening 4000 native refreshes per selected stage, not full playthroughs. Native stage transitions may advance beyond the selected starting stage.",
+    "Stage selection and remaining-lives preconditions are explicit test-only diagnostics, never distributed core patches. Pause flags and frame diversity verify that the longer tests actually advance.",
+    "Each extended sequence watches 10301 native refreshes (2600 through 12900), with no inactive Mark VI list. Inputs begin from stages 1, 5, 7 and 18; two sequences present 26000 frames at double refresh.",
+    "Original (M2) video, full PCM and sampled CPU/RAM match the previous core in the tested SH1/SH2 4000-frame sequences. Mark VI comparisons require unchanged full PCM and sampled CPU/RAM while video differs.",
+    "SH2 Mark VI changes include the intentional shared left-edge clipping correction; this is not a claim of unchanged enhanced video.",
+    "Constructor multiset comparisons do not prove ordering or final pixels. Screenshot review cannot by itself prove absence of temporal flicker.",
+    "These gameplay results are from macOS arm64. Release CI separately compiles all desktop targets and runs its public generic-cartridge Windows runtime checks."
+  ]
+}

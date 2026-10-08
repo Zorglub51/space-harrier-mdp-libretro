@@ -41,6 +41,23 @@ Le lanceur n'active pas Deflicker et désactive la persistance expérimentale de
 sprites, afin de garder la référence visuelle du cœur sans ce filtre ajouté.
 Le rendu est celui du test Mac ; sa conformité complète à M2 reste à valider.
 
+MODE MARK VI FACULTATIF
+
+Dans F1 > Options du cœur > Emulation Hacks > SH1 Rendering, choisissez :
+- Original (M2) : le réglage par défaut, avec les limites natives ;
+- Mark VI (Native Refresh) : liste de sprites étendue sans quotas par ligne ;
+- Mark VI (120 Hz, Experimental) : ajoute l'interpolation des positions et du
+  zoom à 119,845 Hz. Un écran à 120 Hz ou plus permet de voir les images ajoutées.
+
+Ces options sont disponibles séparément pour SH1 et SH2 à partir de la 0.1.22,
+en 4/3 et en 16/9. Le changement s'applique sans redémarrage. Deflicker n'a pas
+besoin d'être activé et aucun overclock n'est imposé. La vitesse du jeu, les
+collisions et le son restent natifs. Les clignotements volontaires du joueur et
+les règles de disparition des objets restent actifs. Consultez
+GUIDE_UTILISATEUR.md pour les limites connues et les sauvegardes instantanées.
+
+JOURNAUX ET CAPTURES
+
 Chaque lancement crée un sous-dossier horodaté dans session\, à côté du lanceur.
 Il contient la configuration locale, session.json, logs\retroarch.log et les
 captures dans screenshots\. Les états et données de jeu restent dans cette

@@ -934,14 +934,15 @@
  }
  
  u16 sega315_5313_device::data_port_r()
-@@ -1396,8 +1733,369 @@
+@@ -1396,8 +1733,386 @@
  
  */
  
 +void sega315_5313_device::sh2_markvi_dma(u32 source, u32 address, u32 count, bool was_active)
 +{
-+	if (!m_sh2_text_compat || m_vdp_code != 0x21 || m_regs[15] != 2)
++	if (!m_markvi_game || m_vdp_code != 0x21 || m_regs[15] != 2)
 +		return;
++	const auto &layout = sh_markvi::layout(m_markvi_game);
 +	const u32 sat_base = u32(m_regs[5] & 0x7f) << 9;
 +	const auto mask = [](unsigned i) -> u16 { return (i & 3) == 1 ? 0xff00 : 0xffff; };
 +	if (address == sat_base && (source & 0xffffff) != m_markvi_source[2])
@@ -960,7 +961,7 @@
 +					std::copy_n(m_markvi_ram[bank], 0x10000, m_markvi_ram[2]);
 +					std::copy_n(m_markvi_sat[bank], 0x140, m_markvi_sat[2]);
 +					std::copy_n(m_markvi_tail[bank], 0x141, m_markvi_tail[2]);
-+					m_markvi_source[2] = bank ? 0xff140c : 0xff118a;
++					m_markvi_source[2] = layout.tail[bank];
 +					m_markvi_ready[2] = true;
 +					break;
 +				}
@@ -986,10 +987,22 @@
 +					return false;
 +			return true;
 +		};
-+		const unsigned bank = (source & 0xffffff) == 0xff140c ? 1 : 0;
++		const unsigned bank = (source & 0xffffff) == layout.tail[1] ? 1 : 0;
 +		bool same = matches_tail(2) ||
-+			((source & 0xffffff) == (bank ? 0xff140c : 0xff118a) &&
++			((source & 0xffffff) == layout.tail[bank] &&
 +			 m_markvi_ready[bank] && matches_tail(bank));
++		// SH1's native interrupt may upload the old overflow count while its
++		// next same-bank constructor is still replacing that tail in RAM.
++		// Authenticate this specific interrupt, source and in-progress build;
++		// keep the complete displayed snapshot, never adopt the partial one.
++		// The active head prefix below must still be unchanged. Arbitrary RAM
++		// edits, other DMA callers and completed/replaced producers do not pass.
++		if (!same && native && m_markvi_game == 1 &&
++			m_markvi_build_bank == int(bank) && !m_markvi_ready[bank] &&
++			(source & 0xffffff) == layout.tail[bank] &&
++			count == u32(m_markvi_tail[2][0x140]) * 4 &&
++			(m_cpu68k->pc() & 0xffffff) == (bank ? 0x0f49d6U : 0x0f4b0cU))
++			same = true;
 +		for (unsigned i = 0; same && i < 0x140 - count; ++i)
 +			same = (mdp_vram_word((sat_base >> 1) + i) & mask(i)) == m_markvi_sat[2][i];
 +		m_markvi_ready[2] = same;
@@ -1005,16 +1018,18 @@
 +
 +void sega315_5313_device::sh2_markvi_capture()
 +{
-+	if (!m_sh2_text_compat)
++	if (!m_markvi_game)
 +		return;
 +	const u16 *ram = reinterpret_cast<const u16 *>(m_space68k->get_read_ptr(0xfe0000));
 +	if (!ram)
 +		return;
-+	const unsigned bank = ram[(0xff387c - 0xfe0000) / 2] & 1;
++	const auto &layout = sh_markvi::layout(m_markvi_game);
++	const unsigned bank = ram[(layout.selector - 0xfe0000) / 2] & 1;
 +	std::copy_n(ram, 0x10000, m_markvi_ram[bank]);
-+	sh2_markvi::clear_traced_boss_budget(m_markvi_ram[bank], m_markvi_boss_budget);
-+	m_markvi_source[bank] = bank ? 0xff3080 :
-+		((u32(ram[(0xff0e00 - 0xfe0000) / 2]) << 16) | ram[(0xff0e02 - 0xfe0000) / 2]) & 0xffffff;
++	if (m_markvi_game == 2)
++		sh2_markvi::clear_traced_boss_budget(m_markvi_ram[bank], m_markvi_boss_budget);
++	m_markvi_source[bank] = bank ? layout.second_head :
++		((u32(ram[(layout.head_pointer - 0xfe0000) / 2]) << 16) | ram[(layout.head_pointer + 2 - 0xfe0000) / 2]) & 0xffffff;
 +	m_markvi_ready[bank] = false;
 +	m_markvi_build_bank = bank;
 +}
@@ -1033,13 +1048,14 @@
 +		return;
 +	for (unsigned i = 0; i < 0x140; ++i)
 +		m_markvi_sat[bank][i] = native[i] & ((i & 3) == 1 ? 0xff00 : 0xffff);
-+	const u32 tail_source = bank ? 0xff140c : 0xff118a;
++	const auto &layout = sh_markvi::layout(m_markvi_game);
++	const u32 tail_source = layout.tail[bank];
 +	const u16 *tail = reinterpret_cast<const u16 *>(m_space68k->get_read_ptr(tail_source));
 +	if (!tail)
 +		return;
 +	for (unsigned i = 0; i < 0x140; ++i)
 +		m_markvi_tail[bank][i] = tail[i] & ((i & 3) == 1 ? 0xff00 : 0xffff);
-+	m_markvi_tail[bank][0x140] = m_space68k->read_word(bank ? 0xff168c : 0xff140a);
++	m_markvi_tail[bank][0x140] = m_space68k->read_word(layout.tail_count[bank]);
 +	m_markvi_ready[bank] = true;
 +}
 +
@@ -1054,7 +1070,8 @@
 +		return address >= 0xfe0000 ? m_markvi_ram[2][(address - 0xfe0000) >> 1] :
 +			(address < 0x400000 ? m_space68k->read_word(address) : 0);
 +	};
-+	if (!sh2_markvi::build(read, m_markvi_sprites, mdp_widescreen_padding() != 0))
++	if (!(m_markvi_game == 1 ? sh1_markvi::build(read, m_markvi_sprites, mdp_widescreen_padding() != 0) :
++		sh2_markvi::build(read, m_markvi_sprites, mdp_widescreen_padding() != 0)))
 +	{
 +		m_markvi_ready[2] = false;
 +		m_markvi_sprites.clear();
@@ -1206,7 +1223,8 @@
 +        return a >= 0xfe0000 ? m_markvi_history[0][(a - 0xfe0000) >> 1] :
 +            (a < 0x400000 ? m_space68k->read_word(a) : 0);
 +    };
-+    if (!sh2_markvi::build(read, previous, mdp_widescreen_padding() != 0)) previous.clear();
++    if (!(m_markvi_game == 1 ? sh1_markvi::build(read, previous, mdp_widescreen_padding() != 0) :
++        sh2_markvi::build(read, previous, mdp_widescreen_padding() != 0))) previous.clear();
 +    for (unsigned phase = 0; phase < 2; ++phase)
 +        m_markvi_phases[phase] = sh2_markvi::interpolate(previous, m_markvi_sprites,
 +            std::min(m_markvi_age, m_markvi_span) * 2 + phase + 1, m_markvi_span * 2);
@@ -1214,7 +1232,7 @@
 +
 +bool sega315_5313_device::mdp_render_markvi_spriteline(int scanline)
 +{
-+	if (!m_sh2_text_compat || !m_markvi_ready[2] || !sh_mdp_video::markvi.load(std::memory_order_relaxed))
++	if (!m_markvi_game || !m_markvi_ready[2] || !sh_mdp_video::markvi.load(std::memory_order_relaxed))
 +		return false;
 +	std::fill_n(m_sprite_renderline.get(), 1024, 0);
 +	const int viewport = (m_regs[12] & 0x81) == 0x81 ? 320 : 256;
@@ -1267,7 +1285,7 @@
 +				start = xacc >> 3;
 +			}
 +			const int span = end - start;
-+			if (span <= 0 || (!padding && span < 8 && start < 0))
++			if (span <= 0)
 +				continue;
 +			const u32 row = BIT(attr, 12) ? 7 - (source_y & 7) : (source_y & 7);
 +			const u32 bank = zoom ? ((size & 0x3000) << 3) : 0;
@@ -1278,8 +1296,7 @@
 +			for (int out = 0; out < span; ++out)
 +			{
 +				const int x = start + out;
-+				if (x < -padding || x >= viewport + padding
-+					|| (span < 8 && start < 0 && x >= 0 && x < viewport))
++				if (x < -padding || x >= viewport + padding)
 +					continue;
 +				int sx = span == 8 ? out : shrink_map[span][out];
 +				if (BIT(attr, 11))
@@ -1304,7 +1321,7 @@
  	const int ytile_shift = (m_imode == 3) ? 4 : 3;
  	const int yline_mask = (m_imode == 3) ? 0xf : 0x7;
  	gfx_element *spr_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
-@@ -1416,7 +2114,7 @@
+@@ -1416,7 +2131,7 @@
  	}
  
  	/* Clear our Render Buffer */
@@ -1313,7 +1330,7 @@
  
  	{
  		int ypos, xpos, addr;
-@@ -1596,6 +2294,9 @@
+@@ -1596,6 +2311,9 @@
  	tile.pri =   (tile_dat & 0x8000) >> 15;
  	u16 code =   (tile_dat & 0x07ff);
  
@@ -1323,7 +1340,7 @@
  	if (m_imode == 3)
  		code &= 0x3ff;
  
-@@ -1662,8 +2363,321 @@
+@@ -1662,8 +2380,321 @@
  }
  
  /* Clean up this function (!) */
@@ -1645,7 +1662,7 @@
  	gfx_element *tile_gfx = (m_imode == 3) ? gfx(1) : gfx(0);
  	u16 base_w = 0;
  
-@@ -1687,7 +2701,7 @@
+@@ -1687,7 +2718,7 @@
  	/* Clear our Render Buffer */
  	for (int x = 0; x < horz; x++)
  	{
@@ -1654,7 +1671,7 @@
  	}
  
  	memset(m_highpri_renderline.get(), 0, horz);
-@@ -1847,7 +2861,7 @@
+@@ -1847,7 +2878,7 @@
  	int vscroll;
  	/* Low Priority B Tiles */
  	{
@@ -1663,7 +1680,7 @@
  		{   /* 20x 16x1 blocks */
  			int vcolumn;
  
-@@ -1910,6 +2924,7 @@
+@@ -1910,6 +2941,7 @@
  		}
  		/* END */
  	}
@@ -1671,7 +1688,7 @@
  	/* Low Priority A Tiles + Window(!) */
  
  	{
-@@ -1934,7 +2949,8 @@
+@@ -1934,7 +2966,8 @@
  
  		/* Non Window Part */
  
@@ -1681,7 +1698,7 @@
  		{   /* 20x 16x1 blocks */
  		//  int xx;
  			int vcolumn;
-@@ -2004,6 +3020,25 @@
+@@ -2004,6 +3037,25 @@
  	}
  		/* END */
  
@@ -1707,7 +1724,7 @@
  /* MEGADRIVE_REG0C_SHADOW_HIGLIGHT */
  	/* Low Priority Sprites */
  	for (int x = 0; x < horz; x++)
-@@ -2139,9 +3174,9 @@
+@@ -2139,9 +3191,9 @@
  			if (!MEGADRIVE_REG0_SPECIAL_PAL) // 3 bit color mode, correct?
  				clut &= 0x49; // (1 << 6) | (1 << 3) | (1 << 0);
  
@@ -1720,7 +1737,7 @@
  		}
  	}
  
-@@ -2155,7 +3190,13 @@
+@@ -2155,7 +3207,13 @@
  		else
  			m_render_line_raw[srcx] = 0x000;
  
@@ -1735,7 +1752,7 @@
  		{
  			if (dat & 0x10000)
  			{
-@@ -2217,7 +3258,21 @@
+@@ -2217,7 +3275,21 @@
  		}
  	}
  
@@ -1758,7 +1775,7 @@
  		m_32x_scanline_helper_func(scanline);
  	if (!m_32x_scanline_func.isnull())
  	{
-@@ -2239,10 +3294,24 @@
+@@ -2239,10 +3311,24 @@
  
  	if (scanline >= 0 && scanline < m_visible_scanlines)
  	{
@@ -1787,7 +1804,7 @@
  	}
  }
  
-@@ -2366,6 +3435,7 @@
+@@ -2366,6 +3452,7 @@
  	/* note, add 240 mode + init new timings! */
  	scr_mul = m_lcm_scaling ? hres_mul[get_hres()] : 1;
  	scr_width = hres[get_hres()] * scr_mul;
@@ -1797,7 +1814,7 @@
  	visarea.set(0, scr_width - 1, 0, m_visible_scanlines - 1);
 --- a/src/devices/video/315_5313.h
 +++ b/src/devices/video/315_5313.h
-@@ -1,24 +1,25 @@
+@@ -1,24 +1,27 @@
  // license:BSD-3-Clause
  // copyright-holders:David Haywood
  /* Sega Megadrive / Genesis VDP */
@@ -1808,6 +1825,8 @@
  
  #include "video/315_5124.h"
 +#include "bus/megadrive/sh2_markvi.h"
++#include "bus/megadrive/sh1_markvi.h"
++#include "bus/megadrive/sh_markvi_profile.h"
  #include "cpu/m68000/m68000.h"
  #include "machine/timer.h"
  
@@ -1823,7 +1842,7 @@
  		m_cpu68k.set_tag(std::forward<T>(cpu_tag));
  	}
  
-@@ -37,34 +38,84 @@
+@@ -37,34 +40,85 @@
  	void set_pal_write_base(int palwrite_base) { m_palwrite_base = palwrite_base; }
  	template <typename T> void set_ext_palette(T &&tag) { m_ext_palette.set_tag(std::forward<T>(tag)); }
  
@@ -1859,6 +1878,7 @@
 +	// Optional read-only diagnostics, with no temporal filtering.
 +	void mdp_debug_frame();
 +	void set_sh2_text_compat(bool enabled) { m_sh2_text_compat = enabled; }
++	void set_sh_markvi_game(unsigned game) { m_markvi_game = game; }
 +	void sh2_markvi_capture();
 +	void sh2_markvi_boss_visibility(u32 object, bool budget);
 +	void sh2_markvi_finalize();
@@ -1908,7 +1928,7 @@
  	int get_scanline_counter();
  
  	TIMER_CALLBACK_MEMBER(render_scanline);
-@@ -95,30 +146,31 @@
+@@ -95,30 +149,31 @@
  	void set_total_scanlines(int total) { m_base_total_scanlines = total; }
  	void set_framerate(int rate) { m_framerate = rate; }
  	void set_vdp_pal(bool pal) { m_vdp_pal = pal ? 1 : 0; }
@@ -1940,7 +1960,7 @@
  	virtual void device_reset() override ATTR_COLD;
  	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
  
-@@ -220,36 +272,86 @@
+@@ -220,36 +275,87 @@
  	void vdp_address_inc();
  	void vdp_set_register(int regnum, u8 value);
  
@@ -2004,6 +2024,7 @@
 +	void sh2_markvi_rebuild();
 +	void sh2_markvi_dma(u32 source, u32 address, u32 count, bool was_active);
 +	bool mdp_render_markvi_spriteline(int scanline);
++	unsigned m_markvi_game = 0; // Authenticated cartridge profile, reapplied on reset.
 +	bool m_sh2_text_compat = false; // Immutable cartridge profile, reapplied on reset.
 +	// Direct CRAM writes are indexed, and several colours may change on one line.
 +	u16 m_mdp_raster_cram[256][128]{};
@@ -2120,13 +2141,16 @@
  
  #include "bus/generic/carts.h"
  #include "bus/sms_ctrl/controllers.h"
-@@ -148,6 +151,120 @@
+@@ -148,6 +151,141 @@
  void md_cons_state::machine_reset()
  {
  	md_base_state::machine_reset();
 +	// Image loading has completed and child devices have reset at this point.
 +	// Keep the SH2-only font workaround out of SH1 and ordinary Mega Drive games.
 +	m_vdp->set_sh2_text_compat(m_cart && m_cart->sh2_text_compat());
++	const unsigned game = m_cart ? m_cart->sh_mdp_game() : 0;
++	m_vdp->set_sh_markvi_game(game);
++	sh_mdp_video::set_game(game);
 +
 +	// Expose the ROM's native OFF/ON1/ON2 list strategies, without altering its
 +	// stored setting, renderer limits or save-state format. Install only after
@@ -2135,7 +2159,26 @@
 +	m_sh_markvi_end_tap.remove();
 +	for (auto &tap : m_sh_markvi_visibility_taps) tap.remove();
 +	m_sh_markvi_visibility_taps.clear();
-+	if (m_cart && m_cart->sh_mdp_game() == 2)
++	if (game == 1)
++	{
++		m_sh_markvi_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(0xff40b8, 0xff40b9,
++			"sh1_markvi_constructor", [this](offs_t offset, u16 &data, u16 mem_mask)
++			{
++				const u32 pc = m_maincpu->pc();
++				if (!machine().side_effects_disabled() && (pc == 0x17034a || pc == 0x17047c))
++					m_vdp->sh2_markvi_capture();
++			});
++		// Observe the unconditional completion data read. Opcode prefetch can
++		// occur while PC still names a distant branch, before construction ends.
++		m_sh_markvi_end_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(0xff3ca4, 0xff3ca5,
++			"sh1_markvi_complete", [this](offs_t offset, u16 &data, u16 mem_mask)
++			{
++				const u32 pc = m_maincpu->pc();
++				if (!machine().side_effects_disabled() && pc == 0x17083c)
++					m_vdp->sh2_markvi_finalize();
++			});
++	}
++	if (game == 2)
 +	{
 +		m_sh_markvi_tap = m_maincpu->space(AS_PROGRAM).install_read_tap(0xff38f2, 0xff38f3,
 +			"sh2_markvi_constructor", [this](offs_t offset, u16 &data, u16 mem_mask)
@@ -2174,7 +2217,6 @@
 +
 +	}
 +	m_sh_deflicker_tap.remove();
-+	const int game = m_cart ? m_cart->sh_mdp_game() : 0;
 +	for (auto &tap : m_sh_widescreen_taps)
 +		tap.remove();
 +	m_sh_widescreen_taps.clear();
@@ -2218,8 +2260,8 @@
 +				m_sh_widescreen_taps.push_back(space.install_read_tap(site.address, site.address + 1,
 +					"sh_widescreen_clip", [site, game](offs_t offset, u16 &data, u16 mem_mask)
 +					{
-+						// Mark VI expands its host constructor; its quota-limited
-+						// guest list need not do extra work for lateral pieces.
++						// Preserve SH1's native wide list and timing in both renderers.
++						// SH2 Mark VI expands its host constructor independently.
 +						if (sh_mdp_video::widescreen && (game == 1 || !sh_mdp_video::markvi) &&
 +							(data & mem_mask) == (site.original & mem_mask))
 +							data = (data & ~mem_mask) | (site.wide & mem_mask);
@@ -2324,7 +2366,7 @@
  
     memcpy(output_audio_buffer.data + output_audio_buffer.size, data, samples * sizeof(*output_audio_buffer.data));
     output_audio_buffer.size += samples;
-@@ -367,30 +384,49 @@
+@@ -367,30 +384,51 @@
  
              // Skip at startup if using default speed, because
              // games like 'dragoona' use a CPU timing boothack
@@ -2344,11 +2386,13 @@
 +   const bool has_aspect = environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &aspect);
 +   sh_mdp_video::request_wide.store(has_aspect && aspect.value && !strcmp(aspect.value, "widescreen"), std::memory_order_relaxed);
 +
++   struct retro_variable sh1_video = {CORE_NAME "_sh1_rendering", NULL};
 +   struct retro_variable sh2_video = {CORE_NAME "_sh2_rendering", NULL};
++   const bool has_sh1_video = environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &sh1_video);
 +   const bool has_sh2_video = environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &sh2_video);
-+   const bool smooth = has_sh2_video && sh2_video.value && !strcmp(sh2_video.value, "mark_vi_120");
-+   sh_mdp_video::request_120.store(smooth, std::memory_order_relaxed);
-+   sh_mdp_video::markvi.store(smooth || (has_sh2_video && sh2_video.value && !strcmp(sh2_video.value, "mark_vi")), std::memory_order_relaxed);
++   sh_mdp_video::sh1_rendering.store(sh_mdp_video::parse_rendering(has_sh1_video ? sh1_video.value : NULL), std::memory_order_relaxed);
++   sh_mdp_video::sh2_rendering.store(sh_mdp_video::parse_rendering(has_sh2_video ? sh2_video.value : NULL), std::memory_order_relaxed);
++   sh_mdp_video::apply_rendering_options();
 +
 +   // Atomic preferences are consumed by the emulation thread at native reads.
 +   // Missing/unknown values always restore control to the in-game option.
@@ -2374,7 +2418,7 @@
     {
        strcpy(joystick_saturation, var.value);
     }
-@@ -702,65 +738,94 @@
+@@ -702,65 +740,94 @@
     if (environ_cb(RETRO_ENVIRONMENT_GET_VARIABLE, &var) && var.value)
     {
        sprintf(mediaType,"-%s",var.value);
@@ -2478,7 +2522,9 @@
  void retro_init(void)
  {
     const char *system_dir  = NULL;
-@@ -862,179 +927,397 @@
+@@ -860,181 +927,410 @@
+    static struct retro_keyboard_callback keyboard_callback = {retro_keyboard_event};
+    environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &keyboard_callback);
  
     memset(videoBuffer, 0, sizeof(videoBuffer));
     init_output_audio_buffer(2048);
@@ -2492,12 +2538,15 @@
  
  void retro_deinit(void)
  {
++   sh_mdp_video::clear_pending();
++   sh_mdp_video::hz120 = false;
     free_output_audio_buffer();
     if (retro_load_ok)
 +   {
        retro_finish();
 +      retro_load_ok = false;
 +   }
++   sh_mdp_video::set_game(0);
 +   sh_mdp_video::wide_eligible = false;
 +   sh_mdp_video::widescreen = false;
  }
@@ -2553,7 +2602,8 @@
 +
 +static void update_markvi_refresh()
 +{
-+   const bool wanted = sh_mdp_explosions::eligible && sh_mdp_video::request_120.load(std::memory_order_relaxed);
++   const bool wanted = retro_load_ok && sh_mdp_video::game.load(std::memory_order_relaxed) != 0 &&
++      sh_mdp_video::request_120.load(std::memory_order_relaxed);
 +   if (rate_request_seen && wanted == rate_request_value) return;
 +   rate_request_seen = true; rate_request_value = wanted;
 +   if (wanted == sh_mdp_video::hz120) return;
@@ -2662,6 +2712,7 @@
  bool retro_load_game(const struct retro_game_info *info)
  {
     retro_load_ok = false;
++   sh_mdp_video::set_game(0);
 +   sh_mdp_video::wide_eligible = false;
 +   sh_mdp_video::widescreen = false;
 +   remember_mdp_geometry(0, 0, 0.0f);
@@ -2742,6 +2793,9 @@
        log_cb(RETRO_LOG_DEBUG, "%s osd_sleep\n", __func__);
        osd_sleep(osd_ticks_per_second());
        log_cb(RETRO_LOG_DEBUG, "%s osd_sleep done\n", __func__);
++      sh_mdp_video::set_game(0);
++      sh_mdp_video::wide_eligible = false;
++      sh_mdp_video::widescreen = false;
        return false;
     }
  
@@ -2749,7 +2803,9 @@
     update_runtime_variables(true);
 +   // Initial timing is reported by retro_get_system_av_info. Libretro only
 +   // permits SET_SYSTEM_AV_INFO from retro_run, for later option changes.
-+   sh_mdp_video::hz120 = sh_mdp_explosions::eligible && sh_mdp_video::request_120.load(std::memory_order_relaxed);
++   sh_mdp_video::apply_rendering_options();
++   sh_mdp_video::hz120 = sh_mdp_video::game.load(std::memory_order_relaxed) != 0 &&
++      sh_mdp_video::request_120.load(std::memory_order_relaxed);
 +   rate_request_seen = true;
 +   rate_request_value = sh_mdp_video::hz120;
 +   sh_mdp_video::widescreen.store(sh_mdp_video::wide_eligible.load(std::memory_order_relaxed) &&
@@ -2780,6 +2836,7 @@
 +      retro_finish();
 +      retro_load_ok = false;
 +   }
++   sh_mdp_video::set_game(0);
 +   sh_mdp_video::wide_eligible = false;
 +   sh_mdp_video::widescreen = false;
 +   retro_pause = -1;
@@ -2916,7 +2973,7 @@
  void audio_effect_filter::reset_lowpass_active()
 --- a/src/osd/libretro/libretro-internal/libretro_core_options.h
 +++ b/src/osd/libretro/libretro-internal/libretro_core_options.h
-@@ -83,6 +83,82 @@
+@@ -83,6 +83,97 @@
  };
  
  struct retro_core_option_v2_definition option_defs_us[] = {
@@ -2924,12 +2981,27 @@
 +      CORE_NAME "_mdp_aspect",
 +      "SH1 / SH2 Screen Format",
 +      NULL,
-+      "Original keeps the native 4:3 field of view. Widescreen renders additional scenery on both sides without stretching the original image. Works with all SH2 rendering, deflicker and explosion options. Objects leave the game at the wider edges, which can change phase timing. Applies without restarting; keep the same setting for matching save-state playback.",
++      "Original keeps the native 4:3 field of view. Widescreen renders additional scenery on both sides without stretching the original image. Works with both games and their rendering, deflicker and explosion options. Objects leave the game at the wider edges, which can change phase timing. Applies without restarting; keep the same setting for matching save-state playback.",
 +      NULL,
 +      "video",
 +      {
 +         { "original", "Original (4:3)" },
 +         { "widescreen", "Widescreen (16:9, Experimental)" },
++         { NULL, NULL },
++      },
++      "original"
++   },
++   {
++      CORE_NAME "_sh1_rendering",
++      "SH1 Rendering",
++      NULL,
++      "Mark VI reconstructs SH1 sprites before the native list quotas, with an extensible host list and per-sprite zoom. It removes list, per-line sprite and source-column budgets. 120 Hz interpolates sprite positions and zoom at twice the native refresh, with a small visual delay. Game logic, audio, background animation and sprite artwork timing stay native. Original (M2) is the faithful default.",
++      NULL,
++      "hacks",
++      {
++         { "original", "Original (M2)" },
++         { "mark_vi", "Mark VI (Native Refresh)" },
++         { "mark_vi_120", "Mark VI (120 Hz, Experimental)" },
 +         { NULL, NULL },
 +      },
 +      "original"

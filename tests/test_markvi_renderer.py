@@ -13,6 +13,8 @@ class MarkVIRenderer(unittest.TestCase):
                              'bool sega315_5313_device::mdp_render_markvi_spriteline(int scanline)')
         source=r'''
 #include "sh2_markvi.h"
+#include "sh1_markvi.h"
+#include "sh_markvi_profile.h"
 #include "sh_video_options.h"
 #include <algorithm>
 #include <array>
@@ -22,7 +24,9 @@ using u8=std::uint8_t;using u16=std::uint16_t;using u32=std::uint32_t;
 #define BIT(v,b) (((v)>>(b))&1U)
 class sega315_5313_device {
 public:
- int mdp_widescreen_padding() const {return 0;}
+ int padding=0;
+ int mdp_widescreen_padding() const {return padding;}
+ unsigned m_markvi_game=2;
  bool m_sh2_text_compat=true,m_markvi_ready[3]={false,false,true};
  u16 m_regs[64]{};
  std::array<u16,65536> vram{};
@@ -50,13 +54,28 @@ int main(){
  // Earlier sprites win overlaps. Empty frames have no persistent pixels.
  v.m_markvi_sprites.insert(v.m_markvi_sprites.begin(),{128,0,1,228,4096});
  v.mdp_render_markvi_spriteline(0);assert(v.m_sprite_renderline[228]==0x41);
+ // Mark VI clips shrunken tiles at the viewport boundary rather than
+ // dropping an entire cell crossing the former 4:3 left edge. Both games and
+ // horizontal orientations keep the visible pixels, including in 16:9.
+ for(unsigned game : {1U,2U})for(int padding : {0,53})for(int flip : {0,0x800}) {
+  v.m_markvi_game=game;v.padding=padding;
+  for(int scale : {2048,4096}) {
+   v.m_markvi_sprites={{128,0,u16(1|flip),126,u16(scale)}};
+   assert(v.mdp_render_markvi_spriteline(0));
+   const int first=padding ? 126 : 128;
+   const int end=scale==2048 ? 130 : 134;
+   for(int i=0;i<1024;++i)
+    assert(v.m_sprite_renderline[i]==(i>=first&&i<end ? 0x41 : 0));
+  }
+ }
+ v.padding=0;v.m_markvi_game=2;
  v.m_markvi_sprites.clear();v.mdp_render_markvi_spriteline(0);
  for(unsigned i=0;i<1024;++i)assert(!v.m_sprite_renderline[i]);
  v.m_markvi_sprites.push_back({128,0,1,228,0});
  v.mdp_render_markvi_spriteline(0); // Zero height must not divide by zero.
  assert(!v.m_sprite_renderline[228]);
  sh_mdp_video::markvi=false;assert(!v.mdp_render_markvi_spriteline(0));
- sh_mdp_video::markvi=true;v.m_sh2_text_compat=false;assert(!v.mdp_render_markvi_spriteline(0));
+ sh_mdp_video::markvi=true;v.m_markvi_game=0;assert(!v.mdp_render_markvi_spriteline(0));
 }
 '''.replace('METHOD',method)
         with tempfile.TemporaryDirectory() as tmp:

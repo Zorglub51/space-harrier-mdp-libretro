@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Compare optional SH2 rendering with private ROMs; publish hashes only.
+"""Compare optional SH1/SH2 rendering with private ROMs; publish hashes only.
 
 Game RAM and CPU registers are sampled into a temporary file, hashed and removed.
 Optional screenshots require an explicit local output directory and are private.
@@ -29,7 +29,8 @@ class AVInfo(C.Structure):
     _fields_ = [('geometry', Geometry), ('timing', Timing)]
 
 class RenderingFrontend(ExplosionFrontend):
-    def __init__(self, *args, rendering, deflicker, capture_dir, **kwargs):
+    def __init__(self, *args, rendering, deflicker, capture_dir, game=2, **kwargs):
+        self.game = game
         self.loading = False
         self.resolution = None
         self.double_rate = False
@@ -39,6 +40,8 @@ class RenderingFrontend(ExplosionFrontend):
         self.rendering = rendering.encode()
         self.deflicker = deflicker.encode()
         self.capture_dir = capture_dir
+        self.stage = None
+        self.rapid_fire = False
         super().__init__(*args, **kwargs)
 
     def environment(self, command, data):
@@ -66,13 +69,13 @@ class RenderingFrontend(ExplosionFrontend):
             if v.key == b'mame_mdp_aspect':
                 v.value = self.aspect
                 return True
-            if v.key == b'mame_sh2_rendering':
+            if v.key == f'mame_sh{self.game}_rendering'.encode():
                 self.report['rendering_queried'] = True
                 if self.rendering == b'missing':
                     return False
                 v.value = self.rendering
                 return True
-            if v.key == b'mame_sh2_deflicker':
+            if v.key == f'mame_sh{self.game}_deflicker'.encode():
                 v.value = self.deflicker
                 return True
         return super().environment(command, data)
@@ -82,6 +85,25 @@ class RenderingFrontend(ExplosionFrontend):
         if self.double_rate:
             self.frame = (self.frame + 1) // 2
         try:
+            if self.stage is not None and self.game == 1 and self.frame < 2600:
+                # Exercise the title screen's native Left/Right stage selector,
+                # after the 700-frame credit input and before Start at 1300.
+                # Wrap backwards for late stages, keeping every case within
+                # the same existing title-screen input window.
+                forward = self.stage - 1
+                backward = 19 - self.stage
+                direction, presses = (7, forward) if forward <= backward else (6, backward)
+                # SH1 starts at 1300. The reference path's extra SH2 menu
+                # confirmations at 1900/2500 would pause this running game.
+                if port == 0 and device == 1 and control == 3 and self.frame >= 1310:
+                    return 0
+                if port == 0 and device == 1 and control in (6, 7):
+                    return int(control == direction and any(
+                        810 + 45 * i <= self.frame < 814 + 45 * i
+                        for i in range(presses)))
+            if (self.rapid_fire and self.input_mode == 'reference' and self.frame >= 2600
+                    and port == 0 and device == 1 and control == 0):
+                return int(self.frame % 4 < 2)
             return super().input_state(port, device, index, control)
         finally:
             self.frame = saved
@@ -108,7 +130,9 @@ def main():
     p.add_argument('--aspect-toggle', action='store_true')
     p.add_argument('--deflicker', default='game', choices=['game','off','on1','on2'])
     p.add_argument('--input', default='reference', choices=['reference','stage3fire','stage4fire','stage5fire','stage5crash','stage7fire','scripted','attract'])
-    p.add_argument('--keep-lives', action='store_true', help='Diagnostic SH2 precondition: maintain nine player lives after entering gameplay; do not change boss HP or objects')
+    p.add_argument('--keep-lives', action='store_true', help='Diagnostic SH1/SH2 precondition: maintain nine player lives after entering gameplay; do not change boss HP or objects')
+    p.add_argument('--stage', type=int, choices=range(1, 19), metavar='1..18', help='SH1 diagnostic with reference inputs: select this stage through native title inputs and preserve that choice through the startup reset')
+    p.add_argument('--rapid-fire', action='store_true', help='Diagnostic reference input: pulse B for two native frames on/two off after frame 2600')
     p.add_argument('--cpu-overclock', default='default', choices=['default','100','150','200','250','300','350','400'])
     p.add_argument('--require-markvi', metavar='START:END', help='Require the extended sprite list on every native refresh in this inclusive gameplay window')
     p.add_argument('--frames', type=int, default=7000)
@@ -129,22 +153,42 @@ def main():
     if a.frames < 240 or a.state_frames < 1:
         p.error('at least 240 frames and a positive replay window are required')
     game = IDENTITIES[hashlib.sha1(a.rom.read_bytes()).hexdigest()][0]
-    if a.keep_lives and game != 2:
-        p.error('--keep-lives is only defined for the authenticated SH2 ROM')
+    if a.stage is not None and (game != 1 or a.input != 'reference'):
+        p.error('--stage requires the authenticated SH1 ROM and --input reference')
+    if a.rapid_fire and a.input != 'reference':
+        p.error('--rapid-fire requires --input reference')
+    if a.stage is not None and a.frames < 3200 * (2 if a.rendering == 'mark_vi_120' and not a.reject_120 else 1):
+        p.error('--stage requires at least 3200 native frames to verify active gameplay')
     watch = None
     if a.require_markvi:
         try:
             watch = tuple(map(int, a.require_markvi.split(':')))
             assert len(watch) == 2 and 0 < watch[0] <= watch[1]
-            assert game == 2 and a.rendering in ('mark_vi', 'mark_vi_120')
+            assert a.rendering in ('mark_vi', 'mark_vi_120')
             assert watch[1] < a.frames // (2 if a.rendering == 'mark_vi_120' else 1) - 2
         except (ValueError, AssertionError):
-            p.error('--require-markvi needs a completed START:END gameplay window with SH2 Mark VI rendering')
+            p.error('--require-markvi needs a completed START:END gameplay window with Mark VI rendering')
     report = dict(passed=False, game=game, rendering=a.rendering, deflicker=a.deflicker, aspect=a.aspect,
                   input=a.input, frames=a.frames, threaded=a.threaded, cpu_overclock=a.cpu_overclock,
                   explosions='sh1' if a.donor else 'original',
                   keep_lives=a.keep_lives,
+                  rapid_fire=a.rapid_fire,
                   core_sha256=hashlib.sha256(a.core.read_bytes()).hexdigest(), messages=[])
+    if a.keep_lives:
+        report['keep_lives_precondition'] = {
+            'address': 'FF1C04' if game == 1 else 'FF1170',
+            'value': 9, 'start_native_frame': 2600,
+            'scope': 'Only the remaining-lives byte is maintained; collision, boss HP, RNG and object state are unchanged.',
+        }
+    if a.stage is not None:
+        report['stage_selection'] = {
+            'requested': a.stage,
+            'method': 'Native title Left/Right inputs; FF3C40 temporarily enabled and restored. The selected stage replaces the single guarded startup reset at 1E5BEC before stage initialization.',
+            'stage_address': 'FF16CC', 'enable_address': 'FF3C40',
+            'enable_native_frames': [700, 1299],
+            'startup_reset': '1E5BEC',
+            'start_native_frames': [700, 1300],
+        }
     if a.capture_dir:
         a.capture_dir.mkdir(parents=True, exist_ok=True)
     try:
@@ -158,14 +202,54 @@ def main():
                 shutil.copyfile(a.donor, temp/'system'/'jp_jp_space_harrier.smp')
             audit = temp/'audit.bin'
             script = temp/'audit.lua'
+            lives_address = '0xff1c04' if game == 1 else '0xff1170'
+            lives_update = f'if frame>=2600 then mem:write_u8({lives_address},9) end' if a.keep_lives else ''
+            stage_setup = stage_update = stage_close = ''
+            if a.stage is not None:
+                stage_setup = f'local stage_out=assert(io.open("{temp / "stage.tsv"}","w"));local selector_previous=nil'
+                stage_setup += f'\nlocal pause_out=assert(io.open("{temp / "pause.tsv"}","w"))'
+                # The native debug selector is real, but normal game startup
+                # unconditionally resets its result to stage 1. Replace only
+                # that initial write, never an in-game stage transition.
+                # The write tap observes PC after MOVE.B #1,$FF16CC at 1E5BEC.
+                stage_setup += '''
+local selected_stage=nil
+local stage_transfers=0
+STAGE_START=mem:install_write_tap(0xff16cc,0xff16cd,"initial_stage_selection",function(offset,data,mask)
+ if stage_transfers==0 and selected_stage~=nil and frame>=1300 and frame<1400
+  and mask==0xff00 and (cpu.state["PC"].value & 0xffffff)==0x1e5bf4
+  and (data >> 8)==1 and mem:read_u16(0x1e5bec)==0x13fc
+  and mem:read_u16(0x1e5bee)==1 and mem:read_u32(0x1e5bf0)==0x00ff16cc then
+  stage_transfers=stage_transfers+1
+  return (data & 0xff) | (selected_stage << 8)
+ end
+ return data
+end)
+'''
+                stage_close = 'stage_out:close();pause_out:close()'
+                stage_update = '''if frame>=700 and frame<1300 then
+  if selector_previous==nil then selector_previous=mem:read_u8(0xff3c40) end
+  mem:write_u8(0xff3c40,1)
+ elseif frame==1300 and selector_previous~=nil then
+  mem:write_u8(0xff3c40,selector_previous)
+ end
+ if frame==1250 then selected_stage=mem:read_u8(0xff16cc) end
+ if frame==1250 or frame==1400 then
+  stage_out:write(string.format('%d\\t%d\\t%d\\t%d\\t%d\\n',frame,mem:read_u8(0xff16cc),mem:read_u8(0xff3c40),mem:read_u32(0xff40aa),stage_transfers));stage_out:flush()
+ end
+ if frame>=2600 then
+  pause_out:write(string.format('%d\\t%d\\n',frame,mem:read_u8(0xff3d0f)));pause_out:flush()
+ end'''
             script.write_text(f'''
 local cpu=manager.machine.devices[":maincpu"]
 local mem=cpu.spaces["program"]
 local frame=0
 local out=assert(io.open("{audit}","ab"))
+{stage_setup}
 FRAME=emu.add_machine_frame_notifier(function()
  frame=frame+1
- {'if frame>=2600 then mem:write_u8(0xff1170,9) end' if a.keep_lives else ''}
+ {lives_update}
+ {stage_update}
  if frame%120==0 then
   out:write(mem:read_range(0xfe0000,0xffffff,8))
   for _,name in ipairs({{"PC","SR","D0","D1","D2","D3","D4","D5","D6","D7","A0","A1","A2","A3","A4","A5","A6","SP"}}) do
@@ -174,7 +258,7 @@ FRAME=emu.add_machine_frame_notifier(function()
   out:flush()
  end
 end)
-STOP=emu.add_machine_stop_notifier(function() out:close() end)
+STOP=emu.add_machine_stop_notifier(function() out:close();{stage_close} end)
 ''')
             if watch:
                 # Scalar diagnostics only; do not publish guest memory or artwork.
@@ -199,8 +283,10 @@ end)
             content = temp/'game.cmd'
             content.write_text(f'megadrij -skip_gameinfo -autoboot_delay 0 -autoboot_script {script} -cart {rom}\n')
             f = RenderingFrontend(a.core.resolve(), content, 'sh1' if a.donor else 'original', a.input, report,
-                                  rendering=a.rendering, deflicker=a.deflicker, capture_dir=a.capture_dir)
+                                  rendering=a.rendering, deflicker=a.deflicker, capture_dir=a.capture_dir, game=game)
             f.aspect = a.aspect.encode()
+            f.stage = a.stage
+            f.rapid_fire = a.rapid_fire
             f.cpu_overclock = a.cpu_overclock.encode()
             f.resolution = a.resolution.encode() if a.resolution else None
             report['resolution'] = a.resolution
@@ -241,6 +327,25 @@ end)
                     f.rendering=a.rendering.encode();f.option_update_pending=True
                 stream=f.run_window(1,a.frames)
                 report['stream']=stream.summary()
+                if a.stage is not None:
+                    selected = [tuple(map(int, line.split())) for line in (temp/'stage.tsv').read_text().splitlines()]
+                    report['stage_selection']['observations'] = [
+                        {'native_frame': frame, 'stage': stage, 'selector_enabled': enabled, 'game_phase': phase, 'startup_transfers': transfers}
+                        for frame, stage, enabled, phase, transfers in selected]
+                    assert len(selected) == 2 and all(row[1] == a.stage for row in selected), report['stage_selection']
+                    assert selected[0][4] == 0 and selected[1][4] == 1, report['stage_selection']
+                    pause_rows = [tuple(map(int, line.split())) for line in (temp/'pause.tsv').read_text().splitlines()]
+                    paused = [frame for frame, value in pause_rows if value]
+                    video_cutoff = 3000 * (2 if f.double_rate else 1)
+                    distinct = len({row['sha256'] for row in report['stream']['video_frame_hashes'] if row['frame'] >= video_cutoff})
+                    report['stage_gameplay'] = {
+                        'pause_address': 'FF3D0F', 'observed': len(pause_rows),
+                        'start_native_frame': pause_rows[0][0] if pause_rows else None,
+                        'end_native_frame': pause_rows[-1][0] if pause_rows else None,
+                        'paused_native_frames': paused,
+                        'distinct_video_frames_after_native_3000': distinct,
+                    }
+                    assert pause_rows and not paused and distinct > 2, report['stage_gameplay']
                 if watch:
                     rows=[tuple(map(int,line.split())) for line in (temp/'markvi.tsv').read_text().splitlines()]
                     inactive=[frame for frame,active in rows if not active]
@@ -248,7 +353,7 @@ end)
                     assert len(rows)==watch[1]-watch[0]+1 and not inactive, report['markvi_watch']
                 if not a.resolution:
                     assert f.last_frame[1] == (426 if a.aspect == 'widescreen' else 320), f.last_frame[1:]
-                if a.rendering == 'mark_vi_120' and game == 2 and not a.reject_120:
+                if a.rendering == 'mark_vi_120' and not a.reject_120:
                     hashes = {x['frame']: x['sha256'] for x in report['stream']['video_frame_hashes']}
                     pairs = [(i, i+1) for i in hashes if i%2 and i+1 in hashes]
                     report['distinct_half_pairs'] = sum(hashes[x]!=hashes[y] for x,y in pairs)
@@ -257,7 +362,7 @@ end)
                 report['state']=replay()
                 audit_data = None
                 if a.half_state:
-                    assert a.rendering == 'mark_vi_120' and game == 2 and a.frames % 2 == 0
+                    assert a.rendering == 'mark_vi_120' and a.frames % 2 == 0
                     audit_data = audit.read_bytes()  # Keep the main comparison window identical.
                     f.run_window(f.frame+1, 1)
                     report['half_state']=replay()
@@ -280,9 +385,9 @@ end)
                         assert core.retro_unserialize(state,size)
                         f.frame,f.last_frame,f.frames_seen=saved
                         f.rendering=mode.encode();f.option_update_pending=True
-                        if a.rendering == 'mark_vi_120' and game == 2 and not a.reject_120:
+                        if a.rendering == 'mark_vi_120' and not a.reject_120:
                             f.frame = saved[0] if mode == 'mark_vi_120' else saved[0] // 2
-                        capture=f.run_window(f.frame+1,600 if mode=='mark_vi_120' and game==2 else 300)
+                        capture=f.run_window(f.frame+1,600 if mode=='mark_vi_120' else 300)
                         if mode in results:
                             assert first_video_difference(results[mode],capture) is None
                             assert first_audio_difference(results[mode],capture) is None
@@ -306,7 +411,7 @@ end)
                     'game_audit_equal':b['game_audit']==report['game_audit'],
                     'video_equal':before['video_sha256']==after['video_sha256'],
                     'changed_frames':sum(x!=y for x,y in zip(before['video_frame_hashes'],after['video_frame_hashes']))}
-                if a.rendering == 'mark_vi_120' and b['rendering'] != 'mark_vi_120' and game == 2 and not a.reject_120:
+                if a.rendering == 'mark_vi_120' and b['rendering'] != 'mark_vi_120' and not a.reject_120:
                     assert a.frames == b['frames'] * 2
                 else:
                     assert len(before['video_frame_hashes'])==len(after['video_frame_hashes'])
