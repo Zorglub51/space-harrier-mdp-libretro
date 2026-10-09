@@ -6,6 +6,15 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+### SH1 sky fidelity investigation
+
+- Add an original-M2 CPU execution oracle for SH1's sky table builder,
+  self-modifying horizontal-interrupt program and native line scheduler.
+  Reproduce the sampled two-pixel high-score sky alternation and title-screen
+  colour alternation; all 54,228 sampled sky pixels in 467 core captures match.
+- Document the isolated workload and remaining full-game timing limits. This
+  investigation changes no emulation, rendering, shader or core option.
+
 ## [0.1.22] - 2026-10-09
 
 ### Mark VI rendering and 120 Hz presentation for SH1

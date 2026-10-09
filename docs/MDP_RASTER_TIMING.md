@@ -61,6 +61,11 @@ the relative order of direct CRAM writes, ordinary port writes and DMA still
 needs broader timing coverage. No temporal averaging or sprite persistence is
 introduced by this correction.
 
+The later [SH1 sky investigation](SH1_SKY_DITHERING.md) executes the actual M2
+68000 engine, original guest sky routines and this frame loop together. It
+reproduces the sampled title/high-score sky phases with an isolated workload;
+it does not validate complete gameplay scheduling.
+
 ## Reproduction
 
 Import the local reference executable as ARM ELF without analysis, then run:
