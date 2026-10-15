@@ -15,6 +15,26 @@ GitHub release notes are generated directly from the corresponding entry.
 - Document the isolated workload and remaining full-game timing limits. This
   investigation changes no emulation, rendering, shader or core option.
 
+## [0.1.23] - 2026-10-15
+
+### Smoother Harrier movement in SH1 at 120 Hz
+
+- Keep Harrier's movement continuous when the native running, turning or
+  shooting artwork changes. Previously, matching individual sprite pieces
+  rejected these changes and snapped the entire player to the next position.
+  Interpolate the verified live-player origin and move the current drawing's
+  pieces together, retaining the original artwork and animation timing.
+- Preserve exact fractional player coordinates until final pixel sampling.
+  Avoid intermediate integer or fixed-point rounding and keep adjacent pieces
+  aligned. The final output still uses the game's native pixel grid.
+- Preserve native death, respawn, blinking and scene-clear transitions. Apply
+  this change only to SH1's **Mark VI (120 Hz, Experimental)** mode; keep
+  **Original (M2)**, native-refresh Mark VI and SH2 rendering unchanged.
+- Verify the captured running sequence with 92 presentation samples: replace
+  36 stationary steps and 11 eight-pixel jumps with 91 consecutive two-pixel
+  steps. Validate fractional raster sampling, save/load between presentation
+  halves, and full-core audio and sampled CPU/RAM comparisons.
+
 ## [0.1.22] - 2026-10-09
 
 ### Mark VI rendering and 120 Hz presentation for SH1

@@ -123,4 +123,54 @@ template<class Read> bool build(Read read, std::vector<sprite> &out, bool widesc
     return true;
 }
 
+// Live Harrier changes the artwork-table base when turning, shooting and
+// running. Those verified 1DDF52 poses share an unscaled object origin, but
+// their individual pieces need not match. Translate the complete CURRENT pose
+// from its current origin to the interpolated origin instead of snapping its
+// motion whenever artwork changes. Native 1E3C90 writes that origin at +0C/+0E;
+// the player pointer is FF16C8. Death/respawn/blinking retain their native cuts.
+template<class Previous, class Current>
+std::vector<sprite> interpolate_player(const std::vector<sprite> &previous,
+                                      const std::vector<sprite> &current,
+                                      Previous before, Current now,
+                                      unsigned numerator, unsigned denominator)
+{
+    auto out = sh2_markvi::interpolate(previous, current, numerator, denominator);
+    if (!denominator || numerator >= denominator) return out;
+    auto lng = [](auto read, std::uint32_t a) {
+        return (std::uint32_t(read(a)) << 16) | read(a + 2);
+    };
+    const auto player = lng(now, 0xff16c8);
+    if (player != lng(before, 0xff16c8) || (player & 1) ||
+        player < 0xff0000 || player > 0xffffb4) return out;
+    auto live = [&](auto read) {
+        const auto artwork = lng(read, player + 0x1c);
+        return lng(read, player + 0x10) == 0x1ddf52 &&
+            read(player + 0x0a) == 0 && (read(player + 0x20) >> 8) == 0 &&
+            !(read(player + 0x2a) & 0x80) &&
+            artwork >= 0x59c && artwork <= 0x662 && (artwork - 0x59c) % 22 == 0;
+    };
+    if (!live(before) || !live(now)) return out;
+    auto body = [&](const auto &sprites) {
+        return std::any_of(sprites.begin(), sprites.end(), [&](const sprite &s) {
+            return s.owner == player && s.routine == 0x1ddf52 && !(s.part & 0x200);
+        });
+    };
+    if (!body(previous) || !body(current)) return out;
+    auto signed_word = [](std::uint16_t v) { return v < 0x8000 ? int(v) : int(v) - 0x10000; };
+    const int dx = signed_word(before(player + 0x0c)) - signed_word(now(player + 0x0c));
+    const int dy = signed_word(before(player + 0x0e)) - signed_word(now(player + 0x0e));
+    if (dx < -128 || dx > 128 || dy < -128 || dy > 128) return out;
+    const auto remaining = denominator - numerator;
+    for (std::size_t i = 0; i < current.size(); ++i) {
+        const auto &s = current[i];
+        if (s.owner != player || s.routine != 0x1ddf52 || (s.part & 0x200)) continue;
+        out[i] = s;
+        out[i].precise_x = std::int64_t(s.x) * denominator + std::int64_t(dx) * remaining;
+        out[i].precise_y = std::int64_t(s.y) * denominator + std::int64_t(dy) * remaining;
+        out[i].position_divisor = denominator;
+    }
+    return out;
+}
+
 } // namespace sh1_markvi

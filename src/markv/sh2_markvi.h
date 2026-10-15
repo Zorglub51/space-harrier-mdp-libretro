@@ -15,7 +15,19 @@ struct sprite {
     std::uint16_t y, size, attr, x, zoom;
     // Presentation identity; never an index into guest VRAM or a quota.
     std::uint32_t owner = 0, routine = 0, descriptor = 0, part = 0;
+    // Optional exact presentation coordinates, in SAT units. Keep fractions
+    // until the rasterizer selects output pixels; x/y remain the native record.
+    std::int64_t precise_x = 0, precise_y = 0;
+    unsigned position_divisor = 0;
 };
+
+// Select an output pixel at its centre, with exact rational boundaries. This
+// is the final sampling step, not an intermediate rounding of piece origins.
+inline std::int64_t raster_boundary(std::int64_t numerator, std::int64_t divisor)
+{
+    const auto n = 2 * numerator + divisor - 1, d = 2 * divisor;
+    return n >= 0 ? n / d : -((-n + d - 1) / d);
+}
 
 // Remove only visibility masks whose executed native branch was the stage-7
 // boss's near-camera alternation. Normalize the private emitter snapshot, never

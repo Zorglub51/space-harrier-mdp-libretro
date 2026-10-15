@@ -934,7 +934,7 @@
  }
  
  u16 sega315_5313_device::data_port_r()
-@@ -1396,8 +1733,386 @@
+@@ -1396,8 +1733,413 @@
  
  */
  
@@ -1225,9 +1225,17 @@
 +    };
 +    if (!(m_markvi_game == 1 ? sh1_markvi::build(read, previous, mdp_widescreen_padding() != 0) :
 +        sh2_markvi::build(read, previous, mdp_widescreen_padding() != 0))) previous.clear();
-+    for (unsigned phase = 0; phase < 2; ++phase)
-+        m_markvi_phases[phase] = sh2_markvi::interpolate(previous, m_markvi_sprites,
-+            std::min(m_markvi_age, m_markvi_span) * 2 + phase + 1, m_markvi_span * 2);
++    auto current = [this](u32 a) -> u16 {
++        return a >= 0xfe0000 ? m_markvi_ram[2][(a - 0xfe0000) >> 1] :
++            (a < 0x400000 ? m_space68k->read_word(a) : 0);
++    };
++    for (unsigned phase = 0; phase < 2; ++phase) {
++        const unsigned n = std::min(m_markvi_age, m_markvi_span) * 2 + phase + 1;
++        const unsigned d = m_markvi_span * 2;
++        m_markvi_phases[phase] = m_markvi_game == 1 ?
++            sh1_markvi::interpolate_player(previous, m_markvi_sprites, read, current, n, d) :
++            sh2_markvi::interpolate(previous, m_markvi_sprites, n, d);
++    }
 +}
 +
 +bool sega315_5313_device::mdp_render_markvi_spriteline(int scanline)
@@ -1256,17 +1264,36 @@
 +		const int width = ((size >> 10) & 3) + 1;
 +		const u32 ystep = zoom ? ((it->zoom & 0x7fff) >> 6) : 64;
 +		const int xstep = zoom ? (std::min<u32>(it->zoom & 0x7fff, 0x1000) >> 6) : 64;
-+		const u32 delta = (scanline + 128 - it->y) & 0x3ff;
-+		if (delta >= (height * ystep) >> 3)
-+			continue;
-+		const u32 source_y = zoom ? ((delta * 64) / ystep) : delta;
++		const bool precise = it->position_divisor != 0;
++		const std::int64_t divisor = precise ? it->position_divisor : 1;
++		u32 source_y;
++		if (precise) {
++			// Sample the pixel centre against the exact piece origin. No piece
++			// coordinate is rounded while moving the complete player assembly.
++			const auto period = 2048 * divisor;
++			const auto offset = (2 * (scanline + 128) + 1) * divisor - 2 * it->precise_y;
++			const auto delta = (offset % period + period) % period;
++			if (delta * 4 >= height * ystep * divisor) continue;
++			source_y = (delta * 32) / (divisor * ystep);
++		} else {
++			const u32 delta = (scanline + 128 - it->y) & 0x3ff;
++			if (delta >= (height * ystep) >> 3) continue;
++			source_y = zoom ? ((delta * 64) / ystep) : delta;
++		}
 +		u32 attr = it->attr;
 +		const u32 tile_y = BIT(attr, 12) ? height - 1 - (source_y >> 3) : (source_y >> 3);
 +		attr += tile_y;
 +		const bool reverse = BIT(attr, 11);
-+		int xacc = ((xword & 0x1ff) - 128) * 8;
++		std::int64_t xacc = ((xword & 0x1ff) - 128) * 8;
++		if (precise) {
++			const auto period = 512 * divisor;
++			xacc = (((it->precise_x % period + period) % period) - 128 * divisor) * 8;
++		}
 +		if (reverse)
-+			xacc += xstep * width;
++			xacc += xstep * width * divisor;
++		auto boundary = [&](std::int64_t x) {
++			return int(precise ? sh2_markvi::raster_boundary(x, 8 * divisor) : x >> 3);
++		};
 +		const int cells = width;
 +
 +		for (int cell = 0; cell < cells; ++cell, attr += height)
@@ -1274,15 +1301,15 @@
 +			int start, end;
 +			if (!reverse)
 +			{
-+				start = xacc >> 3;
-+				xacc += xstep;
-+				end = xacc >> 3;
++				start = boundary(xacc);
++				xacc += xstep * divisor;
++				end = boundary(xacc);
 +			}
 +			else
 +			{
-+				end = xacc >> 3;
-+				xacc -= xstep;
-+				start = xacc >> 3;
++				end = boundary(xacc);
++				xacc -= xstep * divisor;
++				start = boundary(xacc);
 +			}
 +			const int span = end - start;
 +			if (span <= 0)

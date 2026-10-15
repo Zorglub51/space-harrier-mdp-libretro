@@ -68,6 +68,86 @@ int main(){
     assert(v.m_sprite_renderline[i]==(i>=first&&i<end ? 0x41 : 0));
   }
  }
+ // A four-piece, 16x16 drawing exercises exact player origins, both flips,
+ // tile sampling and shared boundaries between independently emitted pieces.
+ // Its pixels vary on both axes, so coverage alone cannot hide a row error.
+ auto art=[](unsigned tile,int x,int y)->u16 {return 1+(tile+x+y*3)%15;};
+ for(unsigned tile=20;tile<24;++tile)for(int y=0;y<8;++y) {
+  u32 bits=0;
+  for(int x=0;x<8;++x)bits=(bits<<4)|art(tile,x,y);
+  v.vram[tile*16+y*2]=bits>>16;
+  v.vram[tile*16+y*2+1]=bits;
+ }
+ auto assembly=[&](std::int64_t origin_x,std::int64_t origin_y,unsigned d,
+                   unsigned flip,bool precise) {
+  std::vector<sh2_markvi::sprite> pieces;
+  for(unsigned i=0;i<4;++i) {
+   const int column=(flip&0x800)?1-int(i%2):int(i%2);
+   const int row=(flip&0x1000)?1-int(i/2):int(i/2);
+   sh2_markvi::sprite s{u16(origin_y/d+row*8),0,u16((20+i)|flip),
+                       u16(origin_x/d+column*8),0x1000};
+   if(precise) {
+    // Deliberately different native coordinates prove the raster consumes
+    // the exact presentation origin on both axes rather than the old fields.
+    s.x=400+column*8;s.y=400+row*8;
+    s.precise_x=origin_x+column*8*d;s.precise_y=origin_y+row*8*d;
+    s.position_divisor=d;
+   }
+   pieces.push_back(s);
+  }
+  return pieces;
+ };
+ v.m_markvi_game=1;
+ // Integral rational coordinates must retain every native pixel exactly.
+ for(int padding:{0,53})for(unsigned flip:{0,0x800,0x1000,0x1800})
+ for(int x:{-2,0,3})for(int y:{-2,0,3}) {
+  v.padding=padding;
+  const auto native=assembly((128+x)*4,(128+y)*4,4,flip,false);
+  const auto precise=assembly((128+x)*4,(128+y)*4,4,flip,true);
+  for(int line=0;line<22;++line) {
+   v.m_markvi_sprites=native;v.mdp_render_markvi_spriteline(line);
+   std::array<u16,1024> expected{};
+   std::copy_n(v.m_sprite_renderline.get(),1024,expected.begin());
+   v.m_markvi_sprites=precise;v.mdp_render_markvi_spriteline(line);
+   for(unsigned i=0;i<1024;++i)assert(v.m_sprite_renderline[i]==expected[i]);
+  }
+ }
+ // The independent oracle samples a single coherent 16x16 picture at each
+ // output pixel centre. It does not split the picture into hardware pieces.
+ // Include quarter/half/three-quarter positions in both directions, at and
+ // across the left/top viewport edges, with every combination of native flips.
+ for(int padding:{0,53})for(unsigned flip:{0,0x800,0x1000,0x1800})
+ for(int base:{-2,0,3})for(int fx=-3;fx<=3;++fx)for(int fy=-3;fy<=3;++fy) {
+  v.padding=padding;
+  const int origin_x=(base+128)*4+fx,origin_y=(base+128)*4+fy;
+  v.m_markvi_sprites=assembly(origin_x,origin_y,4,flip,true);
+  for(int line=0;line<22;++line) {
+   v.mdp_render_markvi_spriteline(line);
+   for(int i=0;i<1024;++i) {
+    const int x=i-128;
+    const int local_x=(2*(x+128)+1)*4-2*origin_x;
+    const int local_y=(2*(line+128)+1)*4-2*origin_y;
+    u16 expected=0;
+    if(x>=-padding&&x<320+padding&&local_x>=0&&local_x<16*8&&
+       local_y>=0&&local_y<16*8) {
+     int sx=local_x/8,sy=local_y/8;
+     if(flip&0x800)sx=15-sx;
+     if(flip&0x1000)sy=15-sy;
+     expected=0x40|art(20+(sy/8)*2+sx/8,sx%8,sy%8);
+    }
+    assert(v.m_sprite_renderline[i]==expected);
+   }
+  }
+ }
+ // A precise zero-height sprite also reaches the height check before any
+ // division, even when its rational origin covers the first scanline.
+ v.padding=0;
+ v.m_markvi_sprites={{200,0,20,200,0}};
+ v.m_markvi_sprites[0].precise_x=128*4+1;
+ v.m_markvi_sprites[0].precise_y=128*4+1;
+ v.m_markvi_sprites[0].position_divisor=4;
+ v.mdp_render_markvi_spriteline(0);
+ for(unsigned i=0;i<1024;++i)assert(v.m_sprite_renderline[i]==0);
  v.padding=0;v.m_markvi_game=2;
  v.m_markvi_sprites.clear();v.mdp_render_markvi_spriteline(0);
  for(unsigned i=0;i<1024;++i)assert(!v.m_sprite_renderline[i]);

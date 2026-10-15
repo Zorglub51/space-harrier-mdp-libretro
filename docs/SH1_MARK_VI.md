@@ -137,6 +137,38 @@ animation and sprite artwork changes retain their native cadence. Interpolation
 adds approximately one object-update interval of visual delay, often 17–33 ms;
 collision positions and game speed remain native. No CPU overclock is required.
 
+### Continuous player movement since 0.1.23
+
+The normal live-player routine `1DDF52` changes the artwork-table base at
+object `+1C` during running, turning and shooting. Its verified unscaled
+drawings occupy `059C..0662`, in 22-byte steps. The original per-piece matcher
+treated those changes as discontinuities and displayed the new position for
+the entire interval. Ground running consequently alternated holds and jumps,
+even though the frontend received 119.845 presentations per second.
+
+SH1's optional 120 Hz path now reads the player pointer at `FF16C8` in both
+immutable emitter snapshots. For the same visible live player, with zero depth
+and pose, a verified drawing and continuous motion, it interpolates the origin
+at object `+0C/+0E` and translates all pieces of the **current** drawing by the
+same offset. No old drawing is revived, morphed or blended. Shadows retain the
+independent shared path. Death, respawn, hidden or missing bodies, unknown
+drawings, pointer changes and large position jumps retain continuity cuts.
+
+Presentation positions use exact rational numerators and a common divisor.
+Neither whole-pixel nor fixed-point rounding occurs before raster sampling.
+The rasterizer samples output pixel centres against those exact origins; its
+ordinary integer path is unchanged. Output remains on the native 320-pixel
+grid (426 in widescreen), so sufficiently small fractional moves can still
+select the same output pixels. This is not a higher-resolution renderer.
+
+In a recorded CPU-400% ground-running interval, replaying 92 presentation
+samples changed the player's X steps from 36 holds, 11 jumps of eight pixels
+and 44 two-pixel steps to 91 consecutive two-pixel steps. The existing SH2
+matcher can also cut ground-running movement; this correction is deliberately
+limited to the verified SH1 player. The measurement proves this reproduced
+case, not identical perceived smoothness in every scene or frontend.
+See [the validation report](SH1_PLAYER_120HZ_VALIDATION.json).
+
 ## Constructor evidence and limits
 
 The constructor analysis produced two distinct comparisons against the frozen

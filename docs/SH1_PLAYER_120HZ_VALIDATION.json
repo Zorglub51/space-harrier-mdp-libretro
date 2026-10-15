@@ -1,0 +1,250 @@
+{
+  "version": "0.1.23",
+  "date": "2026-10-15",
+  "platform": "macOS arm64",
+  "scope": "SH1 Mark VI 120 Hz live-player presentation; numeric and hash-only evidence. No private game memory, artwork or audio is included.",
+  "core_sha256": "08cfe0d9cdc381e403bb245a76b2b2940df69b0f9f8e6903812cb6d34e7a2189",
+  "baseline_core_sha256": "5f79ffca39cbfbfbacef0e8c942e7019714bbd5151db6da7958641e16b9603e7",
+  "running_replay": {
+    "native_frame_window": [
+      1539,
+      1584
+    ],
+    "cpu_percent": 400,
+    "presentation_samples": 92,
+    "scope": "Production constructors and interpolators replayed against captured immutable emitter RAM. This measures player origins, not physical display frame pacing.",
+    "before": {
+      "step_distribution": {
+        "0.0": 36,
+        "-2.0": 44,
+        "-8.0": 11
+      },
+      "zero_steps": 36,
+      "max_step": 8.0
+    },
+    "after": {
+      "step_distribution": {
+        "-2.0": 91
+      },
+      "zero_steps": 0,
+      "max_step": 2.0
+    }
+  },
+  "full_core_cases": [
+    {
+      "passed": true,
+      "game": 1,
+      "rendering": "original",
+      "frames": 3400,
+      "threaded": true,
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 60
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "b860be873645b3ee33c7febad99f343e7cca4d91e719d4f352f7d8d6020bdb9f",
+        "samples": 29,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "frames": 3400,
+      "threaded": true,
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 60
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "b860be873645b3ee33c7febad99f343e7cca4d91e719d4f352f7d8d6020bdb9f",
+        "samples": 29,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 59.92274475097656,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "frames": 6800,
+      "threaded": true,
+      "state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 60
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60308648,
+        "frames": 60
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": false,
+        "changed_frames": 9
+      },
+      "game_audit": {
+        "sha256": "1b6aec37365e0f60fd29dfd950c2368be7091bf27f557c69215396ab7e4b6e92",
+        "samples": 28,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ]
+    },
+    {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "frames": 6800,
+      "threaded": true,
+      "state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 60
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 60
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "0f4c3a6c9d0dd0680e30890027721504e0811dd5e391676981f4d91ed3c18415",
+        "samples": 28,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "av_updates": [
+        {
+          "frame": 0,
+          "fps": 119.84548950195312,
+          "sample_rate": 48000.0,
+          "initial_query": true,
+          "accepted": true
+        }
+      ]
+    }
+  ],
+  "fractional_coordinates": "Exact rational presentation coordinates, including thirds/sixths, until final native-grid pixel-centre sampling.",
+  "additional_full_core_case": {
+    "passed": true,
+    "game": 1,
+    "rendering": "mark_vi_120",
+    "frames": 6800,
+    "threaded": false,
+    "state": {
+      "passed": true,
+      "capacity": 60308648,
+      "frames": 60
+    },
+    "half_state": {
+      "passed": true,
+      "capacity": 60308648,
+      "frames": 60
+    },
+    "game_audit": {
+      "sha256": "ec93523dc554807cbc519ec95df0c1ac6bcf2ea13bb24d853197c053e9735f97",
+      "samples": 28,
+      "interval_video_frames": 120,
+      "bytes_per_sample": 131144
+    },
+    "av_updates": [
+      {
+        "frame": 0,
+        "fps": 119.84548950195312,
+        "sample_rate": 48000.0,
+        "initial_query": true,
+        "accepted": true
+      },
+      {
+        "frame": 3462,
+        "fps": 59.92274475097656,
+        "sample_rate": 48000.0,
+        "accepted": true
+      },
+      {
+        "frame": 6923,
+        "fps": 119.84548950195312,
+        "sample_rate": 48000.0,
+        "accepted": true
+      },
+      {
+        "frame": 3462,
+        "fps": 59.92274475097656,
+        "sample_rate": 48000.0,
+        "accepted": true
+      },
+      {
+        "frame": 6923,
+        "fps": 119.84548950195312,
+        "sample_rate": 48000.0,
+        "accepted": true
+      }
+    ],
+    "settings": {
+      "aspect": "widescreen",
+      "cpu_percent": 100,
+      "deflicker": "on1",
+      "rendering_toggles": true
+    }
+  },
+  "public_tests": {
+    "run": 131,
+    "skipped": 15,
+    "result": "OK",
+    "skipped_scope": "Optional private-ROM and fresh original-M2 execution oracles; independent full-core private-ROM tests are recorded above."
+  },
+  "generated_cartridge_smoke": {
+    "passed": true,
+    "scope": "Generated cartridge only; authenticated SH1/SH2 paths are not covered."
+  }
+}
