@@ -3,10 +3,35 @@
 
 #include "sh2_markvi.h"
 #include "sh1_visibility.h"
+#include "sh1_player_motion.h"
 
 namespace sh1_markvi {
 
 using sprite = sh2_markvi::sprite;
+
+inline bool live_player_artwork(std::uint32_t artwork)
+{
+    return artwork >= 0x59c && artwork <= 0x662 && (artwork - 0x59c) % 22 == 0;
+}
+
+// Read the already-computed player origin, not a predicted input response.
+// 142DB4 advances FF3D08 once per completed game loop, including stationary
+// frames. Sampling only this tick avoids treating a long hold as a slow move.
+template<class Read> void sample_player(Read read)
+{
+    auto lng = [&](std::uint32_t a) { return (std::uint32_t(read(a)) << 16) | read(a + 2); };
+    auto signed_word = [](std::uint16_t v) { return v < 0x8000 ? int(v) : int(v) - 0x10000; };
+    const auto player = lng(0xff16c8);
+    if ((player & 1) || player < 0xff0000 || player > 0xffffb4 ||
+        (read(0xff3d0e) & 0xff) || lng(player + 0x10) != 0x1ddf52 ||
+        read(player + 0x0a) != 0 || (read(player + 0x20) >> 8) != 0 ||
+        (read(player + 0x2a) & 0x80) || !live_player_artwork(lng(player + 0x1c))) {
+        sh1_player_motion::state.clear();
+        return;
+    }
+    sh1_player_motion::state.sample(player, lng(0xff3d08),
+        signed_word(read(player + 0x0c)), signed_word(read(player + 0x0e)));
+}
 
 // Translation of SH1 1702EC..172504, before its 40/80-entry partitioning.
 // SH1 uses a separate object chain, tile cache and depth/shadow tables.
@@ -133,10 +158,12 @@ template<class Previous, class Current>
 std::vector<sprite> interpolate_player(const std::vector<sprite> &previous,
                                       const std::vector<sprite> &current,
                                       Previous before, Current now,
-                                      unsigned numerator, unsigned denominator)
+                                      unsigned numerator, unsigned denominator,
+                                      const sh1_player_motion::history *latest = nullptr,
+                                      unsigned phase = 0)
 {
     auto out = sh2_markvi::interpolate(previous, current, numerator, denominator);
-    if (!denominator || numerator >= denominator) return out;
+    if (!denominator) return out;
     auto lng = [](auto read, std::uint32_t a) {
         return (std::uint32_t(read(a)) << 16) | read(a + 2);
     };
@@ -148,7 +175,7 @@ std::vector<sprite> interpolate_player(const std::vector<sprite> &previous,
         return lng(read, player + 0x10) == 0x1ddf52 &&
             read(player + 0x0a) == 0 && (read(player + 0x20) >> 8) == 0 &&
             !(read(player + 0x2a) & 0x80) &&
-            artwork >= 0x59c && artwork <= 0x662 && (artwork - 0x59c) % 22 == 0;
+            live_player_artwork(artwork);
     };
     if (!live(before) || !live(now)) return out;
     auto body = [&](const auto &sprites) {
@@ -161,13 +188,36 @@ std::vector<sprite> interpolate_player(const std::vector<sprite> &previous,
     const int dx = signed_word(before(player + 0x0c)) - signed_word(now(player + 0x0c));
     const int dy = signed_word(before(player + 0x0e)) - signed_word(now(player + 0x0e));
     if (dx < -128 || dx > 128 || dy < -128 || dy > 128) return out;
+    const int native_x = signed_word(now(player + 0x0c));
+    const int native_y = signed_word(now(player + 0x0e));
+    auto continuous = [](int a, int b) { return a - b >= -128 && a - b <= 128; };
+    const bool responsive = latest && latest->valid && latest->owner == player &&
+        latest->span && latest->span <= sh1_player_motion::max_interval &&
+        continuous(latest->x[0], latest->x[1]) && continuous(latest->y[0], latest->y[1]) &&
+        continuous(latest->x[1], native_x) && continuous(latest->y[1], native_y);
+    if (!responsive && numerator >= denominator) return out;
+    if (responsive) {
+        // Keep the published pose/tile data, but remove the emitter/SAT backlog
+        // from its position. This independent clock still smooths completed
+        // game updates; it does not execute or extrapolate another game step.
+        denominator = latest->span * 2;
+        numerator = std::min(denominator,
+            std::min(latest->age, latest->span) * 2 + std::min(phase, 1u) + 1);
+    }
     const auto remaining = denominator - numerator;
     for (std::size_t i = 0; i < current.size(); ++i) {
         const auto &s = current[i];
         if (s.owner != player || s.routine != 0x1ddf52 || (s.part & 0x200)) continue;
         out[i] = s;
-        out[i].precise_x = std::int64_t(s.x) * denominator + std::int64_t(dx) * remaining;
-        out[i].precise_y = std::int64_t(s.y) * denominator + std::int64_t(dy) * remaining;
+        if (responsive) {
+            out[i].precise_x = std::int64_t(int(s.x) - native_x) * denominator +
+                std::int64_t(latest->x[0]) * remaining + std::int64_t(latest->x[1]) * numerator;
+            out[i].precise_y = std::int64_t(int(s.y) - native_y) * denominator +
+                std::int64_t(latest->y[0]) * remaining + std::int64_t(latest->y[1]) * numerator;
+        } else {
+            out[i].precise_x = std::int64_t(s.x) * denominator + std::int64_t(dx) * remaining;
+            out[i].precise_y = std::int64_t(s.y) * denominator + std::int64_t(dy) * remaining;
+        }
         out[i].position_divisor = denominator;
     }
     return out;

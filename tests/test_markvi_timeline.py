@@ -21,7 +21,7 @@ class Timeline(unittest.TestCase):
 using u16=std::uint16_t;using u32=std::uint32_t;
 struct space {
  std::vector<u16> rom=std::vector<u16>(0x200000);
- u16 read_word(u32 p){return rom[p/2];}
+ u16 read_word(u32 p){return p/2<rom.size()?rom[p/2]:0;}
 };
 class sega315_5313_device {
 public:

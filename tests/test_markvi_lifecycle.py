@@ -14,6 +14,7 @@ class MarkVILifecycle(unittest.TestCase):
             'void sega315_5313_device::sh2_markvi_capture()',
             'void sega315_5313_device::sh2_markvi_finalize()',
             'void sega315_5313_device::sh2_markvi_rebuild()',
+            'void sega315_5313_device::sh2_markvi_postload()',
             'void sega315_5313_device::sh2_markvi_dma(u32 source, u32 address, u32 count, bool was_active)'))
         program=r'''
 #include "sh2_markvi.h"
@@ -47,12 +48,18 @@ public:
  int m_markvi_build_bank=-1;
  std::vector<sh2_markvi::sprite> m_markvi_sprites;
  space memory;space *m_space68k=&memory;
- void sh2_markvi_capture();void sh2_markvi_finalize();void sh2_markvi_rebuild();
+ void sh2_markvi_capture();void sh2_markvi_finalize();void sh2_markvi_rebuild();void sh2_markvi_postload();
  void sh2_markvi_dma(u32,u32,u32,bool was_active=false);
 };
 METHODS
 int main(){
  sega315_5313_device v;
+ // Ordinary DMA rebuilds retain the independent player clock. Native MAME
+ // loads clear future anchors; the libretro boundary then restores its footer.
+ sh1_player_motion::state.sample(0xff21ac,100,160,144);
+ v.sh2_markvi_rebuild();assert(sh1_player_motion::state.valid);
+ v.sh2_markvi_postload();assert(sh1_player_motion::state.valid==(v.m_markvi_game!=1));
+ sh1_player_motion::state.clear();
  v.m_regs[5]=0x70;v.m_regs[15]=2;
  auto &r=v.memory.ram;
  r[(0xff0e00-0xfe0000)/2]=0xff;r[(0xff0e02-0xfe0000)/2]=0x415e;

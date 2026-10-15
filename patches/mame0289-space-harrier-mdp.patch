@@ -547,7 +547,7 @@
 +    save_item(NAME(sh_mdp_video::pending_samples));
 +    save_item(NAME(sh_mdp_video::pending_pixels));
 +    save_item(NAME(sh_mdp_video::pending_audio));
-+	machine().save().register_postload(save_prepost_delegate(FUNC(sega315_5313_device::sh2_markvi_rebuild), this));
++	machine().save().register_postload(save_prepost_delegate(FUNC(sega315_5313_device::sh2_markvi_postload), this));
 +	save_item(NAME(m_mdp_raster_cram));
 +	save_item(NAME(m_mdp_raster_cram_set));
 +
@@ -934,7 +934,7 @@
  }
  
  u16 sega315_5313_device::data_port_r()
-@@ -1396,8 +1733,413 @@
+@@ -1396,8 +1733,424 @@
  
  */
  
@@ -1057,6 +1057,14 @@
 +		m_markvi_tail[bank][i] = tail[i] & ((i & 3) == 1 ? 0xff00 : 0xffff);
 +	m_markvi_tail[bank][0x140] = m_space68k->read_word(layout.tail_count[bank]);
 +	m_markvi_ready[bank] = true;
++}
++
++void sega315_5313_device::sh2_markvi_postload()
++{
++    // Native MAME loads have no optional libretro presentation footer.
++    // Libretro restores that footer after this postload callback completes.
++    if (m_markvi_game == 1) sh1_player_motion::state.clear();
++    sh2_markvi_rebuild();
 +}
 +
 +void sega315_5313_device::sh2_markvi_rebuild()
@@ -1200,9 +1208,12 @@
 +    m_markvi_smooth_valid = false;
 +    if (!sh_mdp_video::hz120 || !m_markvi_ready[2]) {
 +        m_markvi_history_valid = false;
++        if (m_markvi_game == 1) sh1_player_motion::state.clear();
 +        m_markvi_phases[0].clear(); m_markvi_phases[1].clear();
 +        return;
 +    }
++    if (m_markvi_game == 1)
++        sh1_markvi::sample_player([this](u32 a) -> u16 { return m_space68k->read_word(a); });
 +    if (!m_markvi_history_valid) {
 +        std::copy_n(m_markvi_ram[2], 0x10000, m_markvi_history[0]);
 +        std::copy_n(m_markvi_ram[2], 0x10000, m_markvi_history[1]);
@@ -1233,7 +1244,7 @@
 +        const unsigned n = std::min(m_markvi_age, m_markvi_span) * 2 + phase + 1;
 +        const unsigned d = m_markvi_span * 2;
 +        m_markvi_phases[phase] = m_markvi_game == 1 ?
-+            sh1_markvi::interpolate_player(previous, m_markvi_sprites, read, current, n, d) :
++            sh1_markvi::interpolate_player(previous, m_markvi_sprites, read, current, n, d, &sh1_player_motion::state, phase) :
 +            sh2_markvi::interpolate(previous, m_markvi_sprites, n, d);
 +    }
 +}
@@ -1987,7 +1998,7 @@
  	virtual void device_reset() override ATTR_COLD;
  	virtual void device_add_mconfig(machine_config &config) override ATTR_COLD;
  
-@@ -220,36 +275,87 @@
+@@ -220,36 +275,88 @@
  	void vdp_address_inc();
  	void vdp_set_register(int regnum, u8 value);
  
@@ -2049,6 +2060,7 @@
 +    std::vector<sh2_markvi::sprite> m_markvi_phases[2];
 +    void sh2_markvi_begin_frame();
 +	void sh2_markvi_rebuild();
++    void sh2_markvi_postload();
 +	void sh2_markvi_dma(u32 source, u32 address, u32 count, bool was_active);
 +	bool mdp_render_markvi_spriteline(int scanline);
 +	unsigned m_markvi_game = 0; // Authenticated cartridge profile, reapplied on reset.
@@ -2549,7 +2561,7 @@
  void retro_init(void)
  {
     const char *system_dir  = NULL;
-@@ -860,181 +927,410 @@
+@@ -860,181 +927,434 @@
     static struct retro_keyboard_callback keyboard_callback = {retro_keyboard_event};
     environ_cb(RETRO_ENVIRONMENT_SET_KEYBOARD_CALLBACK, &keyboard_callback);
  
@@ -2884,9 +2896,11 @@
 +         && ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
 +      // A runtime mode change must not grow a buffer cached by the frontend.
 +      // Original SH2 reserves trailing zeros; active mode uses the same space
-+      // for its versioned prefix. Other games retain their native state size.
++      // for its versioned prefix. SH1 reserves its presentation-history footer
++      // in every rendering mode. Other games retain their native state size.
 +      return ram_state::get_size(mame_machine_manager::instance()->machine()->save())
-+            + (sh_mdp_explosions::eligible ? sizeof(sh_mdp_explosions::state_tag) : 0);
++            + (sh_mdp_video::game.load(std::memory_order_relaxed) == 1 ? sh1_player_motion::state_size :
++                (sh_mdp_explosions::eligible ? sizeof(sh_mdp_explosions::state_tag) : 0));
  
     return 0;
  }
@@ -2900,7 +2914,14 @@
 +         && ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
 +   {
 +      const size_t payload = ram_state::get_size(mame_machine_manager::instance()->machine()->save());
-+      if (sh_mdp_explosions::eligible)
++      if (sh_mdp_video::game.load(std::memory_order_relaxed) == 1)
++      {
++         if (!data || size < payload + sh1_player_motion::state_size ||
++             !sh1_player_motion::encode(static_cast<uint8_t *>(data) + payload,
++                 sh1_player_motion::state_size, sh1_player_motion::state)) return false;
++         size = payload;
++      }
++      else if (sh_mdp_explosions::eligible)
 +      {
 +         const size_t envelope = sizeof(sh_mdp_explosions::state_tag);
 +         if (!data || size < payload + envelope)
@@ -2930,6 +2951,8 @@
 +      return false;
 +   }
     save_error error = STATERR_NOT_FOUND;
++   const bool sh1_profile = sh_mdp_video::game.load(std::memory_order_relaxed) == 1;
++   sh1_player_motion::history restored_player;
     if (     mame_machine_manager::instance() != NULL
           && mame_machine_manager::instance()->machine() != NULL
 -         &&	ram_state::get_size(mame_machine_manager::instance()->machine()->save()) > 0)
@@ -2937,7 +2960,18 @@
 +   {
 +      const size_t payload = ram_state::get_size(mame_machine_manager::instance()->machine()->save());
 +      const size_t envelope = sizeof(sh_mdp_explosions::state_tag);
-+      if (sh_mdp_explosions::active)
++      if (sh1_profile)
++      {
++         if (size == payload + sh1_player_motion::state_size)
++         {
++            if (!data || !sh1_player_motion::decode(static_cast<const uint8_t *>(data) + payload,
++                  sh1_player_motion::state_size, restored_player)) return false;
++         }
++         else if (size != payload) return false;
++         // Legacy SH1 states seed new history from the restored live position.
++         size = payload;
++      }
++      else if (sh_mdp_explosions::active)
 +      {
 +         if (size != payload + envelope)
 +            return false;
@@ -2964,6 +2998,8 @@
  
     if (error != STATERR_NONE)
        log_cb(RETRO_LOG_ERROR, "State load error %d.\n", error);
++   if (error == STATERR_NONE && sh1_profile)
++      sh1_player_motion::state = restored_player;
     return (error == STATERR_NONE);
  }
  

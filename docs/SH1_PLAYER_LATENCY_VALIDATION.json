@@ -1,0 +1,409 @@
+{
+  "version": "0.1.24",
+  "date": "2026-10-15",
+  "platform": "macOS arm64",
+  "scope": "SH1 Mark VI 120 Hz live-player presentation. Numeric and hash-only evidence; no ROM, artwork, memory dump or audio is included.",
+  "baseline_core_sha256": "08cfe0d9cdc381e403bb245a76b2b2940df69b0f9f8e6903812cb6d34e7a2189",
+  "core_sha256": "2fa6b76ac41532380620bc5464b64f3dd301d979c8bb6203f68891f919534a92",
+  "pixel_response": {
+    "scope": "CPU100%, scripted right/release/left at120Hz; pixel response is exact native framebuffer, not physical display or controller latency.",
+    "baseline": {
+      "tag": "baseline",
+      "right_input_first_polled_presentation": 3079,
+      "actual_anchor_first_changed_presentation": 3085,
+      "visible_translation_first_changed_presentation": 3091,
+      "poll_to_actual_anchor_ms": 50.06446237513359,
+      "poll_to_first_visible_translation_ms": 100.12892475026717,
+      "first_mask_pixel_count": 98,
+      "first_translation_same_pixel_shape": true,
+      "first_visible_delta_x": 2,
+      "pcm_sha256": "731dec3895c1a6ff3fd25c4fb338eab1c629ffbb84cd277778af2d49bb86c012",
+      "ram_sha256": "c24375b3c89247e57c70b229992c8053a22e57f7c5e08699aa14e637341b9d90",
+      "trace_sha256": "85ab268bb83d14edaac256586321a6275475e9888284c9c06a3a118480815a3f",
+      "right_motion": {
+        "presentations": [
+          3091,
+          3130
+        ],
+        "consecutive_steps": 40,
+        "pixel_step_distribution": {
+          "2": 40
+        }
+      },
+      "left_motion": {
+        "presentations": [
+          3171,
+          3210
+        ],
+        "consecutive_steps": 40,
+        "pixel_step_distribution": {
+          "-2": 40
+        }
+      },
+      "first_held_frame_after_right_motion": 3131
+    },
+    "candidate": {
+      "tag": "candidate",
+      "right_input_first_polled_presentation": 3079,
+      "actual_anchor_first_changed_presentation": 3085,
+      "visible_translation_first_changed_presentation": 3087,
+      "poll_to_actual_anchor_ms": 50.06446237513359,
+      "poll_to_first_visible_translation_ms": 66.75261650017812,
+      "first_mask_pixel_count": 98,
+      "first_translation_same_pixel_shape": true,
+      "first_visible_delta_x": 2,
+      "pcm_sha256": "731dec3895c1a6ff3fd25c4fb338eab1c629ffbb84cd277778af2d49bb86c012",
+      "ram_sha256": "c24375b3c89247e57c70b229992c8053a22e57f7c5e08699aa14e637341b9d90",
+      "trace_sha256": "85ab268bb83d14edaac256586321a6275475e9888284c9c06a3a118480815a3f",
+      "right_motion": {
+        "presentations": [
+          3087,
+          3126
+        ],
+        "consecutive_steps": 40,
+        "pixel_step_distribution": {
+          "2": 40
+        }
+      },
+      "left_motion": {
+        "presentations": [
+          3167,
+          3206
+        ],
+        "consecutive_steps": 40,
+        "pixel_step_distribution": {
+          "-2": 40
+        }
+      },
+      "first_held_frame_after_right_motion": 3127
+    },
+    "first_visible_gain_ms": 33.37630825008905,
+    "pcm_sha256_equal": true,
+    "ram_sha256_equal": true,
+    "trace_sha256_equal": true,
+    "additional_audit_counts": {
+      "full_guest_ram_snapshots": 54,
+      "scalar_trace_rows": 271,
+      "ram_sample_interval_native_frames": 30
+    }
+  },
+  "full_core_cases": [
+    {
+      "passed": true,
+      "game": 1,
+      "rendering": "original",
+      "frames": 3400,
+      "threaded": true,
+      "state": {
+        "passed": true,
+        "capacity": 60308712,
+        "frames": 40
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "205463e54d4766d5e03b1289dc7cd86e314f5aa0af8af77b3f187f57e831a97b",
+        "samples": 28,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 799,
+        "start_native_frame": 2600,
+        "end_native_frame": 3398,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 66
+      }
+    },
+    {
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi",
+      "frames": 3400,
+      "threaded": true,
+      "state": {
+        "passed": true,
+        "capacity": 60308712,
+        "frames": 40
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "205463e54d4766d5e03b1289dc7cd86e314f5aa0af8af77b3f187f57e831a97b",
+        "samples": 28,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 799,
+        "start_native_frame": 2600,
+        "end_native_frame": 3398,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 37
+      }
+    },
+    {
+      "passed": true,
+      "game": 1,
+      "rendering": "mark_vi_120",
+      "frames": 6800,
+      "threaded": true,
+      "state": {
+        "passed": true,
+        "capacity": 60308712,
+        "frames": 40
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60308712,
+        "frames": 40
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "205463e54d4766d5e03b1289dc7cd86e314f5aa0af8af77b3f187f57e831a97b",
+        "samples": 28,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      },
+      "stage_gameplay": {
+        "pause_address": "FF3D0F",
+        "observed": 799,
+        "start_native_frame": 2600,
+        "end_native_frame": 3398,
+        "paused_native_frames": [],
+        "distinct_video_frames_after_native_3000": 37
+      }
+    },
+    {
+      "passed": true,
+      "game": 2,
+      "rendering": "mark_vi_120",
+      "frames": 7000,
+      "threaded": true,
+      "state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 40
+      },
+      "half_state": {
+        "passed": true,
+        "capacity": 60308664,
+        "frames": 40
+      },
+      "comparison": {
+        "audio_equal": true,
+        "game_audit_equal": true,
+        "video_equal": true,
+        "changed_frames": 0
+      },
+      "game_audit": {
+        "sha256": "3803c1a3bf727ebee625acbd047e1d06606741e56af894029c4d45004f3d4cf7",
+        "samples": 29,
+        "interval_video_frames": 120,
+        "bytes_per_sample": 131144
+      }
+    }
+  ],
+  "full_core_cases_note": "The ordinary scripted SH1 stage-start run does not change video in this comparison. The targeted live-player pixel measurement and legacy-state replays below exercise the responsive movement path.",
+  "widescreen_and_mode_changes": {
+    "passed": true,
+    "game": 1,
+    "rendering": "mark_vi_120",
+    "frames": 6800,
+    "state": {
+      "passed": true,
+      "capacity": 60308712,
+      "frames": 40
+    },
+    "half_state": {
+      "passed": true,
+      "capacity": 60308712,
+      "frames": 40
+    },
+    "toggles": [
+      {
+        "mode": "original",
+        "stream": {
+          "video_sha256": "008e119243a3c2e7885d5c9c3d5d90a7b4c9d62c05550436543d680620a17438",
+          "audio_sha256": "b9bd0f82f87d731baf2eb75e5e58e6670fd4306945c701fdcd108192fae41bc9",
+          "video_frames": 300,
+          "audio_stereo_frames": 240312
+        },
+        "state": {
+          "passed": true,
+          "capacity": 60308712,
+          "frames": 40
+        }
+      },
+      {
+        "mode": "mark_vi_120",
+        "stream": {
+          "video_sha256": "a103d810399189ba6e84808fb4a723d62f02d0356e5b20ff49e5617fb458ca8d",
+          "audio_sha256": "b9bd0f82f87d731baf2eb75e5e58e6670fd4306945c701fdcd108192fae41bc9",
+          "video_frames": 600,
+          "audio_stereo_frames": 240312
+        },
+        "state": {
+          "passed": true,
+          "capacity": 60308712,
+          "frames": 40
+        }
+      },
+      {
+        "mode": "original",
+        "stream": {
+          "video_sha256": "008e119243a3c2e7885d5c9c3d5d90a7b4c9d62c05550436543d680620a17438",
+          "audio_sha256": "b9bd0f82f87d731baf2eb75e5e58e6670fd4306945c701fdcd108192fae41bc9",
+          "video_frames": 300,
+          "audio_stereo_frames": 240312
+        },
+        "state": {
+          "passed": true,
+          "capacity": 60308712,
+          "frames": 40
+        }
+      },
+      {
+        "mode": "mark_vi_120",
+        "stream": {
+          "video_sha256": "a103d810399189ba6e84808fb4a723d62f02d0356e5b20ff49e5617fb458ca8d",
+          "audio_sha256": "b9bd0f82f87d731baf2eb75e5e58e6670fd4306945c701fdcd108192fae41bc9",
+          "video_frames": 600,
+          "audio_stereo_frames": 240312
+        },
+        "state": {
+          "passed": true,
+          "capacity": 60308712,
+          "frames": 40
+        }
+      }
+    ],
+    "toggle_video_differs": true,
+    "game_audit": {
+      "sha256": "1a6c8c8936badb557237fb2d6851d20e01c304fc624502c0100b850a0be6f9e7",
+      "samples": 28,
+      "interval_video_frames": 120,
+      "bytes_per_sample": 131144
+    },
+    "settings": {
+      "aspect": "widescreen",
+      "cpu_percent": 100,
+      "deflicker": "on1",
+      "threaded": false
+    }
+  },
+  "legacy_state_compatibility": {
+    "passed": true,
+    "scope": "SH1 v0.1.23 native states restored by candidate, separate processes, private ROM, CPU 400 percent, threaded emulation",
+    "baseline_sha256": "08cfe0d9cdc381e403bb245a76b2b2940df69b0f9f8e6903812cb6d34e7a2189",
+    "candidate_sha256": "2fa6b76ac41532380620bc5464b64f3dd301d979c8bb6203f68891f919534a92",
+    "cases": [
+      {
+        "mode": "original",
+        "half": false,
+        "state_at_output": 1540,
+        "legacy_size": 60308648,
+        "current_size": 60308712,
+        "legacy_accepted": true,
+        "cpu_ram": {
+          "sha256": "b10f43d5fcf5997b195583a61eda811aca79147699bc5a6eae9c7453333e2a45",
+          "bytes": 15737280,
+          "samples": 120
+        },
+        "audio_equal": true,
+        "cpu_ram_equal": true,
+        "video_equal": true,
+        "video_changed_frames": 0,
+        "passed": true,
+        "audio_stereo_frames": 96127,
+        "audio_sha256": "e6dc8966535cb50ee7546a2a9b8fb872c9ace3848f85e5d05ef4a3d56744d668",
+        "replay_native_frames": 120
+      },
+      {
+        "mode": "mark_vi",
+        "half": false,
+        "state_at_output": 1540,
+        "legacy_size": 60308648,
+        "current_size": 60308712,
+        "legacy_accepted": true,
+        "cpu_ram": {
+          "sha256": "b10f43d5fcf5997b195583a61eda811aca79147699bc5a6eae9c7453333e2a45",
+          "bytes": 15737280,
+          "samples": 120
+        },
+        "audio_equal": true,
+        "cpu_ram_equal": true,
+        "video_equal": true,
+        "video_changed_frames": 0,
+        "passed": true,
+        "audio_stereo_frames": 96127,
+        "audio_sha256": "e6dc8966535cb50ee7546a2a9b8fb872c9ace3848f85e5d05ef4a3d56744d668",
+        "replay_native_frames": 120
+      },
+      {
+        "mode": "mark_vi_120",
+        "half": false,
+        "state_at_output": 3080,
+        "legacy_size": 60308648,
+        "current_size": 60308712,
+        "legacy_accepted": true,
+        "cpu_ram": {
+          "sha256": "b10f43d5fcf5997b195583a61eda811aca79147699bc5a6eae9c7453333e2a45",
+          "bytes": 15737280,
+          "samples": 120
+        },
+        "audio_equal": true,
+        "cpu_ram_equal": true,
+        "video_equal": false,
+        "video_changed_frames": 76,
+        "passed": true,
+        "audio_stereo_frames": 96127,
+        "audio_sha256": "e6dc8966535cb50ee7546a2a9b8fb872c9ace3848f85e5d05ef4a3d56744d668",
+        "replay_native_frames": 120
+      },
+      {
+        "mode": "mark_vi_120",
+        "half": true,
+        "state_at_output": 3081,
+        "legacy_size": 60308648,
+        "current_size": 60308712,
+        "legacy_accepted": true,
+        "cpu_ram": {
+          "sha256": "220175561318eb2c453f2e84c0f90ccce0d716f0b38d78d674de17d630bee9e4",
+          "bytes": 15737280,
+          "samples": 120
+        },
+        "audio_equal": true,
+        "cpu_ram_equal": true,
+        "video_equal": false,
+        "video_changed_frames": 74,
+        "passed": true,
+        "audio_stereo_frames": 96120,
+        "audio_sha256": "6ba7d7c7d247246e6d9887b7bd3e7fe962072cfb00e1801a996eb2f199395aa5",
+        "replay_native_frames": 120
+      }
+    ]
+  },
+  "public_tests": {
+    "run": 137,
+    "skipped": 15,
+    "result": "OK",
+    "skipped_scope": "Optional private-ROM and fresh original-M2 execution oracles. Separate private-ROM full-core tests are recorded above."
+  },
+  "limits": "Response is measured at the core framebuffer, excluding physical controller, frontend queue and display latency. This targeted sample does not prove a fixed gain in every scene, CPU setting or frontend. Native game logic/input timing is unchanged."
+}

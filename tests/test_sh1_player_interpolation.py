@@ -68,11 +68,13 @@ struct Fixture {
         };
     }
 
-    std::vector<sprite> sample(unsigned numerator = 1, unsigned denominator = 4) {
+    std::vector<sprite> sample(unsigned numerator = 1, unsigned denominator = 4,
+                              const sh1_player_motion::history *latest = nullptr,
+                              unsigned phase = 0) {
         auto before = [this](u32 a) { return old_memory.read(a); };
         auto now = [this](u32 a) { return new_memory.read(a); };
         return sh1_markvi::interpolate_player(old_sprites, new_sprites,
-                                              before, now, numerator, denominator);
+                                              before, now, numerator, denominator, latest, phase);
     }
 };
 
@@ -124,6 +126,78 @@ int main() {
     native_body(f.sample(4, 4), f);
     native_body(f.sample(5, 4), f);
     native_body(f.sample(1, 0), f);
+
+    // Rendering must follow completed game-loop coordinates even if the
+    // emitter/SAT snapshot has not yet published them. Keep CURRENT art and
+    // fractional positions; an emitter endpoint must not disable this clock.
+    sh1_player_motion::history latest;
+    latest.sample(player, 100, 168, 164);
+    latest.sample(player, 100, 169, 165); // Incomplete next update is ignored.
+    latest.sample(player, 101, 169, 165);
+    assert(latest.span == 2);
+    for (unsigned age = 0; age <= 3; ++age) {
+        latest.age = age;
+        for (unsigned phase = 0; phase < 2; ++phase) {
+            const unsigned step = std::min(4U, std::min(age, 2U) * 2 + phase + 1);
+            for (unsigned emitter_step : {1U, 4U, 5U}) {
+                const auto result = f.sample(emitter_step, 4, &latest, phase);
+                for (unsigned i = 0; i < result.size(); ++i) {
+                    assert(result[i].position_divisor == 4);
+                    assert(result[i].precise_x == std::int64_t(f.new_sprites[i].x + 8) * 4 + step);
+                    assert(result[i].precise_y == std::int64_t(f.new_sprites[i].y + 4) * 4 + step);
+                    same_artwork(result[i], f.new_sprites[i]);
+                    assert(result[i].x == f.new_sprites[i].x && result[i].y == f.new_sprites[i].y);
+                }
+            }
+        }
+    }
+    // Invalid, recycled and discontinuous histories retain the .23 path.
+    for (unsigned cut = 0; cut < 7; ++cut) {
+        auto bad = latest;
+        switch (cut) {
+        case 0: bad.valid = false; break;
+        case 1: bad.owner += 0x54; break;
+        case 2: bad.span = 0; break;
+        case 3: bad.span = sh1_player_motion::max_interval + 1; break;
+        case 4: bad.x[0] = bad.x[1] + 129; break;
+        case 5: bad.y[1] += 129; break;
+        case 6: bad.x[0] = bad.x[1] = 400; break;
+        }
+        native_body(f.sample(4, 4, &bad), f);
+    }
+
+    // Live sampling is read-only, uses the completed native counter and cuts
+    // on pause/death/invulnerability/blink/unknown art rather than resurrecting
+    // a stale body. Memory changes are controlled independently from the SAT.
+    auto live_read = [&f](u32 a) { return f.new_memory.read(a); };
+    f.new_memory.lng(0xff3d08, 100);
+    sh1_markvi::sample_player(live_read);
+    assert(sh1_player_motion::state.valid && sh1_player_motion::state.x[1] == 160);
+    f.new_memory.put(player + 0x0c, 168);
+    sh1_markvi::sample_player(live_read);
+    assert(sh1_player_motion::state.x[1] == 160);
+    f.new_memory.lng(0xff3d08, 101);
+    sh1_markvi::sample_player(live_read);
+    assert(sh1_player_motion::state.x[1] == 168 && sh1_player_motion::state.span == 2);
+    for (unsigned cut = 0; cut < 9; ++cut) {
+        Fixture live;
+        switch (cut) {
+        case 0: live.new_memory.put(0xff3d0e, 1); break;
+        case 1: live.new_memory.lng(player + 0x10, 0x1dd698); break;
+        case 2: live.new_memory.lng(player + 0x10, 0x1dd4e0); break;
+        case 3: live.new_memory.put(player + 0x2a, 0x84); break;
+        case 4: live.new_memory.put(player + 0x0a, 1); break;
+        case 5: live.new_memory.put(player + 0x20, 0x0100); break;
+        case 6: live.new_memory.lng(player + 0x1c, 0x621); break;
+        case 7: live.new_memory.lng(0xff16c8, player | 1); break;
+        case 8: live.new_memory.lng(0xff16c8, 0xfffffe); break;
+        }
+        sh1_markvi::sample_player([&live](u32 a) { return live.new_memory.read(a); });
+        assert(!sh1_player_motion::state.valid);
+        sh1_markvi::sample_player(live_read);
+        assert(sh1_player_motion::state.valid && sh1_player_motion::state.span == 1);
+    }
+    f.new_memory.put(player + 0x0c, 160);
 
     // Three native pixels over four subframes retain exact 3/4-pixel steps.
     // No early integer or fixed-point rounding is allowed in either direction.

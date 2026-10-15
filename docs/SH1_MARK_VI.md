@@ -98,8 +98,9 @@ active list. An empty completed list replaces the old picture; no previous-frame
 sprite pixels are retained.
 
 The existing three RAM snapshots, producer signatures, history and pending
-presentation buffers were already serialized in 0.1.21. SH1 support adds no
-serialized fields and leaves that state layout unchanged. The profile is derived
+presentation buffers were already serialized in 0.1.21. Version 0.1.22 SH1 support adds no
+serialized fields and leaves that native state layout unchanged. Since 0.1.24,
+SH1 libretro states append the separate player-history footer described below. The profile is derived
 from the immutable loaded cartridge and reapplied on reset; it is not guest save
 state. Variable host lists are rebuilt after loading. States from before 0.1.21
 remain incompatible. Matching visual replay requires the same rendering and
@@ -168,6 +169,43 @@ matcher can also cut ground-running movement; this correction is deliberately
 limited to the verified SH1 player. The measurement proves this reproduced
 case, not identical perceived smoothness in every scene or frontend.
 See [the validation report](SH1_PLAYER_120HZ_VALIDATION.json).
+
+### Reduced player presentation delay since 0.1.24
+
+The normal game loop has already moved Harrier before that position reaches the
+published emitter/SAT snapshot. Interpolating only the published snapshots adds
+this backlog to the normal interpolation delay. SH1 now samples the live player
+origin against the completed native game-loop counter at `FF3D08`, advanced by
+`142DB4`. The counter advances even when Harrier is stationary, preventing a
+long stationary hold from becoming the duration of the next moving interval.
+Uncompleted writes between counter changes are ignored. Pausing (`FF3D0F`),
+nonlive handlers, unknown drawings, hiding, scaling and discontinuities cut the
+new history.
+
+All pieces retain their published artwork, attributes and local coordinates.
+Only the verified live body's common display origin follows the newer completed
+positions. The separate player clock uses the same exact rational arithmetic
+and clamps at its known endpoint; it never extrapolates, predicts input or runs
+another game update. Shadows keep their existing interpolation/projection rules.
+Original rendering, native-refresh Mark VI and SH2 do not use this path.
+
+In the recorded CPU-100% right-movement test, input poll to the first visible
+translation falls from 100.13 ms to 66.75 ms: four presentations, or 33.38 ms,
+earlier. The first response translates the exact same 98-pixel pants mask by
+two pixels. Forty consecutive two-pixel steps in either direction remain
+regular, and release settles four presentations earlier. The native game
+position still first changes after 50.06 ms; physical controller, frontend and
+display delays are outside this measurement. PCM, 54 full guest-RAM snapshots
+and 271 scalar trace rows match the 0.1.23 run.
+
+A 64-byte, versioned, big-endian footer stores the independent history after
+SH1's unchanged native MAME payload. It is reserved in every SH1 rendering mode
+so changing modes cannot grow a frontend's cached buffer. Invalid footers are
+rejected before MAME loading, and valid histories are committed only after a
+successful native load. Legacy 0.1.23 payload-only states remain accepted and
+seed fresh history. Native MAME loads clear transient player history; normal
+DMA list rebuilds retain it. This footer does not change SH2's explosion envelope.
+See [the latency validation report](SH1_PLAYER_LATENCY_VALIDATION.json).
 
 ## Constructor evidence and limits
 

@@ -15,6 +15,27 @@ GitHub release notes are generated directly from the corresponding entry.
 - Document the isolated workload and remaining full-game timing limits. This
   investigation changes no emulation, rendering, shader or core option.
 
+## [0.1.24] - 2026-10-15
+
+### More responsive Harrier movement in SH1 at 120 Hz
+
+- Position Harrier using his latest completed native game-loop coordinates,
+  instead of waiting for the older emitter/SAT snapshot. Retain the current
+  published artwork and exact fractional interpolation across its pieces.
+  No input prediction, extra emulated frames or guest memory changes are used.
+- Reduce input-poll-to-framebuffer response from 100.13 ms to 66.75 ms in the
+  measured CPU-100% right-movement test: four 120 Hz presentations, or 33.38 ms
+  earlier. Physical controller, frontend and display latency are not included.
+  Retain 40 consecutive two-pixel steps in each tested movement direction and
+  settle four presentations earlier when the direction is released.
+- Reset player motion history on pause, death, native hiding, scene changes,
+  cartridge reset and native MAME state loading. Preserve exact history in a
+  portable, validated SH1 save-state footer and continue accepting 0.1.23 SH1
+  states. Keep the unchanged native MAME payload and existing SH2 format.
+- Apply this change only to SH1 **Mark VI (120 Hz, Experimental)**. Original
+  rendering, native-refresh Mark VI, SH2, audio and native input/game execution
+  remain unchanged in the recorded comparisons.
+
 ## [0.1.23] - 2026-10-15
 
 ### Smoother Harrier movement in SH1 at 120 Hz

@@ -4,6 +4,7 @@
 #include <cstdint>
 #include <cstring>
 #include <vector>
+#include "sh1_player_motion.h"
 namespace sh_mdp_video {
 // Authenticated cartridge profile, supplied by the machine driver. Options
 // alone never enable enhanced rendering for an unrelated Mega Drive game.
@@ -68,6 +69,7 @@ inline unsigned texture_width = 0, texture_height = 0, texture_stride = 0;
 inline std::vector<std::uint32_t> half_output;
 inline bool half_valid = false;
 inline void clear_pending() {
+    sh1_player_motion::state.clear();
     second_half = pending_draw = half_valid = false;
     pending_samples = pending_source_width = 0;
     source_width = 0;
