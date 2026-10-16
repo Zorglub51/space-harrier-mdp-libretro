@@ -1,0 +1,77 @@
+{
+  "scope": "Instruction-qualified timing of the native SH1 control code executing in core 0.1.24, CPU 100%, Mark VI 120 Hz. Excludes physical controller and display delay.",
+  "native_addresses": {
+    "player_pointer": "FF16C8",
+    "live_player_handler": "1DDF52",
+    "control_function": "1E3C90",
+    "input_function_pointer": "FF3C88",
+    "normal_input_function": "1DE5F2",
+    "cached_pad_read": "1E946A",
+    "cached_pad_word": "FF416A",
+    "pad_refresh_function": "1E94DE",
+    "vblank_calls_pad_refresh": "1EACB4",
+    "current_game_input": "FF3CF2",
+    "previous_game_input": "FF3CF0",
+    "player_origin_offsets": [
+      "0C",
+      "0E"
+    ],
+    "post_control_input_store": "1DE21A",
+    "completed_game_tick": "FF3D08"
+  },
+  "events": [
+    {
+      "native_trace_interval": 1538,
+      "event": "player_reads_cached_input",
+      "value": 0,
+      "player_x": 160,
+      "frontend_presentation_call": 3079
+    },
+    {
+      "native_trace_interval": 1538,
+      "event": "pad_io_reads_current_right",
+      "high_TH_value_hex": "77",
+      "cached_right_value": 8,
+      "frontend_presentation_call": 3079
+    },
+    {
+      "native_trace_interval": 1538,
+      "event": "cached_pad_updated",
+      "value": 8,
+      "player_x": 160,
+      "frontend_presentation_call": 3079
+    },
+    {
+      "native_trace_interval": 1539,
+      "event": "cached_pad_remains_updated_no_player_update",
+      "value": 8,
+      "player_x": 160,
+      "frontend_presentation_call": 3081
+    },
+    {
+      "native_trace_interval": 1540,
+      "event": "player_reads_cached_input",
+      "value": 8,
+      "new_player_x": 168,
+      "frontend_presentation_call": 3083
+    }
+  ],
+  "v24_framebuffer_response": {
+    "first_right_poll_presentation": 3079,
+    "actual_anchor_first_visible_to_probe_presentation": 3085,
+    "first_pixel_translation_presentation": 3087,
+    "first_pixel_delta_x": 2,
+    "poll_to_first_pixel_ms": 66.75261650017812,
+    "actual_position_write_presentation": 3083,
+    "poll_to_actual_position_write_ms": 33.37630825008906,
+    "actual_write_to_first_pixel_ms": 33.37630825008906,
+    "probe_observation_note": "A pre-frame Lua notifier first observed the coordinate change at presentation 3085 (50.06 ms); the qualified control write already occurred at presentation 3083 (33.38 ms)."
+  },
+  "diagnostic_fresh_pad_bypass": {
+    "scope": "Temporary diagnostic only: replace the qualified cached-pad read with the known current pad value. This advances committed input timing while retaining the movement algorithm. No production code or ROM was changed.",
+    "first_pixel_translation_presentation": 3083,
+    "poll_to_first_pixel_ms": 33.37630825008906
+  },
+  "conclusion": "Bypassing cached pad input alone is insufficient for a <20ms guarantee at native30Hz control updates.",
+  "original_m2_timing_limit": "The input mechanisms were identified in native SH1 code. Their execution timings were measured in this portable core; the complete original M2 application has not been measured."
+}

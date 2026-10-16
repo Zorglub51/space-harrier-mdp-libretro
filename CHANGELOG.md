@@ -6,6 +6,17 @@ GitHub release notes are generated directly from the corresponding entry.
 
 ## [Unreleased]
 
+### SH1 input timing measurement correction
+
+- Distinguish the native position write from its later pre-frame observation.
+  Qualified instruction-level probes measure 33.38 ms from input polling to
+  the write in the recorded case, followed by 33.38 ms to its first visible
+  translation. The earlier 50.06 ms label included an observation-frame delay.
+  The measured 100.13 ms to 66.75 ms framebuffer improvement is unchanged.
+- Document the native cached-pad ordering and approximately 30 Hz player update
+  observed in this core. Do not infer identical full-application M2 latency.
+  This documentation correction changes no emulation or rendering behavior.
+
 ### SH1 sky fidelity investigation
 
 - Add an original-M2 CPU execution oracle for SH1's sky table builder,

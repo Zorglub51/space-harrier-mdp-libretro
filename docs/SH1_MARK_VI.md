@@ -193,10 +193,22 @@ In the recorded CPU-100% right-movement test, input poll to the first visible
 translation falls from 100.13 ms to 66.75 ms: four presentations, or 33.38 ms,
 earlier. The first response translates the exact same 98-pixel pants mask by
 two pixels. Forty consecutive two-pixel steps in either direction remain
-regular, and release settles four presentations earlier. The native game
-position still first changes after 50.06 ms; physical controller, frontend and
-display delays are outside this measurement. PCM, 54 full guest-RAM snapshots
-and 271 scalar trace rows match the 0.1.23 run.
+regular, and release settles four presentations earlier. Instruction-qualified,
+call-correlated probes show the game writes the changed position after 33.38 ms,
+then another 33.38 ms elapses before its first visible translation. The earlier
+50.06 ms label incorrectly identified the next pre-frame Lua observation as the
+write time. This correction changes neither the measured framebuffer response
+nor the measured gain. Physical controller, frontend and display delays are
+outside this measurement. PCM, 54 full guest-RAM snapshots and 271 scalar trace
+rows match the 0.1.23 run.
+
+In this recorded phase, Harrier's approximately 30 Hz native update reads the
+previous cached pad value before the next VBlank refreshes it; the next player
+update consumes the new value. The host has already polled input before CPU
+execution. This identifies a native control mechanism running in our core; it
+does not establish the same latency in the full original M2 application.
+Interpolated 120 Hz presentation does not make native control updates run at
+120 Hz. See [the instruction-level input timing](SH1_NATIVE_INPUT_TIMING.json).
 
 A 64-byte, versioned, big-endian footer stores the independent history after
 SH1's unchanged native MAME payload. It is reserved in every SH1 rendering mode

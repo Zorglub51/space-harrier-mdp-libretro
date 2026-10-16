@@ -10,9 +10,7 @@
     "baseline": {
       "tag": "baseline",
       "right_input_first_polled_presentation": 3079,
-      "actual_anchor_first_changed_presentation": 3085,
       "visible_translation_first_changed_presentation": 3091,
-      "poll_to_actual_anchor_ms": 50.06446237513359,
       "poll_to_first_visible_translation_ms": 100.12892475026717,
       "first_mask_pixel_count": 98,
       "first_translation_same_pixel_shape": true,
@@ -40,14 +38,14 @@
           "-2": 40
         }
       },
-      "first_held_frame_after_right_motion": 3131
+      "first_held_frame_after_right_motion": 3131,
+      "first_preframe_observed_anchor_change_presentation": 3085,
+      "poll_to_first_preframe_observed_anchor_change_ms": 50.06446237513359
     },
     "candidate": {
       "tag": "candidate",
       "right_input_first_polled_presentation": 3079,
-      "actual_anchor_first_changed_presentation": 3085,
       "visible_translation_first_changed_presentation": 3087,
-      "poll_to_actual_anchor_ms": 50.06446237513359,
       "poll_to_first_visible_translation_ms": 66.75261650017812,
       "first_mask_pixel_count": 98,
       "first_translation_same_pixel_shape": true,
@@ -75,7 +73,12 @@
           "-2": 40
         }
       },
-      "first_held_frame_after_right_motion": 3127
+      "first_held_frame_after_right_motion": 3127,
+      "first_preframe_observed_anchor_change_presentation": 3085,
+      "poll_to_first_preframe_observed_anchor_change_ms": 50.06446237513359,
+      "actual_position_write_presentation": 3083,
+      "poll_to_actual_position_write_ms": 33.37630825008906,
+      "actual_write_to_first_pixel_ms": 33.37630825008906
     },
     "first_visible_gain_ms": 33.37630825008905,
     "pcm_sha256_equal": true,
@@ -405,5 +408,15 @@
     "result": "OK",
     "skipped_scope": "Optional private-ROM and fresh original-M2 execution oracles. Separate private-ROM full-core tests are recorded above."
   },
-  "limits": "Response is measured at the core framebuffer, excluding physical controller, frontend queue and display latency. This targeted sample does not prove a fixed gain in every scene, CPU setting or frontend. Native game logic/input timing is unchanged."
+  "limits": "Response is measured at the core framebuffer, excluding physical controller, frontend queue and display latency. This targeted sample does not prove a fixed gain in every scene, CPU setting or frontend. Native game logic/input timing is unchanged.",
+  "measurement_correction": {
+    "date": "2026-10-16",
+    "method": "Correlate instruction-qualified cached-pad reads, pad-latch writes and completed player-control writes directly with the current libretro presentation call.",
+    "previous_error": "50.06 ms was the first pre-frame Lua observation of the changed coordinate, not the execution time of the coordinate write.",
+    "measured_control_write_delay_ms": 33.37630825008906,
+    "measured_write_to_pixel_delay_ms": 33.37630825008906,
+    "framebuffer_result_unchanged": true,
+    "reference": "SH1_NATIVE_INPUT_TIMING.json",
+    "original_m2_limit": "These timings were measured in this portable core, not the complete original M2 application."
+  }
 }
