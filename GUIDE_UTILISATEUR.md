@@ -59,6 +59,10 @@ ouvrez **Options > Emulator** pour régler le cœur, ou **Options > Controls**
 pour réattribuer les boutons. Commencez en rendu **Original (M2)** à la
 fréquence native ; laissez le mode 120 Hz expérimental désactivé sur la console.
 
+Si le jeu ralentit, ouvrez **Options > Frontend** et essayez **CPU Speed** sur
+**Performance**. Activez **Debug HUD** juste en dessous pour afficher les temps
+par image. Comparez la même scène en **Auto** et en **Performance**.
+
 ### Installation manuelle dans RetroArch
 
 1. Décompressez l’archive téléchargée.

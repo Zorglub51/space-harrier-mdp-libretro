@@ -54,6 +54,10 @@ This pak uses NextUI's built-in frontend. In game, press **Menu** and open
 buttons. Start with **Original (M2)** at native refresh; leave the experimental
 120 Hz mode off on the handheld.
 
+If gameplay slows down, open **Options > Frontend** and test **CPU Speed**
+on **Performance**. Enable **Debug HUD** just below it to see per-frame
+timings. Compare the same scene with **Auto** and **Performance**.
+
 ### Manual installation in RetroArch
 
 1. Extract the downloaded archive.

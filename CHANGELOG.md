@@ -26,6 +26,15 @@ GitHub release notes are generated directly from the corresponding entry.
 - Document the isolated workload and remaining full-game timing limits. This
   investigation changes no emulation, rendering, shader or core option.
 
+## [0.1.27] - 2026-11-10
+
+### Reduce host CPU work on TrimUI Smart Pro
+
+- Use the handheld's optimized AArch64 memory fill routine in the NextUI
+  build. The package still targets Cortex-A53, Linux 4.9 and glibc 2.28.
+- Verify the optimized routine at packaging time and document how to compare
+  NextUI's Auto and Performance CPU profiles with Debug HUD enabled.
+
 ## [0.1.26] - 2026-11-10
 
 ### Fix the NextUI build on Linux hosts

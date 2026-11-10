@@ -62,12 +62,35 @@ elif [[ "${platform}" == "trimui-smart-pro-nextui" ]]; then
     # Keep GENie's host compiler native. Only the generated Linux core build
     # uses these wrappers. Do not link the handheld module against host glibc.
     for driver in cc c++; do
-        printf '%s\n' '#!/bin/sh' \
-            "exec \"\$SHMDP_ZIG\" ${driver} -target aarch64-linux.4.9-gnu.2.28 -mcpu=cortex_a53 -Wno-nullability-completeness \"\$@\"" \
-            > "${trimui_tools}/${driver}"
+        cat > "${trimui_tools}/${driver}" <<'SH'
+#!/bin/sh
+for arg do
+    case "$arg" in
+        -shared|-dynamiclib)
+            set -- "$@" "${0%/*}/glibc-memset.o"
+            break
+            ;;
+    esac
+done
+exec "$SHMDP_ZIG" "${0##*/}" -target aarch64-linux.4.9-gnu.2.28 -mcpu=cortex_a53 -Wno-nullability-completeness "$@"
+SH
     done
     printf '%s\n' '#!/bin/sh' 'exec "$SHMDP_ZIG" ar "$@"' > "${trimui_tools}/ar"
     chmod +x "${trimui_tools}/cc" "${trimui_tools}/c++" "${trimui_tools}/ar"
+    # Make does not track objects appended by the compiler wrapper. Relink
+    # when the shim is added or changes, even on an incremental build.
+    shim="${trimui_tools}/glibc-memset.o"
+    "${trimui_tools}/cc" -O2 -fPIC -fno-builtin-memset -c \
+        "${repo_root}/dist/nextui/glibc-memset.c" -o "${shim}.new"
+    if cmp -s "${shim}.new" "${shim}"; then
+        rm "${shim}.new"
+    else
+        mv "${shim}.new" "${shim}"
+        rm -f "${mame_tree}/shmdp_libretro.so"
+        if [[ "$(uname -s)" == Darwin ]]; then
+            rm -f "${mame_tree}/shmdp_libretro.dylib"
+        fi
+    fi
     # With CROSS_BUILD, MAME keeps CC native for GENie and otherwise checks
     # that host compiler for the target Clang version. Linux hosts may use GCC.
     trimui_clang_version="$("${trimui_tools}/cc" --version |

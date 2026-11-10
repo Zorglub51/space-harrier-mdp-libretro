@@ -52,13 +52,18 @@ def verify(core: Path, readelf: str):
         raise ValueError(f"expected glibc requirements at or below 2.28: {sorted(set(glibc))}")
 
     exports = set()
+    imports = set()
     for line in inspect("--dyn-syms").splitlines():
         columns = line.split()
-        if (len(columns) >= 8 and columns[3:6] == ["FUNC", "GLOBAL", "DEFAULT"]
-                and columns[6].isdigit()):
-            exports.add(columns[7].partition("@")[0])
+        if len(columns) >= 8 and columns[3:6] == ["FUNC", "GLOBAL", "DEFAULT"]:
+            if columns[6].isdigit():
+                exports.add(columns[7].partition("@")[0])
+            elif columns[6] == "UND":
+                imports.add(columns[7])
     if missing := LIBRETRO_API - exports:
         raise ValueError(f"missing libretro functions: {', '.join(sorted(missing))}")
+    if "memset@GLIBC_2.17" not in imports or "memset" in exports:
+        raise ValueError("expected the system AArch64 memset with no exported shim")
 
     version = ".".join(map(str, max(glibc))).removesuffix(".0")
     print(f"AArch64 ELF64, highest glibc requirement {version}, "
