@@ -26,6 +26,20 @@ GitHub release notes are generated directly from the corresponding entry.
 - Document the isolated workload and remaining full-game timing limits. This
   investigation changes no emulation, rendering, shader or core option.
 
+## [0.1.28] - 2026-11-10
+
+### Reduce repeated work in MDP video and PSG audio
+
+- Convert the MDP palette when CRAM changes and reuse the exact RGB values
+  for the native raster and widescreen margins. Rebuild the derived palette
+  on state load and retain raster palette writes for MAME's graphics viewer.
+- Mix the PSG once per divided chip clock and fill the held samples as a
+  block. Keep the same chip ticks, output levels, and serialized counters.
+- Compared with 0.1.26, the median SH1 frame time was about 22% lower in the
+  ARM64 Linux test environment. SH1 and SH2 regression runs matched the
+  reference video, PCM audio, and sampled game state in Original and
+  widescreen Mark VI 120 Hz modes.
+
 ## [0.1.27] - 2026-11-10
 
 ### Reduce host CPU work on TrimUI Smart Pro
