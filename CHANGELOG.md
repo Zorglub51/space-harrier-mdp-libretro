@@ -26,6 +26,17 @@ GitHub release notes are generated directly from the corresponding entry.
 - Document the isolated workload and remaining full-game timing limits. This
   investigation changes no emulation, rendering, shader or core option.
 
+## [0.1.26] - 2026-11-10
+
+### Fix the NextUI build on Linux hosts
+
+- Pass Zig's target Clang version to the MAME build generator. The generator
+  was checking the Linux runner's native GCC instead, so the GitHub build
+  failed its Clang version check before compiling the TrimUI core.
+- Include the TrimUI Smart Pro (TG5040) NextUI pak for both games. The core
+  still targets Cortex-A53, Linux 4.9 and glibc 2.28. This fix changes the
+  build configuration, not emulation behavior.
+
 ## [0.1.25] - 2026-11-10
 
 ### TrimUI Smart Pro with NextUI

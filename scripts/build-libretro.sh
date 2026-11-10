@@ -68,8 +68,17 @@ elif [[ "${platform}" == "trimui-smart-pro-nextui" ]]; then
     done
     printf '%s\n' '#!/bin/sh' 'exec "$SHMDP_ZIG" ar "$@"' > "${trimui_tools}/ar"
     chmod +x "${trimui_tools}/cc" "${trimui_tools}/c++" "${trimui_tools}/ar"
+    # With CROSS_BUILD, MAME keeps CC native for GENie and otherwise checks
+    # that host compiler for the target Clang version. Linux hosts may use GCC.
+    trimui_clang_version="$("${trimui_tools}/cc" --version |
+        sed -nE '1s/^.*clang version ([0-9]+\.[0-9]+(\.[0-9]+)?)([[:space:]].*)?$/\1/p')"
+    if [[ -z "${trimui_clang_version}" ]]; then
+        echo "Could not determine the target Clang version from Zig." >&2
+        exit 1
+    fi
     build_core TARGETOS=linux ARCHITECTURE=_arm64_clang PLATFORM=arm64 \
         LIBRETRO_CPU=aarch64 CROSS_BUILD=1 VERBOSE= \
+        CLANG_VERSION="${trimui_clang_version}" \
         OVERRIDE_CC="${trimui_tools}/cc" OVERRIDE_CXX="${trimui_tools}/c++" \
         OVERRIDE_AR="${trimui_tools}/ar" NOASM=1 NO_OPENGL=1 DONT_USE_NETWORK=1 \
         'LDOPTS=-s -Wl,-z,defs'
