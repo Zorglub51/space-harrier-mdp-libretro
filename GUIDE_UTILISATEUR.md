@@ -2,8 +2,11 @@
 
 ## Ce qu’il vous faut
 
-1. Un ordinateur Windows 64 bits, macOS ou Linux 64 bits.
-2. [RetroArch](https://www.retroarch.com/) installé.
+1. Un ordinateur Windows 64 bits, macOS ou Linux 64 bits, ou une TrimUI Smart Pro
+   (TG5040).
+2. [RetroArch](https://www.retroarch.com/) sur ordinateur, ou
+   [NextUI 6.15.0 ou ultérieur](https://github.com/LoveRetro/NextUI/releases/tag/v6.15.0)
+   sur la Smart Pro.
 3. Votre propre fichier original SH1 ou SH2, extrait d’une Mega Drive Mini 2
    vous appartenant.
 4. L’archive `space-harrier-mdp-….7z` correspondant à votre système, téléchargée
@@ -26,7 +29,7 @@ Sous Windows, `TESTER_SH1_WINDOWS.cmd` et `TESTER_SH2_WINDOWS.cmd` permettent
 un essai avec choix de RetroArch et de la ROM. Chaque lancement conserve ses
 journaux et captures dans un dossier de session distinct.
 
-## Installation dans RetroArch
+## Installation du cœur
 
 ### macOS — installation automatique
 
@@ -40,7 +43,23 @@ L’installateur lit les répertoires configurés par RetroArch, place chaque fi
 au bon endroit et régénère le cache des informations sur les cœurs. Il ne touche
 ni aux ROM, ni aux sauvegardes, ni aux autres cœurs.
 
-### Installation manuelle — tous les systèmes
+### TrimUI Smart Pro (TG5040) avec NextUI
+
+1. Décompressez l’archive `trimui-smart-pro-nextui` sur votre ordinateur.
+2. Copiez le dossier `SHMDP.pak` fourni dans `Emus/tg5040/` sur la carte microSD.
+   Le lanceur et le cœur doivent se retrouver dans `Emus/tg5040/SHMDP.pak/`.
+3. Placez vos fichiers originaux `.smp` directement dans
+   `Roms/Space Harrier (SHMDP)/` sur la carte. Gardez le suffixe `(SHMDP)` pour
+   que NextUI choisisse le bon émulateur.
+4. Réinsérez la carte et choisissez un jeu dans le dossier **Space Harrier**
+   de NextUI.
+
+Le pak utilise le lecteur intégré à NextUI. En jeu, appuyez sur **Menu**, puis
+ouvrez **Options > Emulator** pour régler le cœur, ou **Options > Controls**
+pour réattribuer les boutons. Commencez en rendu **Original (M2)** à la
+fréquence native ; laissez le mode 120 Hz expérimental désactivé sur la console.
+
+### Installation manuelle dans RetroArch
 
 1. Décompressez l’archive téléchargée.
 2. Dans RetroArch, ouvrez **Paramètres > Répertoires** et notez les deux chemins
@@ -69,6 +88,8 @@ bibliothèque extraite. Cette commande n’installe pas toujours le fichier
 manuellement.
 
 ## Lancer le jeu
+
+Dans RetroArch sur ordinateur :
 
 1. Choisissez **Charger un cœur**.
 2. Sélectionnez **Space Harrier MDP**.
@@ -186,9 +207,9 @@ Changer Deflicker ne change pas le format des états de cette version du cœur.
 ## Explosions de SH1 dans SH2 — option facultative
 
 Placez votre ROM originale `jp_jp_space_harrier.smp` à côté de celle de SH2,
-ou dans le répertoire **System/BIOS** de RetroArch. Dans **Menu rapide >
-Options du cœur > Emulation Hacks**, choisissez **SH1 Artwork and Timing**
-pour **SH2 Explosions**. Le changement relance automatiquement SH2 depuis
+ou dans le répertoire **System/BIOS** de RetroArch (`Bios/SHMDP/` sur la microSD
+NextUI). Dans les options du cœur, choisissez **SH1 Artwork and Timing** pour
+**SH2 Explosions**. Le changement relance automatiquement SH2 depuis
 le début lorsque vous reprenez le jeu. Le remplacement concerne tous les objets qui explosent : ennemis, boss,
 décors et effets produits par les collisions du joueur. Il ne dépend plus
 d’une liste de familles d’ennemis. La réservation des graphismes corrige aussi

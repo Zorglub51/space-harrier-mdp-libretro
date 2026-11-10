@@ -1,8 +1,8 @@
 # Space Harrier MDP — Libretro core
 
 This project makes the Mega Drive Mini 2 editions of **Space Harrier** and
-**Space Harrier II** playable in
-RetroArch on desktop operating systems. It combines a narrowly scoped MAME 0.289
+**Space Harrier II** playable in RetroArch on desktop operating systems and in
+NextUI on the TrimUI Smart Pro (TG5040). It combines a narrowly scoped MAME 0.289
 Libretro build with the missing MDP video behaviour and repairs the original game
 code in memory at launch.
 
@@ -19,8 +19,10 @@ Choose the archive for your operating system on the
 - [Changelog for every version](CHANGELOG.md)
 
 Releases provide complete `.7z` downloads for Windows x86_64, Linux x86_64,
-macOS Intel and macOS Apple Silicon. Extract the archive matching your machine
-with 7-Zip or a compatible tool. The `source` archive is only needed to rebuild.
+macOS Intel, macOS Apple Silicon and TrimUI Smart Pro with NextUI. Extract the
+archive matching your machine with 7-Zip or a compatible tool. The NextUI archive
+contains a [microSD-ready emulator pak](USER_GUIDE.md#trimui-smart-pro-tg5040-with-nextui).
+The `source` archive is only needed to rebuild.
 Each download has SHA-256 checksums and a build manifest recording its revision.
 
 The supported originals are:
@@ -57,10 +59,11 @@ The build is pinned to libretro/MAME commit
 ```
 
 See [Building](docs/BUILDING.md) for dependencies and platform details. GitHub
-Actions builds Linux x86_64, Windows x86_64, macOS Intel and macOS Apple Silicon.
+Actions builds Linux x86_64, Windows x86_64, macOS Intel, macOS Apple Silicon and
+TrimUI Smart Pro (NextUI).
 Each version has an English entry in [CHANGELOG.md](CHANGELOG.md), used as its
 GitHub release notes. A matching `vX.Y.Z`
-tag runs the public tests and builds all four cores plus their corresponding
+tag runs the public tests and builds all five cores plus their corresponding
 source archive. The release becomes public only after all downloads pass the
 revision and integrity checks. See [Publishing](docs/BUILDING.md#publishing-a-revision)
 for the revision procedure.

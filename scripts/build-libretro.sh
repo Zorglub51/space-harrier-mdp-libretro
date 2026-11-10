@@ -48,6 +48,35 @@ if [[ "${platform}" == "osx" ]]; then
             ;;
         *) echo "Unsupported MACOS_ARCH: ${MACOS_ARCH:-$(uname -m)}" >&2; exit 1 ;;
     esac
+elif [[ "${platform}" == "trimui-smart-pro-nextui" ]]; then
+    if ! SHMDP_ZIG="$(command -v zig)" || [[ "$("${SHMDP_ZIG}" version)" != 0.16.0 ]]; then
+        echo "This target requires Zig 0.16.0 on PATH." >&2
+        exit 1
+    fi
+    export SHMDP_ZIG
+    platform=linux
+    trimui_tools="$(cd "${mame_tree}" && pwd)/build/trimui-toolchain"
+    mkdir -p "${trimui_tools}"
+    export ZIG_GLOBAL_CACHE_DIR="${ZIG_GLOBAL_CACHE_DIR:-${trimui_tools}/zig-global-cache}"
+    export ZIG_LOCAL_CACHE_DIR="${ZIG_LOCAL_CACHE_DIR:-${trimui_tools}/zig-local-cache}"
+    # Keep GENie's host compiler native. Only the generated Linux core build
+    # uses these wrappers. Do not link the handheld module against host glibc.
+    for driver in cc c++; do
+        printf '%s\n' '#!/bin/sh' \
+            "exec \"\$SHMDP_ZIG\" ${driver} -target aarch64-linux.4.9-gnu.2.28 -mcpu=cortex_a53 -Wno-nullability-completeness \"\$@\"" \
+            > "${trimui_tools}/${driver}"
+    done
+    printf '%s\n' '#!/bin/sh' 'exec "$SHMDP_ZIG" ar "$@"' > "${trimui_tools}/ar"
+    chmod +x "${trimui_tools}/cc" "${trimui_tools}/c++" "${trimui_tools}/ar"
+    build_core TARGETOS=linux ARCHITECTURE=_arm64_clang PLATFORM=arm64 \
+        LIBRETRO_CPU=aarch64 CROSS_BUILD=1 VERBOSE= \
+        OVERRIDE_CC="${trimui_tools}/cc" OVERRIDE_CXX="${trimui_tools}/c++" \
+        OVERRIDE_AR="${trimui_tools}/ar" NOASM=1 NO_OPENGL=1 DONT_USE_NETWORK=1 \
+        'LDOPTS=-s -Wl,-z,defs'
+    if [[ "$(uname -s)" == Darwin ]]; then
+        # GENie uses the host suffix, although Zig links an ELF for this target.
+        cp "${mame_tree}/shmdp_libretro.dylib" "${mame_tree}/shmdp_libretro.so"
+    fi
 elif [[ "${platform}" == "win" ]]; then
     windows_patch="${repo_root}/patches/mame0289-libretro-windows.patch"
     if git -C "${mame_tree}" apply --check "${windows_patch}" 2>/dev/null; then

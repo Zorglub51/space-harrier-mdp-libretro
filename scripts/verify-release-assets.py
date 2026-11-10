@@ -8,7 +8,8 @@ from pathlib import Path
 import shutil
 import subprocess
 
-PLATFORMS = {"windows-x86_64", "linux-x86_64", "macos-x86_64", "macos-arm64", "source"}
+PLATFORMS = {"windows-x86_64", "linux-x86_64", "macos-x86_64", "macos-arm64",
+             "trimui-smart-pro-nextui", "source"}
 
 
 def sha256(path):
@@ -22,7 +23,7 @@ def sha256(path):
 def verify_assets(directory: Path, version: str, commit: str):
     manifests = sorted(directory.glob("*.7z.BUILD.json"))
     if len(manifests) != len(PLATFORMS):
-        raise ValueError("A release requires four core manifests and one source manifest")
+        raise ValueError(f"A release requires a manifest for each of: {', '.join(sorted(PLATFORMS))}")
     seen, expected_files, archives = set(), set(), []
     for manifest in manifests:
         build = json.loads(manifest.read_text(encoding="utf-8"))

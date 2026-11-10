@@ -26,6 +26,18 @@ GitHub release notes are generated directly from the corresponding entry.
 - Document the isolated workload and remaining full-game timing limits. This
   investigation changes no emulation, rendering, shader or core option.
 
+## [0.1.25] - 2026-11-10
+
+### TrimUI Smart Pro with NextUI
+
+- Add a Linux ARM64 build for the TrimUI Smart Pro (TG5040) running NextUI
+  6.15.0 or later. The downloadable archive includes a MinArch emulator pak
+  for both Space Harrier games and setup instructions in English and French.
+- Build with Zig 0.16.0 targeting Cortex-A53, Linux 4.9 and glibc 2.28.
+  The release workflow checks the packaged core's architecture, dependencies
+  and libretro exports, then runs a generated cartridge on ARM64 Linux to
+  verify video, audio and save-state replay.
+
 ## [0.1.24] - 2026-10-15
 
 ### More responsive Harrier movement in SH1 at 120 Hz

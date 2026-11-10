@@ -21,6 +21,7 @@ on:
           - linux
           - windows
           - macos
+          - trimui-smart-pro-nextui
   pull_request:
   push:
     branches: [main]
@@ -57,6 +58,60 @@ jobs:
       - uses: actions/upload-artifact@v7
         with:
           name: space-harrier-mdp-linux-x86_64
+          path: out/*.7z*
+          compression-level: 0
+          if-no-files-found: error
+
+  trimui-smart-pro-nextui:
+    name: TrimUI Smart Pro (NextUI)
+    timeout-minutes: 60
+    if: inputs.platform == '' || inputs.platform == 'all' || inputs.platform == 'trimui-smart-pro-nextui'
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          ref: ${{ inputs.ref || github.ref }}
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential binutils git python3 7zip
+      - name: Install pinned Zig compiler
+        run: |
+          archive=zig-aarch64-linux-0.16.0.tar.xz
+          curl --fail --location --retry 3 "https://ziglang.org/download/0.16.0/${archive}" \
+            --output "${RUNNER_TEMP}/${archive}"
+          echo "ea4b09bfb22ec6f6c6ceac57ab63efb6b46e17ab08d21f69f3a48b38e1534f17  ${RUNNER_TEMP}/${archive}" \
+            | sha256sum --check
+          tar -xJf "${RUNNER_TEMP}/${archive}" -C "${RUNNER_TEMP}"
+          echo "${RUNNER_TEMP}/${archive%.tar.xz}" >> "${GITHUB_PATH}"
+      - name: Prepare pinned MAME tree
+        run: ./scripts/fetch-mame.sh
+      - name: Build
+        env:
+          PLATFORM: trimui-smart-pro-nextui
+        run: ./scripts/build-libretro.sh
+      - name: Package NextUI pak
+        run: ./scripts/package-core.sh build/mame trimui-smart-pro-nextui
+      - name: Check packaged ELF and run the ARM64 core
+        run: |
+          extracted="${RUNNER_TEMP}/trimui-package"
+          seven_zip=$(command -v 7zz || command -v 7z)
+          "${seven_zip}" x -y "-o${extracted}" out/*-trimui-smart-pro-nextui.7z
+          core=$(find "${extracted}" -type f -path '*/Emus/tg5040/SHMDP.pak/shmdp_libretro.so')
+          python3 scripts/verify-trimui-core.py "${core}"
+          python3 tests/libretro_public_smoke.py --core "${core}" \
+            --output "${RUNNER_TEMP}/trimui-smoke.json"
+          python3 tests/libretro_public_smoke.py --core "${core}" --threaded \
+            --output "${RUNNER_TEMP}/trimui-smoke-threaded.json"
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: trimui-runtime-report
+          path: ${{ runner.temp }}/trimui-smoke*.json
+          if-no-files-found: ignore
+      - uses: actions/upload-artifact@v7
+        with:
+          name: space-harrier-mdp-trimui-smart-pro-nextui
           path: out/*.7z*
           compression-level: 0
           if-no-files-found: error

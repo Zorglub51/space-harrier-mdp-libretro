@@ -2,8 +2,10 @@
 
 ## You will need
 
-1. A 64-bit Windows, macOS or Linux computer.
-2. [RetroArch](https://www.retroarch.com/) installed.
+1. A 64-bit Windows, macOS or Linux computer, or a TrimUI Smart Pro (TG5040).
+2. [RetroArch](https://www.retroarch.com/) on a computer, or
+   [NextUI 6.15.0 or later](https://github.com/LoveRetro/NextUI/releases/tag/v6.15.0)
+   on the Smart Pro.
 3. Your own original SH1 or SH2 file, extracted from hardware you own.
 4. The `space-harrier-mdp-….7z` archive for your operating system from this
    repository's **Releases** page.
@@ -38,7 +40,21 @@ The installer reads RetroArch's configured directories, puts each file in the
 correct location and rebuilds the core-info cache. It does not touch ROMs,
 saves, or any other core.
 
-### Manual installation on any system
+### TrimUI Smart Pro (TG5040) with NextUI
+
+1. Extract the `trimui-smart-pro-nextui` archive on your computer.
+2. Copy the included `SHMDP.pak` folder to `Emus/tg5040/` on the microSD card.
+   The launcher and core should end up in `Emus/tg5040/SHMDP.pak/`.
+3. Put your original `.smp` files directly in `Roms/Space Harrier (SHMDP)/`
+   on the card. Keep the `(SHMDP)` tag so NextUI picks the right emulator.
+4. Reinsert the card and select either game in NextUI's **Space Harrier** folder.
+
+This pak uses NextUI's built-in frontend. In game, press **Menu** and open
+**Options > Emulator** for core settings or **Options > Controls** to remap
+buttons. Start with **Original (M2)** at native refresh; leave the experimental
+120 Hz mode off on the handheld.
+
+### Manual installation in RetroArch
 
 1. Extract the downloaded archive.
 2. In RetroArch, open **Settings > Directory** and note both the **Cores** and
@@ -64,9 +80,9 @@ if needed.
 
 ## Play
 
-Select **Load Core > Space Harrier MDP**, then **Load Content** and choose the
-original `.smp` file. The core recognises it and applies the repairs in memory;
-the file on disk is never changed.
+In RetroArch, select **Load Core > Space Harrier MDP**, then **Load Content** and
+choose the original `.smp` file. The core recognises it and applies the repairs
+in memory; the file on disk is never changed.
 
 The directional pad or left stick moves Harrier, RetroPad **B** fires and **Start**
 starts the game. Remap these under **Quick Menu > Controls > Port 1 Controls** if
@@ -177,8 +193,8 @@ Changing Deflicker does not change the current core's save-state format.
 ## Optional SH1 explosions in SH2
 
 Put your original `jp_jp_space_harrier.smp` next to the SH2 ROM, or in
-RetroArch's **System/BIOS** directory. In **Quick Menu > Core Options >
-Emulation Hacks**, set **SH2 Explosions** to **SH1 Artwork and Timing**.
+RetroArch's **System/BIOS** directory (`Bios/SHMDP/` on the NextUI microSD).
+Set **SH2 Explosions** to **SH1 Artwork and Timing** in the core options.
 Changing this option automatically restarts SH2 from the beginning when gameplay
 resumes. The replacement covers all exploding objects, including enemies, bosses,
 scenery and explosions caused by player collisions. It no longer filters by

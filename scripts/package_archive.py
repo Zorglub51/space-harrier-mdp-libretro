@@ -40,8 +40,10 @@ def package_archive(package: Path, archive: Path, download_limit: int = None) ->
     seven_zip = shutil.which("7zz") or shutil.which("7z")
     if not seven_zip:
         raise RuntimeError("7-Zip is required: install 7zz or 7z before packaging.")
-    if not (package / "BUILD.json").is_file():
+    build_info = package / "BUILD.json"
+    if not build_info.is_file():
         raise RuntimeError(f"Missing package metadata: {package / 'BUILD.json'}")
+    build = json.loads(build_info.read_text(encoding="utf-8"))
     archive.parent.mkdir(parents=True, exist_ok=True)
 
     manifest = package / "FILES_SHA256SUMS"
@@ -56,6 +58,9 @@ def package_archive(package: Path, archive: Path, download_limit: int = None) ->
         compressed = temp / archive.name
         command = [seven_zip, "a", "-t7z", "-mx=9", "-m0=lzma2", "-md=64m",
                    "-mfb=273", "-ms=on", "-mmt=2", "-snl"]
+        if build.get("platform") == "trimui-smart-pro-nextui":
+            # Older 7-Zip readers cannot decode the automatic ARM64 filter.
+            command.append("-mf=off")
         if download_limit:
             volume_size = min(VOLUME_SIZE, max(1, download_limit * 95 // 100))
             command.append(f"-v{volume_size}b")
@@ -84,7 +89,6 @@ def package_archive(package: Path, archive: Path, download_limit: int = None) ->
         run_7z([seven_zip, "t", str(outputs[0])], temp)
 
         metadata = temp / (archive.name + ".BUILD.json")
-        build = json.loads((package / "BUILD.json").read_text(encoding="utf-8"))
         build.update({
             "archive_format": "7z",
             "split": len(outputs) > 1,

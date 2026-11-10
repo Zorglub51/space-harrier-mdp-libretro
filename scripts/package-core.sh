@@ -20,7 +20,7 @@ archive="${package_dir}.7z"
 case "${platform_tag}" in
     windows-*) extension=dll ;;
     macos-*) extension=dylib ;;
-    linux-*) extension=so ;;
+    linux-*|trimui-smart-pro-nextui) extension=so ;;
     *) echo "Unknown platform tag: ${platform_tag}" >&2; exit 1 ;;
 esac
 
@@ -32,7 +32,16 @@ fi
 
 rm -rf "${package_dir}"
 mkdir -p "${package_dir}"
-cp "${core}" "${package_dir}/shmdp_libretro.${extension}"
+core_relative="shmdp_libretro.${extension}"
+if [[ "${platform_tag}" == trimui-smart-pro-nextui ]]; then
+    pak="Emus/tg5040/SHMDP.pak"
+    mkdir -p "${package_dir}/${pak}" "${package_dir}/Roms/Space Harrier (SHMDP)"
+    cp "${repo_root}/dist/nextui/launch.sh" "${package_dir}/${pak}/launch.sh"
+    cp -R "${repo_root}/dist/nextui/licenses" "${package_dir}/licenses"
+    chmod +x "${package_dir}/${pak}/launch.sh"
+    core_relative="${pak}/shmdp_libretro.so"
+fi
+cp "${core}" "${package_dir}/${core_relative}"
 cp "${repo_root}/dist/shmdp_libretro.info" "${package_dir}/shmdp_libretro.info"
 cp "${repo_root}/GUIDE_UTILISATEUR.md" "${package_dir}/LISEZ-MOI.md"
 cp "${repo_root}/USER_GUIDE.md" "${package_dir}/README.md"
@@ -65,21 +74,21 @@ elif [[ "${platform_tag}" == windows-* ]]; then
     fi
 fi
 
-python3 - "${package_dir}" "${extension}" "${version}" "${platform_tag}" "${repo_root}" "${mame_tree}" <<'PY'
+python3 - "${package_dir}" "${core_relative}" "${version}" "${platform_tag}" "${repo_root}" "${mame_tree}" <<'PY'
 import hashlib
 import json
 from pathlib import Path
 import sys
 import subprocess
 
-package, extension, version, platform, repo, mame = sys.argv[1:]
+package, core_relative, version, platform, repo, mame = sys.argv[1:]
 package, repo, mame = Path(package), Path(repo), Path(mame)
 def git(path, *args):
     result = subprocess.run(["git", "-C", str(path), *args], capture_output=True, text=True)
     return result.stdout.strip() if result.returncode == 0 else None
-core = package / f"shmdp_libretro.{extension}"
+core = package / core_relative
 digest = hashlib.sha256(core.read_bytes()).hexdigest()
-(package / "CORE_SHA256.txt").write_text(f"{digest}  {core.name}\n", encoding="utf-8")
+(package / "CORE_SHA256.txt").write_text(f"{digest}  {core_relative}\n", encoding="utf-8")
 info = package / "shmdp_libretro.info"
 lines = info.read_text(encoding="utf-8").splitlines()
 info.write_text("\n".join(

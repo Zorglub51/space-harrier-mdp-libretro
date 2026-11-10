@@ -71,10 +71,10 @@ class ReleaseAssetTests(unittest.TestCase):
         return assets.verify_assets(self.root, "0.1.3", self.commit)
 
     def test_complete_matrix_is_accepted(self):
-        self.assertEqual(len(self.verify()), 5)
+        self.assertEqual(len(self.verify()), 6)
 
     def test_missing_platform_is_rejected(self):
-        next(self.root.glob("*.BUILD.json")).unlink()
+        (self.root / "space-harrier-mdp-0.1.3-trimui-smart-pro-nextui.7z.BUILD.json").unlink()
         with self.assertRaises(ValueError):
             self.verify()
 

@@ -16,6 +16,12 @@ GPL-2.0-or-later. Corresponding source is reproducibly described by the pinned
 upstream commit, the patch and scripts in this repository. Release pages also
 carry a complete corresponding-source archive for the distributed binaries.
 
+The TrimUI build statically links the C++ and compiler runtimes supplied with
+[Zig 0.16.0](https://ziglang.org/download/). The TrimUI download includes the
+Zig, libc++, libc++abi and libunwind notices in `licenses/`. The exact Zig
+distribution sources are available in the
+[Zig 0.16.0 source archive](https://ziglang.org/download/0.16.0/zig-0.16.0.tar.xz).
+
 Space Harrier, Mega Drive and Mega Drive Mini 2 are trademarks or properties of
 their respective owners. This project is unaffiliated with and not endorsed by
 Sega, M2, MAMEdev, Libretro or RetroArch.

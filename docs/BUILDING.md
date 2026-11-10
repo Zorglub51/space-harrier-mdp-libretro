@@ -64,6 +64,28 @@ PLATFORM=win ./scripts/build-libretro.sh
 ./scripts/package-core.sh build/mame windows-x86_64
 ```
 
+## TrimUI Smart Pro (NextUI)
+
+Install [Zig 0.16.0](https://ziglang.org/download/) on `PATH` alongside the
+native C/C++ build tools, Git, Python 3, Make and 7-Zip. The TG5040 target uses
+ARM64 code tuned for Cortex-A53, Linux 4.9 and the glibc 2.28 ABI. Zig
+provides a modern C++ compiler and statically linked C++ runtime. This keeps
+the core independent of desktop graphics libraries and the firmware's C++
+runtime version. Use a separate MAME checkout for this target.
+
+```bash
+./scripts/fetch-mame.sh build/mame-trimui
+PLATFORM=trimui-smart-pro-nextui ./scripts/build-libretro.sh build/mame-trimui
+python3 scripts/verify-trimui-core.py build/mame-trimui/shmdp_libretro.so
+./scripts/package-core.sh build/mame-trimui trimui-smart-pro-nextui
+```
+
+The ABI check needs GNU `readelf` (`--readelf greadelf` if installed by
+Homebrew). The CI build verifies the extracted pak and runs an original test
+cartridge in both single-threaded and threaded modes on an ARM64 Linux runner.
+This checks loading, video, audio and save-state replay; it does not measure
+performance on the handheld. For microSD setup see the [user guide](../USER_GUIDE.md#trimui-smart-pro-tg5040-with-nextui).
+
 ## Outputs
 
 The core is built as the small `shmdp` subtarget using only
@@ -93,9 +115,10 @@ artifacts; `release.yml` publishes them when a `v*` tag is pushed.
    ```
 
 The release workflow rejects a tag without matching version notes. It tests and
-builds Windows x86_64, Linux x86_64, and native Intel/Apple Silicon macOS cores.
-In parallel it packages the full pinned MAME source with the port changes. It
-verifies all five archives, their checksums and common commit before uploading
+builds Windows x86_64, Linux x86_64, native Intel/Apple Silicon macOS and TrimUI
+Smart Pro (NextUI) cores. In parallel it packages the full pinned MAME source
+with the port changes. It verifies all six archives, their checksums and common
+commit before uploading
 them to a draft release and making it public. The release text is extracted
 verbatim from that version's changelog entry; the script does not translate it.
 Before tagging, preview and review the English notes with:
