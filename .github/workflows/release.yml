@@ -10,6 +10,7 @@ on:
   push:
     tags:
       - "v*"
+      - "!v2" # The independent Mark V core has its own release assets.
 
 concurrency:
   group: release-${{ inputs.tag || github.ref_name }}
@@ -23,6 +24,7 @@ env:
 
 jobs:
   validate:
+    if: (inputs.tag || github.ref_name) != 'v2'
     name: Validate version and changelog
     runs-on: ubuntu-latest
     outputs:

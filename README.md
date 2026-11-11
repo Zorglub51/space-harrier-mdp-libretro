@@ -9,10 +9,17 @@ code in memory at launch.
 The repository and release archives contain **no game ROM**. You must provide your
 own original files extracted from hardware you own.
 
-## Download and play
+## Mark V v2
 
-Choose the archive for your operating system on the
-[Releases](../../releases) page, then follow:
+[Mark V v2](../../releases/tag/v2) is an independent emulator for the original
+Japanese Space Harrier and Space Harrier II `.smp` cartridges. It has its own
+CPU, video and audio implementation, with desktop RetroArch cores and a
+TrimUI Smart Pro NextUI package. See [Mark V options and build instructions](markv-native/README.md).
+
+## MAME-based editions
+
+Choose the archive for your operating system from the
+[last MAME-based release](../../releases/tag/v0.1.28), then follow:
 
 - [Guide utilisateur en français](GUIDE_UTILISATEUR.md)
 - [English user guide](USER_GUIDE.md)
